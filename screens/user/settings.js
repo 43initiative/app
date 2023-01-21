@@ -44,7 +44,7 @@ export default class Settings extends React.Component {
                         <Ionicons style={[{borderColor:'black',borderWidth:0}]} name={'ios-arrow-back'} size={25} color={'black'}/>
                     </TouchableOpacity>
                     <View><Text style={[{fontSize:16,fontWeight:'bold'}]}>Settings</Text></View>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack()}}>
+                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('HelpScreen')}}>
                         <Ionicons style={[{borderColor:'black',borderWidth:0}]} name={'ios-help-buoy-outline'} size={25} color={'black'}/>
                     </TouchableOpacity>
                 </View>

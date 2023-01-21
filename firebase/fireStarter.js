@@ -364,6 +364,42 @@ const changeUserPassword = async (newPassword) => {
     }
 }
 
+const submitFeedback = async (message) => {
+    try {
+        let {db,auth} = firebaseCreds;
+        let userUid = auth.currentUser.uid;
+        await addDoc(collection(db, "feedback"), {
+            userUid: userUid,
+            feedback:message
+        });
+        return {passed:true}
+    }catch (e) {
+        return {passed:false}
+    }
+
+}
+
+const getUserProfile = async (navigation,route,isSelf,userUid) => {
+    try {
+        let auth = firebaseCreds.auth;
+        let myUid = auth.currentUser.uid;
+        const docRef = doc(firebaseCreds.db, "publicUsers", isSelf ? myUid : userUid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            console.log(docSnap.data());
+            navigation.navigate('PublicProfile',docSnap.data())
+            return {data:docSnap.data(),passed:true}
+        } else {
+            console.log("No such document!");
+            return {data:null,passed:false,reason:'no such document exists'}
+        }
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+}
+
 
 module.exports = {
     checkForOnboarding,
@@ -381,5 +417,7 @@ module.exports = {
     updateUserBio,
     updateProfilePic,
     changeUserEmail,
-    changeUserPassword
+    changeUserPassword,
+    submitFeedback,
+    getUserProfile
 }

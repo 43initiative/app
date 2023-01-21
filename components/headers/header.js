@@ -28,7 +28,7 @@ export default class Header extends React.Component {
                         <Ionicons style={[{fontWeight:'bold'}]} name={'ios-add'} size={20} color={'black'}/>
                     </View>
                     </TouchableOpacity>
-                   <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Profile')}}>
+                   <TouchableOpacity onPress={()=>{this.props.navigation.navigate('AltProfile')}}>
                     <View style={[createCircle(.0425,0,'black'),{backgroundColor:'lightgray'}]}>
                         <Ionicons style={[{fontWeight:'bold'}]} name={'ios-person'} size={20} color={'black'}/>
                     </View>

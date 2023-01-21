@@ -30,6 +30,8 @@ import EditBio from "../../screens/user/editBio";
 import ChangeProfilePic from "../../screens/user/changeProfilePic";
 import ChangeEmail from "../../screens/user/changeEmail";
 import ChangePassword from "../../screens/user/changePassword";
+import Help from "../../screens/user/help";
+import AltProfile from "../../screens/user/altProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -212,6 +214,18 @@ function ChangePasswordScreen({route,navigation}) {
     )
 }
 
+function HelpScreen({route,navigation}) {
+    return(
+        <Help  route={route} navigation={navigation}/>
+    )
+}
+
+function AltProfileScreen({route,navigation}) {
+    return(
+        <AltProfile  route={route} navigation={navigation}/>
+    )
+}
+
 
 export function MainNavigator() {
     return (<Stack.Navigator initialRouteName={'SplashScreen'}>
@@ -306,6 +320,14 @@ export function MainNavigator() {
         <Stack.Screen
             options={{headerShown: false}}
             name="ChangePassword" component={ChangePasswordScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="HelpScreen" component={HelpScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="AltProfile" component={AltProfileScreen}/>
 
 
         <Stack.Group screenOptions={{presentation:'fullScreenModal'}}>

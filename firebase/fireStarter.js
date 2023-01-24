@@ -3,7 +3,7 @@ import { initializeApp,getApps } from "firebase/app";
 import {getStorage,ref,uploadBytes,getDownloadURL} from 'firebase/storage'
 import {getAuth, createUserWithEmailAndPassword, signOut,signInWithEmailAndPassword,sendPasswordResetEmail,updateEmail,updatePassword} from "firebase/auth";
 
-import { doc, getDocs,getFirestore,collection,getDoc,addDoc,query, where ,updateDoc} from "firebase/firestore";
+import { doc, getDocs,getFirestore,collection,getDoc,addDoc,query, where ,updateDoc,onSnapshot} from "firebase/firestore";
 import {storeControllers} from "../reducers/controllers";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {returnStore} from "./fireInit";
@@ -383,13 +383,16 @@ const getUserProfile = async (navigation,route,isSelf,userUid) => {
     try {
         let auth = firebaseCreds.auth;
         let myUid = auth.currentUser.uid;
-        const docRef = doc(firebaseCreds.db, "publicUsers", isSelf ? myUid : userUid);
+        let isSelfUid = (myUid === userUid) || isSelf;
+        let searchUid = isSelfUid ? myUid : userUid;
+        const docRef = doc(firebaseCreds.db, "publicUsers", searchUid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
             console.log(docSnap.data());
-            navigation.navigate('PublicProfile',docSnap.data())
-            return {data:docSnap.data(),passed:true}
+            let data = {userUid:searchUid,isSelf,...docSnap.data()}
+            navigation.push('PublicProfile',data)
+            return {data: {userUid:searchUid,isSelf,...docSnap.data()},passed:true}
         } else {
             console.log("No such document!");
             return {data:null,passed:false,reason:'no such document exists'}
@@ -398,6 +401,129 @@ const getUserProfile = async (navigation,route,isSelf,userUid) => {
         return {data:null,passed:false,reason:e}
 
     }
+}
+
+const getFollowers = async (isSelf,userUid) => {
+    try {
+        let {auth,db} = firebaseCreds;
+        let myUid = auth.currentUser.uid;
+        let searchUid = isSelf ? myUid : userUid;
+        const userRef = collection(db,'publicUsers');
+        const q = query(userRef,where('followingList','array-contains',searchUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+
+        return {passed:true,data:list}
+    } catch (e) {
+        return {passed:false}
+    }
+
+}
+
+const getFollowing = async (isSelf,userUid) => {
+    try {
+        let {auth,db} = firebaseCreds;
+        let myUid = auth.currentUser.uid;
+        let searchUid = isSelf ? myUid : userUid;
+        const userRef = collection(db,'publicUsers');
+        const q = query(userRef,where('followList','array-contains',searchUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+
+        return {passed:true,data:list}
+    } catch (e) {
+        return {passed:false}
+    }
+
+
+}
+
+const getUserDeeds = async (isSelf,userUid) => {
+    try {
+        let {auth,db} = firebaseCreds;
+        let myUid = auth.currentUser.uid;
+        let searchUid = isSelf ? myUid : userUid;
+        const userRef = collection(db,'publicUsers');
+        const q = query(userRef,where('userUid','==',searchUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+
+        return {passed:true,data:list}
+    } catch (e) {
+        return {passed:false}
+    }
+}
+
+const getAllUsers = async () => {
+    let {auth,db} = firebaseCreds;
+    const userRef = collection(db,'publicUsers');
+    const querySnapshot = await getDocs(userRef);
+    let list = []
+    querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        list.push({userUid:doc.id,...doc.data()})
+    });
+    return {passed:true,data:list}
+}
+
+const returnUserFollowingList = async () => {
+    let followingList = storeControllers.storeData().userData.publicData.followingList;
+    return followingList;
+}
+
+const updateFollowingList = async (followingList) => {
+    let auth = firebaseCreds.auth
+    let userUid = auth.currentUser.uid;
+    const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
+    const res = await updateDoc(userRef,{followingList})
+    return {passed:true,reason:res}
+}
+
+const getNotifications = async () => {
+    try {
+        let {auth,db,app} = firebaseCreds
+        let userUid = auth.currentUser.uid;
+        let activityRef = collection(db,'notifications')
+        let q = query(activityRef,where('userUid' ,'==', userUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+        console.log(list);
+        return {data:list,passed:true};
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+}
+
+const startNotifListener = async() => {
+    const q = query(collection(db, "notifications"), where("state", "==", "CA"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const cities = [];
+        querySnapshot.forEach((doc) => {
+            cities.push(doc.data().name);
+        });
+        console.log("Current cities in CA: ", cities.join(", "));
+    });
 }
 
 
@@ -419,5 +545,12 @@ module.exports = {
     changeUserEmail,
     changeUserPassword,
     submitFeedback,
-    getUserProfile
+    getUserProfile,
+    getFollowers,
+    getFollowing,
+    getUserDeeds,
+    getAllUsers,
+    returnUserFollowingList,
+    updateFollowingList,
+    getNotifications
 }

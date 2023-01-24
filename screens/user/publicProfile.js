@@ -3,10 +3,12 @@ import {
     TouchableWithoutFeedback, View, Animated, Text, TouchableOpacity, Pressable, Image, ScrollView, Dimensions
 } from 'react-native';
 import {flexing} from "../../styles/dimensions/dims";
-import {createCircle} from "../../styles/globals/shapes";
+import {createCircle, fixedShape} from "../../styles/globals/shapes";
 import {Ionicons} from "@expo/vector-icons";
 import Spacer from "../../design/spacer";
 import Pif from "../../components/listings/pif";
+import FollowerList from "../../components/listings/followerList";
+import FollowingList from "../../components/listings/followingList";
 
 
 export default class PublicProfile extends React.Component {
@@ -17,6 +19,11 @@ export default class PublicProfile extends React.Component {
             hasPif:true
         }
 
+    }
+
+    componentDidMount() {
+        let data = this.props.route.params;
+        console.log(data)
     }
 
     returnHasPifs = () => {
@@ -45,28 +52,48 @@ export default class PublicProfile extends React.Component {
 
     }
 
+    returnProfilePic = (data) => {
+        return(
+            <Image resizeMode={'cover'} style={[{width:'100%',height:'100%',borderRadius:100,overflow:'hidden'}]} source={{uri:data.img}}/>
+        )
+    }
+
+    returnInitials = (data) => {
+        return(
+            <Text style={[{color:'black',fontSize:50,opacity:.7}]}>{data.initials}</Text>
+        )
+    }
+
     render() {
+        let data = this.props.route.params;
         return (
+            <View style={{width:'100%',height:'100%',backgroundColor:'white'}}>
+                <TouchableOpacity onPress={()=>{this.props.navigation.goBack()}} style={[{position:'absolute',width:'20%',zIndex:2,marginTop:'12.5%',marginLeft:'87.5%'},flexing.startColumn,{height:'25%'}]}>
+                    <Ionicons name={'ios-close-circle'} size={30} color={'black'}/>
+                </TouchableOpacity>
             <ScrollView style={{width:'100%'}}>
 
             <Animated.View style={[{width:Dimensions.get('window').width,height:Dimensions.get('window').height,backgroundColor:'#ffffff'}]}>
-            <View style={[{position:'absolute',top:0,left:0,width:'100%',height:'17.5%',backgroundColor:'black'}]}>
-                <Image source={require('../../assets/img/welcomeimg.png')} style={{width:'100%',position:'absolute'}} resizeMode={'contain'}/>
-                <TouchableOpacity onPress={()=>{this.props.navigation.goBack()}} style={[{width:'20%',marginTop:'5%'},flexing.startColumn,{height:'25%'}]}>
-                    <Ionicons name={'ios-chevron-back'} size={25} color={'white'}/>
-                </TouchableOpacity>
+
+
+                <View style={[{position:'absolute',top:0,left:0,width:'100%',height:'17.5%',backgroundColor:'#e3e3e3'}]}>
+                {/*<Image source={require('../../assets/img/welcomeimg.png')} style={{width:'100%',height:'75%',marginTop:'5%',position:'absolute'}} resizeMode={'contain'}/>*/}
+
             </View>
 
-                <View style={[{width:'90%',marginLeft:'5%',marginTop:'20%',backgroundColor:'transparent'},flexing.centerColumn]}>
-                    <Image  style={[createCircle(.1625,0,'firebrick'),{borderRadius:100,borderColor:'white',borderWidth:4}]} source={{uri:'https://scontent.fewr1-6.fna.fbcdn.net/v/t39.30808-6/308583490_10221158791344323_5099317024454302786_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=g6kei8gL3ZUAX9_PRoQ&_nc_ht=scontent.fewr1-6.fna&oh=00_AfAk0hhGa3biiDEjEEozwyTVSrGI3t2ojRnKuYE9oVxscA&oe=63C62FC2'}} resizeMode={'cover'} />
+                <View style={[{width:'100%',marginLeft:'0%',marginTop:'25%',backgroundColor:'transparent'},flexing.centerColumn]}>
+
+                    <View style={[createCircle(.1625,5,'white')]}>
+                        {data.imgProvided ? this.returnProfilePic(data) : this.returnInitials(data)}
+                    </View>
                     <Spacer spacing={.0125}/>
 
-                    <Text style={[{fontSize:20}]}>@Joe Mangi</Text>
+                    <Text style={[{fontSize:20}]}>@{data.displayName}</Text>
                     <Spacer spacing={.025}/>
 
 
                     <Text style={[{fontSize:13,color:'gray',width:'85%',textAlign:'center'}]}>
-                        This is a section where people can explain why they joined the 43initiative and decided to provide a daily dose of humanity.
+                        {data.aboutMe}
                     </Text>
                     <Spacer spacing={.025}/>
                     <View style={[flexing.rowAround,{width:'85%'}]}>
@@ -90,13 +117,14 @@ export default class PublicProfile extends React.Component {
                     </View>
                     <Spacer spacing={.025}/>
 
-                    <View style={[{width:'100%',height:'.05%',backgroundColor:'#e3e3e3'}]}>
+                    <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>
 
-                    </View>
                     <Spacer spacing={.025}/>
 
+                    <FollowerList isSelf={data.isSelf} userUid={data.userUid} navigation={this.props.navigation} route={this.props.route}/>
+                    <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>
 
-
+                    <FollowingList isSelf={data.isSelf} userUid={data.userUid} navigation={this.props.navigation} route={this.props.route}/>
 
                     {/*<View style={[flexing.rowBetween,{width:'90%'}]}>*/}
                     {/*    <Text style={[{fontSize:13,color:'#101010',textAlign:'center'}]}>*/}
@@ -108,7 +136,13 @@ export default class PublicProfile extends React.Component {
                     {/*    </Text>*/}
                     {/*</View>*/}
                 </View>
-                <View style={{width:'90%',marginLeft:'5%'}}>
+                <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>
+
+                <View style={{width:'90%',marginLeft:'5%',marginTop:'5%'}}>
+                    <Text style={[{fontSize:15,fontWeight:'500'}]}>
+                        {data.isSelf ? 'Your Deeds' : 'Their Deeds'}
+                    </Text>
+
                     {this.returnHasPifs()}
 
                 </View>
@@ -117,6 +151,7 @@ export default class PublicProfile extends React.Component {
 <Spacer spacing={.7}/>
 
             </ScrollView>
+            </View>
         )
     }
 

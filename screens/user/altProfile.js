@@ -8,6 +8,9 @@ import {createCircle, createSquare, fixedShape} from "../../styles/globals/shape
 import Spacer from "../../design/spacer";
 import Circle from "../../designComps/circle";
 import {storeControllers} from "../../reducers/controllers";
+import {getUserProfile} from "../../firebase/fireStarter";
+import FollowerList from "../../components/listings/followerList";
+import FollowingList from "../../components/listings/followingList";
 
 
 export default class AltProfile extends React.Component {
@@ -25,8 +28,10 @@ export default class AltProfile extends React.Component {
             detailButtons: [
                 {icon:'ios-image',text:'Change Profile Pic',nav:false,useFunction:this.changeProfilePic},
                 {icon:'ios-document',text:'Change Your Bio',nav:false,useFunction:this.changeAboutMe},
-                {icon:'ios-list',text:'View Activity',nav:'UserActivityScreen'},
+                {icon:'ios-list',text:'View Your Activity',nav:'UserActivityScreen'},
                 {icon:'ios-qr-code',text:'My QR Code',nav:'EditImg'},
+                {icon:'ios-settings',text:'Settings',nav:'Settings'},
+                {icon:'ios-log-out',text:'Log Out',nav:'Settings'},
             ],
             aboutMe:'',
             img:'',
@@ -121,7 +126,9 @@ export default class AltProfile extends React.Component {
                 </View>
                 <View style={[{marginTop:'15%',width:'100%',height:'100%'}]}>
                     <ScrollView style={[{width:'100%'}]}>
-                        <TouchableOpacity style={[flexing.rowStart,{width:'90%',marginLeft:'5%'}]}>
+                        <TouchableOpacity onPress={()=>{
+                            getUserProfile(this.props.navigation,this.props.route,true)
+                        }} style={[flexing.rowStart,{width:'90%',marginLeft:'5%'}]}>
                             <View style={[createCircle(.05,0,'black')]}>
                                 {this.state.imgProvided ? this.returnProfilePic() : this.returnInitials()}
                             </View>
@@ -142,15 +149,10 @@ export default class AltProfile extends React.Component {
 
                         <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>
 
-                        <View style={[flexing.startColumn,{width:'90%',marginTop:'5%',marginLeft:'5%'}]}>
-                            <Text style={[{fontSize:15,fontWeight:'500'}]}>Your Followers</Text>
-                            {this.returnHasFollowers()}
-                        </View>
+                        <FollowerList navigation={this.props.navigation} route={this.props.route} isSelf={true}/>
+
                         <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>
-                        <View style={[flexing.startColumn,{width:'90%',marginTop:'5%',marginLeft:'5%'}]}>
-                            <Text style={[{fontSize:15,fontWeight:'500'}]}>People You Follow</Text>
-                            {this.returnHasFollowing()}
-                        </View>
+                        <FollowingList navigation={this.props.navigation} route={this.props.route} isSelf={true}/>
 
                         <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>
                         <View style={[flexing.startColumn,{width:'90%',marginTop:'5%',marginLeft:'5%'}]}>

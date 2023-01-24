@@ -5,7 +5,9 @@ import {
 import {flexing} from "../../styles/dimensions/dims";
 import {createCircle} from "../../styles/globals/shapes";
 import Spacer from "../../design/spacer";
-
+import InitialOrPic from "../buttons/initialOrPic";
+import {convertTimeStamp} from "../../helperFuncs/dateTime";
+import {getUserProfile} from "../../firebase/fireStarter";
 
 export default class NotificationListing extends React.Component {
     constructor(props) {
@@ -15,20 +17,27 @@ export default class NotificationListing extends React.Component {
 
     }
 
-    render() {
-        return (
-            <Animated.View style={[flexing.rowStart,{width:'100%',padding:'2.5%',backgroundColor:'#e3e3e3'}]}>
-            <View style={[createCircle(.075,0,'transparent'),{overflow:'hidden',backgroundColor:'black'}]}>
-                <Image  style={[{width:'100%',height:'100%'}]} source={{uri:'https://www.intouchweekly.com/wp-content/uploads/2019/08/kylie-jenner-sexiest-moments-02.jpg?fit=772%2C762&quality=86&strip=all'}} resizeMode={'cover'} />
+    navigateNotification = async () => {
+        let data =this.props.data;
+        switch(data.type) {
+            case 'follow' : {
+                return getUserProfile(this.props.navigation,this.props.route,null,data.userUid)
+            }
+        }
+    }
 
-            </View>
+    render() {
+        let data = this.props.data;
+        return (
+            <TouchableOpacity onPress={this.navigateNotification} style={[flexing.rowStart,{width:'100%',padding:'2.5%',backgroundColor:'#e3e3e3'}]}>
+                <InitialOrPic circleRadius={.075} navigation={this.props.navigation} route={this.props.route} initials={data.initials} imgProvided={data.imgProvided} img={data.img} userUid={data.id}/>
                 <Spacer xAxis spacing={.0275} />
                 <View style={[{width:'65%'},flexing.startColumn]}>
-                    <Text style={[{fontSize:14}]}>Kim Anderson just admired your PIF, you're getting noticed!</Text>
+                    <Text style={[{fontSize:14}]}>{data.message}</Text>
                     <Spacer spacing={.005}/>
-                    <Text style={[{fontSize:10,color:"#101010"}]}>Just Now</Text>
+                    <Text style={[{fontSize:10,color:"#101010"}]}>{convertTimeStamp(data.timestamp)}</Text>
                 </View>
-            </Animated.View>
+            </TouchableOpacity>
         )
     }
 

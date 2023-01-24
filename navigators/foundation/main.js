@@ -32,6 +32,7 @@ import ChangeEmail from "../../screens/user/changeEmail";
 import ChangePassword from "../../screens/user/changePassword";
 import Help from "../../screens/user/help";
 import AltProfile from "../../screens/user/altProfile";
+import SearchUsers from "../../screens/user/searchUsers";
 
 const Stack = createNativeStackNavigator();
 
@@ -226,6 +227,12 @@ function AltProfileScreen({route,navigation}) {
     )
 }
 
+function SearchUserScreen({route,navigation}) {
+    return(
+        <SearchUsers  route={route} navigation={navigation}/>
+    )
+}
+
 
 export function MainNavigator() {
     return (<Stack.Navigator initialRouteName={'SplashScreen'}>
@@ -277,9 +284,7 @@ export function MainNavigator() {
             options={{headerShown: false}}
             name="TestFetch" component={TestFetchScreen}/>
 
-        <Stack.Screen
-            options={{headerShown: false}}
-            name="PublicProfile" component={PublicProfileScreen}/>
+
 
         <Stack.Screen
             options={{headerShown: false}}
@@ -329,8 +334,15 @@ export function MainNavigator() {
             options={{headerShown: false}}
             name="AltProfile" component={AltProfileScreen}/>
 
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="SearchUsers" component={SearchUserScreen}/>
+
 
         <Stack.Group screenOptions={{presentation:'fullScreenModal'}}>
+            <Stack.Screen
+                options={{headerShown: false}}
+                name="PublicProfile" component={PublicProfileScreen}/>
             <Stack.Screen
                 options={{headerShown: false}}
                 name="CreatePif" component={CreatePifScreen}/>

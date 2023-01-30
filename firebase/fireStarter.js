@@ -3,11 +3,12 @@ import { initializeApp,getApps } from "firebase/app";
 import {getStorage,ref,uploadBytes,getDownloadURL} from 'firebase/storage'
 import {getAuth, createUserWithEmailAndPassword, signOut,signInWithEmailAndPassword,sendPasswordResetEmail,updateEmail,updatePassword} from "firebase/auth";
 
-import { doc, getDocs,getFirestore,collection,getDoc,addDoc,query, where ,updateDoc,onSnapshot} from "firebase/firestore";
+import { doc, getDocs,getFirestore,collection,getDoc,addDoc,query, where ,updateDoc,onSnapshot,serverTimestamp,orderBy} from "firebase/firestore";
 import {storeControllers} from "../reducers/controllers";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {returnStore} from "./fireInit";
-import {STORE_PRIVATE_DATA, STORE_PUBLIC_DATA} from "../reducers/actionTypes";
+import {SET_NOTIF, STORE_PRIVATE_DATA, STORE_PUBLIC_DATA} from "../reducers/actionTypes";
+import firebase from "firebase/compat";
 let app;
 let db;
 let auth;
@@ -123,6 +124,48 @@ const uploadToFirebase = async (img,fire,bucket,name) => {
     }
 
 }
+
+
+//add image to post
+const transformBlobForPost = async (img,fire,bucket,name) => {
+    try {
+        const response = await fetch(img);
+        const blob = await response.blob();
+        return uploadToFirebaseForPost(blob,fire,bucket,name)
+    } catch (e) {
+        console.log(e)
+        return {passed:false,e:e}
+    }
+
+}
+
+const uploadToFirebaseForPost = async (img,fire,bucket,name) => {
+    try {
+        let userUid;
+        const storage = getStorage(firebaseCreds.app);
+
+// Create a storage reference from our storage service
+
+        if(!firebaseCreds.auth.currentUser.uid) {
+            userUid = 'xxx'
+        } else {
+            userUid = firebaseCreds.auth.currentUser.uid;
+        }
+        const storageRef = ref(storage,`43pics/${userUid}/${Date.now()}`);
+        //let ref = fire.storage().ref(`${bucket}/${userUid}/${name}`);
+        //let searchRef = fire.storage().ref(`${bucket}/${userUid}/${name}_200x200`);
+        await uploadBytes(storageRef, img)
+        return getDownloadUrl(storage,storageRef)
+    } catch (e) {
+        return {passed:false,e:e}
+
+    }
+
+}
+
+
+
+//
 
 const getDownloadUrl = async (storage,storageRef,userUid) => {
     try {
@@ -381,13 +424,14 @@ const submitFeedback = async (message) => {
 
 const getUserProfile = async (navigation,route,isSelf,userUid) => {
     try {
+        console.log('here')
         let auth = firebaseCreds.auth;
         let myUid = auth.currentUser.uid;
         let isSelfUid = (myUid === userUid) || isSelf;
         let searchUid = isSelfUid ? myUid : userUid;
         const docRef = doc(firebaseCreds.db, "publicUsers", searchUid);
         const docSnap = await getDoc(docRef);
-
+console.log('called')
         if (docSnap.exists()) {
             console.log(docSnap.data());
             let data = {userUid:searchUid,isSelf,...docSnap.data()}
@@ -402,6 +446,40 @@ const getUserProfile = async (navigation,route,isSelf,userUid) => {
 
     }
 }
+
+const getDeed = async (postId,navigation,route) => {
+    try {
+        const docRef = doc(firebaseCreds.db, "pifs", postId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            console.log(docSnap.data());
+            return loadFullCommentSection(navigation,route,postId,{id:docSnap.id,...docSnap.data()},null,null)
+        } else {
+            return {data:null,passed:false,reason:'no such document exists'}
+        }
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+}
+
+const getPifPost = async (postId) => {
+    try {
+        console.log(postId)
+        const docRef = doc(firebaseCreds.db, "pifs", postId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return {data:{id:docSnap.id,...docSnap.data()},passed:true,reason:'no such document exists'}
+        } else {
+            return {data:null,passed:false,reason:'no such document exists'}
+        }
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+}
+
+
 
 const getFollowers = async (isSelf,userUid) => {
     try {
@@ -453,7 +531,7 @@ const getUserDeeds = async (isSelf,userUid) => {
         let {auth,db} = firebaseCreds;
         let myUid = auth.currentUser.uid;
         let searchUid = isSelf ? myUid : userUid;
-        const userRef = collection(db,'publicUsers');
+        const userRef = collection(db,'pifs');
         const q = query(userRef,where('userUid','==',searchUid));
         const querySnapshot = await getDocs(q);
         let list = []
@@ -483,7 +561,24 @@ const getAllUsers = async () => {
 
 const returnUserFollowingList = async () => {
     let followingList = storeControllers.storeData().userData.publicData.followingList;
+    console.log(followingList)
     return followingList;
+}
+
+const returnFollowerList = async () => {
+    let followingList = storeControllers.storeData().userData.publicData.followList;
+    console.log(followingList,'look for follow')
+    return followingList;
+}
+
+const returnUserLikedList = async () => {
+    let likedList = storeControllers.storeData().userData.publicData.likedList;
+    return likedList;
+}
+
+const returnUserSavedList = async () => {
+    let savedList = storeControllers.storeData().userData.publicData.savedList;
+    return savedList;
 }
 
 const updateFollowingList = async (followingList) => {
@@ -491,6 +586,22 @@ const updateFollowingList = async (followingList) => {
     let userUid = auth.currentUser.uid;
     const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
     const res = await updateDoc(userRef,{followingList})
+    return {passed:true,reason:res}
+}
+
+const updateSavedList = async (savedList) => {
+    let auth = firebaseCreds.auth
+    let userUid = auth.currentUser.uid;
+    const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
+    const res = await updateDoc(userRef,{savedList})
+    return {passed:true,reason:res}
+}
+
+const updateLikedList = async (likedList) => {
+    let auth = firebaseCreds.auth
+    let userUid = auth.currentUser.uid;
+    const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
+    const res = await updateDoc(userRef,{likedList})
     return {passed:true,reason:res}
 }
 
@@ -502,6 +613,8 @@ const getNotifications = async () => {
         let q = query(activityRef,where('userUid' ,'==', userUid));
         const querySnapshot = await getDocs(q);
         let list = []
+
+
         querySnapshot.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
             list.push({id:doc.id,...doc.data()})
@@ -515,16 +628,257 @@ const getNotifications = async () => {
     }
 }
 
-const startNotifListener = async() => {
-    const q = query(collection(db, "notifications"), where("state", "==", "CA"));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const cities = [];
+
+
+const getInspiration = async () => {
+    let {auth,db,app} = firebaseCreds
+    let userUid = auth.currentUser.uid;
+    const q = query(collection(db, "pifs"), where("savedList", "array-contains", userUid));
+
+    const querySnapshot = await getDocs(q);
+    let list = []
+    querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        list.push({postId:doc.id,id:doc.id,...doc.data()})
+        console.log(doc.id, " => ", doc.data());
+    });
+
+    if(list.length > 0) {
+        return {passed:true,data:list}
+
+    }
+
+    return {passed:false,data:[]}
+
+}
+
+const addPif = async (pif) => {
+
+    try {
+        console.log(pif.inspirationId)
+        let {auth,db,app} = firebaseCreds
+        let userUid = auth.currentUser.uid;
+        pif.userUid = userUid;
+        pif.timestamp = serverTimestamp()
+        const docRef = await addDoc(collection(db, "pifs"), pif);
+        console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+        console.error("Error adding document: ", e);
+    }
+}
+
+const getAllDeeds = async () => {
+    let {auth,db} = firebaseCreds;
+    const pifRef = collection(db,'pifs')
+    const querySnapshot = await getDocs(pifRef);
+
+    //
+   ///const q = query(userRef,where('userUid','==',searchUid));
+   //const q = query(pifRef, orderBy("timestamp"))
+   // const querySnapshot = await getDocs(q);
+    let list = []
+    querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        let newData = {postId:doc.id}
+        list.push({id:doc.id,postId:doc.id,...doc.data()})
+        //console.log(doc.id, " => ", doc.data());
+    });
+
+    console.log(list,'here')
+    //
+    // //
+    // let list = []
+    // querySnapshot.forEach((doc) => {
+    //     // doc.data() is never undefined for query doc snapshots
+    //     list.push({postId:doc.id,...doc.data()})
+    // });
+    return {passed:true,data:list}
+}
+
+const loadCommentSection = async (navigation,route,postId,pifData,moveToTop,posterUid,altScreen) => {
+    try {
+        let {auth,db,app} = firebaseCreds
+        console.log(postId)
+        let userUid = auth.currentUser.uid;
+        const q = query(collection(db, "comments"), where("postId", "==", postId));
+
+        const querySnapshot = await getDocs(q);
+        console.log(querySnapshot,'query')
+        let list = []
         querySnapshot.forEach((doc) => {
-            cities.push(doc.data().name);
+            // doc.data() is never undefined for query doc snapshots
+            console.log(doc.data(),'ran')
+            list.push({id:doc.id,...doc.data()})
         });
-        console.log("Current cities in CA: ", cities.join(", "));
+
+        console.log(list,'from call')
+
+        navigation.push('CommentSection',{
+            commentsExist:list.length > 0,
+            commentList:list,
+            pifData:pifData,
+            postId:postId
+        })
+
+
+    } catch (e) {
+        console.warn(e)
+    }
+
+
+}
+
+const loadFullCommentSection = async (navigation,route,postId,pifData,moveToTop,posterUid) => {
+    try {
+        let {auth,db,app} = firebaseCreds
+        console.log(postId)
+        let userUid = auth.currentUser.uid;
+        const q = query(collection(db, "comments"), where("postId", "==", postId));
+
+        const querySnapshot = await getDocs(q);
+        console.log(querySnapshot,'query')
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            console.log(doc.data(),'ran')
+            list.push({id:doc.id,...doc.data()})
+        });
+
+        console.log(list,'from call')
+
+        navigation.push('ViewSinglePost',{
+            commentsExist:list.length > 0,
+            commentList:list,
+            pifData:pifData,
+            postId:postId
+        })
+
+
+    } catch (e) {
+        console.warn(e)
+    }
+
+
+}
+
+const submitComment = async (post,postId) => {
+
+    try {
+        let {db,auth} = firebaseCreds;
+        let userUid = auth.currentUser.uid;
+        let {img,imgProvided,initials,displayName} = storeControllers.storeData().userData.publicData
+
+        let comment = {
+            img,
+            imgProvided,displayName,initials,
+            comment:post,
+            postId:postId,
+            timestamp:Date.now(),
+            userUid
+        }
+        await addDoc(collection(db, "comments"), comment);
+        return {passed:true,comment}
+    }catch (e) {
+        return {passed:false}
+    }
+
+}
+
+let unsubscribeNotifWatcher = null;
+
+const notifWatcher = async () => {
+    if(unsubscribeNotifWatcher !== null) {
+        return
+    }
+    let {db,auth} = firebaseCreds;
+    let userUid = auth.currentUser.uid;
+    const q = query(collection(db, "notifications"), where("userUid", "==", userUid));
+    unsubscribeNotifWatcher = onSnapshot(q, (querySnapshot) => {
+        const notifs = [];
+        querySnapshot.forEach((doc) => {
+            notifs.push({id:doc.id,...doc.data()});
+        });
+        console.log(notifs,'notifs')
+        let newNotification = notifs.filter((val)=>{
+            return !val.read
+        })
+        storeControllers.store.dispatch({type:SET_NOTIF,payload:{newNotifications: newNotification.length > 0,notifCount:newNotification.length,notificationList:notifs}})
     });
 }
+
+
+const markNotifRead = async (id) => {
+    try {
+        const notifRef = doc(firebaseCreds.db, "notifications", id);
+        const res = await updateDoc(notifRef,{read:true})
+        return {passed:true,reason:res}
+    } catch (e) {
+        console.warn(e,'warning')
+    }
+
+}
+
+
+const getSentNominations = async () => {
+    try {
+        let {auth,db,app} = firebaseCreds
+        let userUid = auth.currentUser.uid;
+        let activityRef = collection(db,'nominations')
+        let q = query(activityRef,where('nominatorId' ,'==', userUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+        console.log(list);
+        return list;
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+
+
+}
+
+const getRecNominations = async () => {
+
+
+    try {
+        let {auth,db,app} = firebaseCreds
+        let userUid = auth.currentUser.uid;
+        let activityRef = collection(db,'nominations')
+        let q = query(activityRef,where('nominatedId' ,'==', userUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+        });
+        console.log(list);
+        return {passed:true,data:list};
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+}
+
+const rejectNominations = async (nomId) => {
+    let {db,auth} = firebaseCreds;
+
+    const nomRef = doc(db, "nominations", nomId);
+    const res = await updateDoc(nomRef,{pending:false,accepted:false})
+}
+
+const withdrawNominations = async (nomId) => {
+    let {db,auth} = firebaseCreds;
+
+    const nomRef = doc(db, "nominations", nomId);
+    const res = await updateDoc(nomRef,{withdrawn:true,pending:false})
+}
+
+
 
 
 module.exports = {
@@ -552,5 +906,25 @@ module.exports = {
     getAllUsers,
     returnUserFollowingList,
     updateFollowingList,
-    getNotifications
+    getNotifications,
+    getInspiration,
+    transformBlobForPost,
+    uploadToFirebaseForPost,
+    addPif,
+    getAllDeeds,
+    updateSavedList,
+    updateLikedList,
+    returnUserSavedList,
+    returnUserLikedList,
+    loadCommentSection,
+    submitComment,
+    notifWatcher,
+    markNotifRead,
+    getSentNominations,
+    getRecNominations,
+    withdrawNominations,
+    rejectNominations,
+    getDeed,
+    getPifPost,
+    returnFollowerList
 }

@@ -193,6 +193,18 @@ const requestValidation = async (img,fire,bucket,name) => {
 
 
 
+const addTo43Img = async  (img,fire,bucket,name) => {
+    try {
+        const response = await fetch(img);
+        const blob = await response.blob();
+        return uploadToFirebase(blob,fire,bucket,name)
+    } catch (e) {
+        console.log(e)
+        return {passed:false,e:e}
+    }
+
+}
+
 
 const unsubscribeFromBranch = async (branch) => {
     await branch.off()

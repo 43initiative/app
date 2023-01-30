@@ -55,7 +55,7 @@ export default class FollowerList extends React.Component {
 
     returnFollowerList = () => {
         return(<ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={[{width:'100%',paddingLeft:'5%',marginTop:'5%'}]}>
-            {this.state.followerList.map((val)=>{
+            {this.state.followerList.slice(0,6).map((val)=>{
                 return(
                     <View style={[{width:dimensions.dimensions.returnWidth(.2),marginTop:'5%'},flexing.centerColumn]}>
                         <InitialOrPic circleRadius={.0625} navigation={this.props.navigation} route={this.props.route} initials={val.initials} imgProvided={val.imgProvided} img={val.img} userUid={val.id}/>
@@ -70,7 +70,12 @@ export default class FollowerList extends React.Component {
     render() {
         return (
             <View style={[flexing.startColumn,{width:'100%',marginTop:'5%',marginLeft:'0%'}]}>
-                <Text style={[{fontSize:15,fontWeight:'500',paddingLeft:'5%'}]}>Followers</Text>
+                <View style={[flexing.rowBetween,{width:'90%'}]}>
+                    <Text style={[{fontSize:15,fontWeight:'500',paddingLeft:'5%'}]}>Followers ({this.state.followerList.length})</Text>
+                    <TouchableOpacity>
+                        <Text  style={[{textDecorationLine:'underline'}]}>See All</Text>
+                    </TouchableOpacity>
+                </View>
                 {this.returnHasFollowers()}
             </View>
         )

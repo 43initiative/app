@@ -11,6 +11,13 @@ import Feed from "../../screens/tabs/feed";
 import Notifications from "../../screens/user/notifications";
 import Inspo from "../../screens/tabs/inspo";
 import Deeds from "../../screens/tabs/deeds";
+import AltProfile from "../../screens/user/altProfile";
+import ProfileHeader from "../../components/headers/profileHeader";
+import Nominations from "../../screens/tabs/nominations";
+import Social from "../../screens/tabs/social";
+import ContentHeader from "../../components/headers/contentHeader";
+import SavedHeader from "../../components/headers/savedHeader";
+import NominationsHeader from "../../components/headers/nominationsHeader";
 
 function FeedScreen({route,navigation}) {
     return (
@@ -36,10 +43,28 @@ function InspoScreen({route,navigation}) {
     );
 }
 
-function NotifScreen({route,navigation}) {
+
+
+function ProfileTabScreen({route,navigation}) {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-           <Notifications route={route} navigation={navigation}/>
+            <AltProfile route={route} navigation={navigation}/>
+        </View>
+    );
+}
+
+function NominationTabScreen({route,navigation}) {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Nominations route={route} navigation={navigation}/>
+        </View>
+    );
+}
+
+function SocialScreen({route,navigation}) {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Social route={route} navigation={navigation}/>
         </View>
     );
 }
@@ -52,6 +77,38 @@ const tabHeaderOptions=  (route,navigation)=>({
     headerTransparent:true,
     headerShadowVisible:false,
    })
+
+const profileHeaderOpts=  (route,navigation)=>({
+    headerShown:true,
+    header: () => (<ProfileHeader route={route} navigation={navigation}/>),
+    title: '',
+    headerTransparent:true,
+    headerShadowVisible:false,
+})
+
+const contentHeader=  (route,navigation)=>({
+    headerShown:true,
+    header: () => (<ContentHeader route={route} navigation={navigation}/>),
+    title: '',
+    headerTransparent:true,
+    headerShadowVisible:false,
+})
+
+const savedHeader=  (route,navigation)=>({
+    headerShown:true,
+    header: () => (<SavedHeader route={route} navigation={navigation}/>),
+    title: '',
+    headerTransparent:true,
+    headerShadowVisible:false,
+})
+
+const nominationHeader=  (route,navigation)=>({
+    headerShown:true,
+    header: () => (<NominationsHeader route={route} navigation={navigation}/>),
+    title: '',
+    headerTransparent:true,
+    headerShadowVisible:false,
+})
 export default function TabStack() {
     return (
             <Tab.Navigator>
@@ -69,24 +126,24 @@ export default function TabStack() {
                     name="Feed" component={FeedScreen} />
                 <Tab.Screen
                     options={({route, navigation})=>({
-                        ...tabHeaderOptions(route,navigation),
+                        ...contentHeader(route,navigation),
                         headerShown:true,
-                        tabBarLabel:'My PIFS',
-                        title:'Pifs',
+                        tabBarLabel:'My Content',
+                        title:'My Content',
                         tabBarInactiveTintColor:'gray',
                         tabBarActiveTintColor:'red',
-                        tabBarIcon:({focused})=>{return(<Ionicons name={'happy-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-albums-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
                     })}
                     name="Pifs" component={DeedsScreen} />
                 <Tab.Screen
                     options={({route, navigation})=>({
-                        ...tabHeaderOptions(route,navigation),
+                        ...savedHeader(route,navigation),
                         headerShown:true,
-                        tabBarLabel:'My Inspos',
-                        title:'Inspirations',
+                        tabBarLabel:'Saved',
+                        title:'Saved',
                         tabBarInactiveTintColor:'gray',
                         tabBarActiveTintColor:'red',
-                        tabBarIcon:({focused})=>{return(<Ionicons name={'heart-half-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-bookmarks-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
                     })}
                     name="Inspo" component={InspoScreen} />
 
@@ -94,13 +151,37 @@ export default function TabStack() {
                     options={({route, navigation})=>({
                         ...tabHeaderOptions(route,navigation),
                         headerShown:true,
-                        tabBarLabel:'Notifications',
-                        title:'Notifications',
+                        tabBarLabel:'Social',
+                        title:'Social',
                         tabBarInactiveTintColor:'gray',
                         tabBarActiveTintColor:'red',
-                        tabBarIcon:({focused})=>{return(<Ionicons name={'notifications-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-people'} size={20} color={focused ?'red' : 'gray'}/>)}
                     })}
-                    name="Notifications" component={NotifScreen} />
+                    name="Social" component={SocialScreen} />
+
+
+                <Tab.Screen
+                    options={({route, navigation})=>({
+                        ...nominationHeader(route,navigation),
+                        headerShown:true,
+                        tabBarLabel:'Nominations',
+                        title:'Nominations',
+                        tabBarInactiveTintColor:'gray',
+                        tabBarActiveTintColor:'red',
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-hand-right-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
+                    })}
+                    name="Nominations" component={NominationTabScreen} />
+                <Tab.Screen
+                    options={({route, navigation})=>({
+                        ...profileHeaderOpts(route,navigation),
+                        headerShown:true,
+                        tabBarLabel:'Menu',
+                        title:'Menu',
+                        tabBarInactiveTintColor:'gray',
+                        tabBarActiveTintColor:'red',
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-person-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
+                    })}
+                    name="Menu" component={ProfileTabScreen} />
             </Tab.Navigator>
     );
 }

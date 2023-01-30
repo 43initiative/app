@@ -67,13 +67,20 @@ export default class FollowingList extends React.Component {
                     </View>
                 )
                         })}
+
+            <Spacer spacing={.05} xAxis/>
         </ScrollView>)
     }
 
     render() {
         return (
             <View style={[flexing.startColumn,{width:'100%',marginTop:'5%',marginLeft:'0%'}]}>
-                <Text style={[{fontSize:15,fontWeight:'500',paddingLeft:'5%'}]}>Following</Text>
+                <View style={[flexing.rowBetween,{width:'90%'}]}>
+                    <Text style={[{fontSize:15,fontWeight:'500',paddingLeft:'5%'}]}>Following ({this.state.followingList.length})</Text>
+                    <TouchableOpacity>
+                        <Text  style={[{textDecorationLine:'underline'}]}>See All</Text>
+                    </TouchableOpacity>
+                </View>
                 {this.returnHasFollowers()}
             </View>
         )

@@ -27,10 +27,11 @@ export default class SearchUsers extends React.Component {
 
     getUsers = async () => {
         let users = await getAllUsers();
+        //this is retreived from store
         let followingList = await returnUserFollowingList();
+        console.log(followingList,'followList')
         this.setState({list:users.data,followingList});
 
-        console.log(this.state.list[0],'empty array')
     }
 
     doFollowAction = async (action,userUid) => {
@@ -82,7 +83,7 @@ export default class SearchUsers extends React.Component {
                     contentContainerStyle={{width:'90%',marginLeft:'5%'}}
                     data={DATA}
                     renderItem={({item}) => (
-                        <UserTruncated pressed={(action)=>{this.doFollowAction(action,item.userUid)}} isFollowing={this.state.followingList.indexOf(item.userUid) !== -1} route={this.props.route} navigation={this.props.navigation} displayName={item.displayName} img={item.img} imgProvided={item.imgProvided} initials={item.initials}/>
+                        <UserTruncated pressed={(action)=>{this.doFollowAction(action,item.userUid)}} isFollowing={this.state.followingList.indexOf(item.userUid) !== -1} route={this.props.route} navigation={this.props.navigation} displayName={item.displayName} userUid={item.userUid} img={item.img} imgProvided={item.imgProvided} initials={item.initials}/>
 
 
                     )}

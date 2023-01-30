@@ -33,6 +33,16 @@ import ChangePassword from "../../screens/user/changePassword";
 import Help from "../../screens/user/help";
 import AltProfile from "../../screens/user/altProfile";
 import SearchUsers from "../../screens/user/searchUsers";
+import AltPostModaler from "../../screens/tabs/altPostModaler";
+import CreateDeedPost from "../../screens/postCreation/createDeedPost";
+import NominationModal from "../../screens/postCreation/nominationModal";
+import CommentScreen from "../../screens/user/commentScreen";
+import Notifications from "../../screens/user/notifications";
+import ViewSinglePost from "../../screens/user/viewSinglePost";
+import InspirationSelectionModal from "../../screens/postCreation/selectInspirationModal";
+import RefineFilterModal from "../../screens/tabs/refineFilterModal";
+import OrgModal from "../../screens/tabs/orgModal";
+import OrgCreation from "../../screens/org/orgCreation";
 
 const Stack = createNativeStackNavigator();
 
@@ -149,6 +159,12 @@ return(
 )
 }
 
+function RefineFilterScreen({route,navigation}) {
+    return(
+        <RefineFilterModal  route={route} navigation={navigation}/>
+    )
+}
+
 function SelectInspirationScreen({route,navigation}) {
     return(
         <SelectInspirationModal  route={route} navigation={navigation}/>
@@ -233,12 +249,79 @@ function SearchUserScreen({route,navigation}) {
     )
 }
 
+function AltPostModalScreen({route,navigation}) {
+    return(
+        <AltPostModaler  route={route} navigation={navigation}/>
+    )
+}
+
+function CreateDeedPostScreen({route,navigation}) {
+    return(
+        <CreateDeedPost  route={route} navigation={navigation}/>
+    )
+}
+
+function InspoSelctionModal({route,navigation}) {
+    return(
+        <SelectInspirationModal  route={route} navigation={navigation}/>
+    )
+}
+
+function NominationModalScreen({route,navigation}) {
+    return(
+        <NominationModal  route={route} navigation={navigation}/>
+    )
+}
+
+function CommentsScreen({route,navigation}) {
+    return(
+        <CommentScreen  route={route} navigation={navigation}/>
+    )
+}
+
+function NotifScreen({route,navigation}) {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Notifications route={route} navigation={navigation}/>
+        </View>
+    );
+}
+
+
+function ViewSinglePostScreen({route,navigation}) {
+    return (
+            <ViewSinglePost route={route} navigation={navigation}/>
+    );
+}
+
+function InspoSelectModaler({route,navigation}) {
+    return (
+        <InspirationSelectionModal route={route} navigation={navigation}/>
+    );
+}
+
+function OrgModalScreen({route,navigation}) {
+    return (
+        <OrgModal route={route} navigation={navigation}/>
+    );
+}
+
+function OrgCreationScreen({route,navigation}) {
+    return (
+        <OrgCreation route={route} navigation={navigation}/>
+    );
+}
+
 
 export function MainNavigator() {
     return (<Stack.Navigator initialRouteName={'SplashScreen'}>
         <Stack.Screen
             options={{headerShown: false}}
             name="SplashScreen" component={SplashScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="CreateOrg" component={OrgCreationScreen}/>
 
         <Stack.Screen
             options={{headerShown: false}}
@@ -259,6 +342,10 @@ export function MainNavigator() {
         <Stack.Screen
             options={{headerShown: false}}
             name="Delete Account" component={DeleteScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="Notifications" component={NotifScreen}/>
 
         <Stack.Screen
             options={{headerShown: false}}
@@ -338,6 +425,18 @@ export function MainNavigator() {
             options={{headerShown: false}}
             name="SearchUsers" component={SearchUserScreen}/>
 
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="CreateDeedPost" component={CreateDeedPostScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="CommentSection" component={CommentsScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="ViewSinglePost" component={ViewSinglePostScreen}/>
+
 
         <Stack.Group screenOptions={{presentation:'fullScreenModal'}}>
             <Stack.Screen
@@ -357,8 +456,32 @@ export function MainNavigator() {
 
         <Stack.Group screenOptions={{presentation:'modal'}}>
             <Stack.Screen
-                options={{headerShown: true,title:'Refine Your Feed'}}
+                options={{headerShown: true,title:'Sort Content'}}
                 name="RefineFeed" component={RefineFeedScreen}/>
+
+            <Stack.Screen
+                options={{headerShown: true,title:'43Intiative Org Account'}}
+                name="OrgModal" component={OrgModalScreen}/>
+
+            <Stack.Screen
+                options={{headerShown: true,title:'Filter Content'}}
+                name="RefineFilter" component={RefineFilterScreen}/>
+
+            <Stack.Screen
+                options={{headerShown: true,title:'Select Inspiration'}}
+                name="InspoModaler" component={InspoSelectModaler}/>
+
+            <Stack.Screen
+                options={{headerShown: true,title:'Select Nominees'}}
+                name="NominationModal" component={NominationModalScreen}/>
+
+            <Stack.Screen
+                options={{headerShown: true,title:'Refine Your Feed'}}
+                name="SelectInspo" component={InspoSelctionModal}/>
+
+            <Stack.Screen
+                options={{headerShown: true,title:'Create A Post'}}
+                name="AltPoster" component={AltPostModalScreen}/>
 
             <Stack.Screen
                 options={{headerShown: true,title:'Select Inspiration'}}

@@ -7,7 +7,7 @@ import {Ionicons} from "@expo/vector-icons";
 import {dimensions} from '../../styles/dimensions/dims'
 import NotificationListing from "../../components/listings/notification";
 import Spacer from "../../design/spacer";
-import {getNotifications} from "../../firebase/fireStarter";
+import {markNotifRead, getNotifications} from "../../firebase/fireStarter";
 
 export default class Notifications extends React.Component {
     constructor(props) {
@@ -26,22 +26,47 @@ export default class Notifications extends React.Component {
     getNotifications = async () =>{
         let data = await getNotifications()
         if(data.passed) {
+
             this.setState({notifications:data.data})
         }
     }
+
+    clearNotif = (id) => {
+        markNotifRead(id)
+    }
+
     render() {
         return (
             <SafeAreaView style={[{backgroundColor:'white'}]}>
-<Spacer spacing={.1}/>
-                <ScrollView>
-                    <Text style={[{fontWeight:'bold',marginBottom:'5%',marginLeft:'2.5%',fontSize:17}]}>New Notifications</Text>
+
+                <View style={{width:'100%',height:'100%'}}>
+                    <View style={[{position:'absolute',zIndex:1,width:'90%',marginTop:'2.5%',marginLeft:'5%'},flexing.rowStart,{alignItems:'flex-start'}]}>
+                        <TouchableOpacity onPress={()=>{this.props.navigation.goBack()}}>
+                            <Ionicons name={'ios-arrow-back'} size={25} color={'black'}/>
+                        </TouchableOpacity>
+                        {/*<Text style={[{fontWeight:'bold',marginBottom:'5%',marginLeft:'2.5%',fontSize:17}]}>Notifications</Text>*/}
+
+                    </View>
+
+<Spacer spacing={.075}/>
+                <ScrollView styke={{width:'100%'}}>
+                    <View style={[flexing.rowBetween,{width:'95%',alignItems:'flex-start'}]}>
+                        <Text style={[{fontWeight:'bold',marginBottom:'5%',marginLeft:'2.5%',fontSize:17}]}>Notifications</Text>
+                        {this.state.notifications.filter((val)=>{
+                            return !val.read
+                        }).length > 0 ?
+                        <Text>Mark all as read</Text> : <></>
+                        }
+                    </View>
                     <View style={[{width:dimensions.returnWidth(1),height:dimensions.returnHeight(1),backgroundColor:'white'}]}>
                         {this.state.notifications.map((val)=>(
-                            <NotificationListing navigation={this.props.navigation} route={this.props.route} data={val}/>
+                            <NotificationListing clearNotification={(id)=>{this.clearNotif(id)}} navigation={this.props.navigation} route={this.props.route} data={val}/>
 
                         ))}
                     </View>
+                    <Spacer spacing={.25}/>
                 </ScrollView>
+                </View>
             </SafeAreaView>
         )
     }

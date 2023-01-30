@@ -6,6 +6,7 @@ import {getUserProfile} from "../../firebase/fireStarter";
 import {flexing} from "../../styles/dimensions/dims";
 import {createCircle} from "../../styles/globals/shapes";
 import Spacer from "../../design/spacer";
+import FastImage from 'react-native-fast-image'
 
 
 export default class InitialOrPic extends React.Component {
@@ -20,7 +21,16 @@ export default class InitialOrPic extends React.Component {
     returnWhich = () => {
         if(this.props.imgProvided) {
             return(
-                <Image resizeMode={'cover'} style={[{width:'100%',height:'100%',borderRadius:100,overflow:'hidden'}]} source={{uri:this.props.img}}/>
+
+                <FastImage
+                    style={[{width:'100%',height:'100%',borderRadius:100,overflow:'hidden'}]}
+                    source={{
+                        uri: this.props.img,
+                        priority: FastImage.priority.normal,
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                />
+                // <Image resizeMode={'cover'} style={[{width:'100%',height:'100%',borderRadius:100,overflow:'hidden'}]} source={{uri:this.props.img}}/>
             )
         } else {
             return(
@@ -34,7 +44,17 @@ export default class InitialOrPic extends React.Component {
     render() {
         return (
             <TouchableOpacity onPress={()=>{
-                getUserProfile(this.props.navigation,this.props.route,false,this.props.userUid)}}
+              //  console.log(this.props.initials)
+                console.log('tapped')
+                if(this.props.noPress) {
+console.log('no press')
+                } else {
+                    console.log('live',this.props.userUid)
+                  return  getUserProfile(this.props.navigation,this.props.route,false,this.props.userUid)
+
+                }
+
+            }}
            style={[createCircle(this.props.circleRadius,0,'black'),flexing.centerColumn,{backgroundColor:'firebrick'}]}>
                 {this.returnWhich()}
                 </TouchableOpacity>

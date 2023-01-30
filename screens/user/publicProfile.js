@@ -9,14 +9,14 @@ import Spacer from "../../design/spacer";
 import Pif from "../../components/listings/pif";
 import FollowerList from "../../components/listings/followerList";
 import FollowingList from "../../components/listings/followingList";
-
+import FastImage from "react-native-fast-image";
 
 export default class PublicProfile extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            hasPif:true
+            hasPif:false
         }
 
     }
@@ -54,7 +54,14 @@ export default class PublicProfile extends React.Component {
 
     returnProfilePic = (data) => {
         return(
-            <Image resizeMode={'cover'} style={[{width:'100%',height:'100%',borderRadius:100,overflow:'hidden'}]} source={{uri:data.img}}/>
+            <FastImage
+                style={[{width:'100%',height:'100%',borderRadius:100,overflow:'hidden'}]}
+                source={{
+                    uri: data.img,
+                    priority: FastImage.priority.normal,
+                }}
+                resizeMode={FastImage.resizeMode.cover}
+            />
         )
     }
 
@@ -76,14 +83,14 @@ export default class PublicProfile extends React.Component {
             <Animated.View style={[{width:Dimensions.get('window').width,height:Dimensions.get('window').height,backgroundColor:'#ffffff'}]}>
 
 
-                <View style={[{position:'absolute',top:0,left:0,width:'100%',height:'17.5%',backgroundColor:'#e3e3e3'}]}>
-                {/*<Image source={require('../../assets/img/welcomeimg.png')} style={{width:'100%',height:'75%',marginTop:'5%',position:'absolute'}} resizeMode={'contain'}/>*/}
+                <View style={[{position:'absolute',top:0,left:0,width:'100%',height:'17.5%',backgroundColor:'#g3g3g3'}]}>
+                <Image source={require('../../assets/img/welcomeimg.png')} style={{width:'100%',height:'75%',marginTop:'5%',position:'absolute'}} resizeMode={'repeat'}/>
 
             </View>
 
                 <View style={[{width:'100%',marginLeft:'0%',marginTop:'25%',backgroundColor:'transparent'},flexing.centerColumn]}>
 
-                    <View style={[createCircle(.1625,5,'white')]}>
+                    <View style={[createCircle(.1625,5,'white'),{backgroundColor:'firebrick'}]}>
                         {data.imgProvided ? this.returnProfilePic(data) : this.returnInitials(data)}
                     </View>
                     <Spacer spacing={.0125}/>
@@ -106,13 +113,13 @@ export default class PublicProfile extends React.Component {
                             <Text style={[{color:'slategrey',fontSize:13,fontWeight:'bold'}]}>Pif Score</Text>
                             <Spacer spacing={.0125}/>
 
-                            <Text style={[{fontSize:14,color:'gray'}]}>350</Text>
+                            <Text style={[{fontSize:14,color:'gray'}]}>{data.pifScore ? data.pifScore : 0}</Text>
                         </View>
                         <View style={[flexing.centerColumn, {width: '30%'}]}>
                             <Text style={[{color:'slategrey',fontSize:13,fontWeight:'bold'}]}>Joined</Text>
                             <Spacer spacing={.0125}/>
 
-                            <Text style={[{fontSize:14,color:'gray'}]}>Dec 2022</Text>
+                            <Text style={[{fontSize:14,color:'gray'}]}>{typeof data.joined === 'number' ? convertTimeStamp(data.joined) : 'unknown'}</Text>
                         </View>
                     </View>
                     <Spacer spacing={.025}/>

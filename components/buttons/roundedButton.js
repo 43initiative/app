@@ -21,8 +21,8 @@ export default class RoundedButton extends React.Component {
                 <Text style={[{color:'white',textTransform:'uppercase',fontWeight:'bold'},this.props.textStyles]}>{this.props.text}</Text>
             </View>)
         } else {
-           return(<TouchableOpacity   onPress={this.props.pressed}  style={[styles.roundedButton,...this.props.style,{backgroundColor:this.props.bgColor}]} disabled={this.props.disabled}  >
-               <Text style={[{color:'white',textTransform:'uppercase',fontWeight:'bold'},this.props.textStyles]}>{this.props.text}</Text>
+           return(<TouchableOpacity   onPress={this.props.pressed}  style={[styles.roundedButton,...this.props.style,this.props.doOutline ? {backgroundColor:'transparent',borderColor:this.props.bgColor,borderWidth:2}:{backgroundColor:this.props.bgColor}]} disabled={this.props.disabled}  >
+               <Text style={[{color:'white',textTransform:'uppercase',fontWeight:'bold'},this.props.textStyles,this.props.doOutline ? {color:this.props.bgColor} : {}]}>{this.props.text}</Text>
            </TouchableOpacity>)
         }
     }

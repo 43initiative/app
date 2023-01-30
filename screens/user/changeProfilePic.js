@@ -57,8 +57,7 @@ export default class ChangeProfilePic extends React.Component {
 
     returnAnImage = async () => {
         let x = await acquireAnImage(true);
-        console.log(x)
-        this.setState({tempImg:x.link,imgProvided:true})
+        return this.uploadImg(x.link)
         // if(x.passed) {
         //     this.setState({profilePicLink:x.link},()=>{
         //         this.setState({profilePicAdded:true})
@@ -67,11 +66,13 @@ export default class ChangeProfilePic extends React.Component {
 
     }
 
+
+
     uploadImg = async (img) => {
         let x = await transformBlob(img)
         if(x.link) {
             console.log(x.link)
-            this.setState({img:x.link},()=>{
+            this.setState({tempImg:x.link},()=>{
                 this.setState({imgProvided:true})
 
                 console.log('uploaded new profile pic')
@@ -86,7 +87,7 @@ export default class ChangeProfilePic extends React.Component {
         await updateProfilePic(true,this.state.tempImg)
         //update the user data store
         let store = storeControllers.store
-        store.dispatch({type:UPDATE_IMG,payload:{imgProvided: this.state.imgProvided,img:this.state.img}})
+        store.dispatch({type:UPDATE_IMG,payload:{imgProvided: this.state.imgProvided,img:this.state.tempImg}})
         //trigger the param function
         deactivateLoading()
         this.props.route.params.updateData();

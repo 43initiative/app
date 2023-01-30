@@ -8,12 +8,12 @@ import Spacer from "../../design/spacer";
 import {Ionicons} from "@expo/vector-icons";
 import LiveButton from "../buttons/liveButton";
 import InitialOrPic from "../buttons/initialOrPic";
-import {convertTimeStamp, formatTimestamp} from "../../helperFuncs/dateTime";
+import {convertTimeStamp} from "../../helperFuncs/dateTime";
 import {loadCommentSection, getUserProfile} from "../../firebase/fireStarter";
 import FastImage from "react-native-fast-image";
 
 
-export default class Pif extends React.Component {
+export default class MyPif extends React.Component {
     constructor(props) {
         super(props);
 
@@ -27,45 +27,15 @@ export default class Pif extends React.Component {
 
     componentDidMount() {
         let data = this.props.data;
-this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationList ? data.inspirationList.length : 0})
+        this.setState({currentLikes:data.likedList.length,savedCount:data.savedList.length})
     }
 
-    likePost = () => {
-        let currentLikes = this.state.currentLikes;
-        currentLikes += 1;
-        this.setState({currentLikes},()=>{
-            this.props.like()
-        })
-    }
 
-    unlikePost = () => {
-        let currentLikes = this.state.currentLikes;
-        currentLikes -= 1;
-        this.setState({currentLikes},()=>{
-            this.props.unlike()
-        })
-    }
-
-    savePost = () => {
-        // let currentSaves = this.state.savedCount;
-        // currentSaves += 1;
-       // this.setState({savedCount:currentSaves},()=>{
-            this.props.save()
-       // })
-    }
-
-    unsavePost = () => {
-        // let currentSaves = this.state.savedCount;
-        // currentSaves -= 1;
-       // this.setState({savedCount:currentSaves},()=>{
-            this.props.unsave()
-       // })
-    }
 
     loadComments = async (data) => {
-        console.log(data,'data')
+        console.log(this.props.data,'data')
         if(this.props.ableToLoadComments) {
-            loadCommentSection(this.props.navigation,this.props.route,data.postId,data)
+            loadCommentSection(this.props.navigation,this.props.route,data.id,data)
         }
     }
 
@@ -73,10 +43,10 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
         let data = this.props.data;
 
         return (
-            <Animated.View style={[flexing.startColumn,{width:'100%',backgroundColor:'white',marginTop:'5%',borderTopWidth:8,borderColor:'#d3d3d3'}]}>
+            <Animated.View style={[flexing.startColumn,{width:'90%',marginLeft:'5%',backgroundColor:'ghostwhite',marginTop:'5%',borderRadius:20}]}>
                 <View style={[flexing.rowStart,{width:'95%',marginLeft:'2.5%',marginTop:'2.5%'}]}>
 
-                    <View style={[flexing.rowStart,{width:'80%'}]}>
+                    <View style={[flexing.rowStart,{width:'80%',borderWidth:0,borderColor:'red'}]}>
 
                         <InitialOrPic circleRadius={.05} initials={data.userInitials} route={this.props.route} navigation={this.props.navigation} userUid={data.userUid} imgProvided={data.userImgProvided} img={data.userImg}/>
 
@@ -88,7 +58,7 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
                         }} style={[flexing.startColumn]}>
                             <Text style={[{fontSize:15,fontWeight:'500'}]}>{data.userDisplayName}</Text>
                             <View style={[flexing.rowStart]}>
-                                <Text style={[{fontSize:11,color:'gray'}]}>{formatTimestamp(data.timestamp)}</Text>
+                                <Text style={[{fontSize:11,color:'gray'}]}>{convertTimeStamp(data.timestamp)}</Text>
                                 <Spacer xAxis={true} spacing={.0125}/>
                                 <Ionicons name={'ios-globe'} size={15} color={'gray'}/>
                             </View>
@@ -99,7 +69,7 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
 
                     <View style={[createSquare(.035,1,'purple'),{backgroundColor:'purple'}]}>
                         <TouchableOpacity>
-                        <Ionicons name={'ios-git-branch-outline'} color={'white'} size={25}/>
+                            <Ionicons name={'ios-git-branch-outline'} color={'white'} size={25}/>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -111,7 +81,7 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
 
                 {data.imgProvided
 
-                ?
+                    ?
                     <View style={[flexing.centerColumn,{width:'100%'}]}>
                         <FastImage
                             style={[{width:'100%',height:250}]}
@@ -130,12 +100,12 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
                 <Spacer  spacing={.025}/>
 
                 <View style={[flexing.rowStart,{width:'95%',marginLeft:'2.5%'}]}>
-                    <TouchableOpacity style={[flexing.rowStart,{width:'30%'}]}>
+                    <View style={[flexing.rowStart,{width:'30%'}]}>
                         <Ionicons name={'ios-heart-circle'} color={'red'} size={20}/>
                         <Spacer xAxis spacing={.0125}/>
 
-                        <Text>{this.state.currentLikes}</Text>
-                    </TouchableOpacity>
+                        <Text>{data.likedList.length}</Text>
+                    </View>
 
                     <View style={[flexing.rowEnd,{width:'70%'}]}>
                         <TouchableOpacity onPress={()=>{this.loadComments(data)}} style={[flexing.rowStart]}>
@@ -146,50 +116,19 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
                         </TouchableOpacity>
                         <Spacer xAxis spacing={.05125}/>
 
-                        <TouchableOpacity style={[flexing.rowStart]}>
-                            <Text>{this.state.savedCount}</Text>
+                        <View style={[flexing.rowStart]}>
+                            <Text>{data.savedList.length}</Text>
                             <Spacer xAxis spacing={.005125}/>
 
-                            <Text>Inspo{this.state.savedCount === 1 ? '':'s'}</Text>
-                        </TouchableOpacity>
+                            <Text>Inspo{data.savedList.length === 1 ? '':'s'}</Text>
+                        </View>
 
 
                     </View>
 
                 </View>
                 <Spacer  spacing={.0125}/>
-                <View style={[fixedShape.line,{width:'90%',marginLeft:'5%'}]}></View>
                 <Spacer  spacing={.0125}/>
-
-                <View style={[flexing.rowAround,{width:'95%',marginLeft:'2.5%'}]}>
-                    <LiveButton
-                        pressed={()=>{this.props.isLiked ? this.unlikePost() : this.likePost()}}
-                        active={this.props.isLiked}
-                    activeIcon={'ios-heart'}
-                    activeColor={'red'}
-                    inactiveIcon={'ios-heart-outline'}
-                        text={'Admire'}
-                   />
-
-                    <TouchableOpacity onPress={()=>{this.loadComments(data)}} style={[flexing.rowStart]}>
-                        <Ionicons name={'ios-chatbubble-outline'} color={'gray'} size={20}/>
-                        <Spacer xAxis spacing={.0125}/>
-
-                        <Text>Comment</Text>
-                    </TouchableOpacity>
-
-
-                    <LiveButton
-                        pressed={()=>{this.props.isSaved ? this.unsavePost() : this.savePost()}}
-                        active={this.props.isSaved}
-                        activeIcon={'ios-bookmark'}
-                        activeColor={'gold'}
-                        inactiveIcon={'ios-bookmark-outline'}
-                        text={'Saved'}
-                    />
-
-                </View>
-                <Spacer  spacing={.025}/>
 
             </Animated.View>
         )

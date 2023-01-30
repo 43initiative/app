@@ -20,3 +20,5 @@ export const STORE_PUBLIC_DATA = 'STORE_PUBLIC_DATA';
 export const STORE_PRIVATE_DATA = 'STORE_PRIVATE_DATA';
 export const UPDATE_IMG = 'UPDATE_IMG';
 export const UPDATE_BIO = 'UPDATE_BIO';
+
+export const SET_NOTIF = "SET_NOTIF"

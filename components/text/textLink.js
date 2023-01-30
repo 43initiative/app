@@ -14,7 +14,7 @@ export default class TextLink extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity style={[this.props.underline ? {borderBottomWidth:1,borderColor:'gray'} : {}]} onPress={this.props.pressed} activeOpacity={.8}>
+            <TouchableOpacity style={[this.props.underline ? {borderBottomWidth:1,borderColor:this.props.underlineColor ? this.props.underlineColor :'gray'} : {}]} onPress={this.props.pressed} activeOpacity={.8}>
                 <Text style={[...this.props.textStyles]}>{this.props.text}</Text>
             </TouchableOpacity>
         )

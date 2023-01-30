@@ -9,18 +9,20 @@ import {Ionicons} from "@expo/vector-icons";
 import RoundedButton from "../../components/buttons/roundedButton";
 
 
-export default class RefineFeedModal extends React.Component {
+export default class RefineFilterModal extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            selected:'newest',
-            lastSelection:'newest',
+            selected:'',
+            lastSelection:'',
             options : [
-                {designation:'newest',icon:'ios-timer',title:'Newest Content',blurb:'We will show you the newest content first, regardless of engagement and popularity.'},
-                {designation:'likes',icon:'ios-heart',title:'Most Popular',blurb:'We will show you the most popular content according to the number of likes.'},
-                {designation:'comments',icon:'ios-chatbubbles',title:'Most Viral',blurb:'We will show you the most popular content according to the number of comments.'}
-               // {designation:'comments',icon:'ios-git-branch',title:'Most Viral',blurb:'We will show you content that has the longest PIF chains, representing the greatest impact and spread.'},
+                {designation:'inspired',icon:'ios-hand-right',title:'Inspired',blurb:'We will show you the newest content that has been inspired by previous good deeds.'},
+                {designation:'trending',icon:'ios-pulse',title:'Trending',blurb:'We will show you the original content has inspired other deeds.'},
+                {designation:'followers',icon:'ios-person',title:'Followers',blurb:'We will show you content from your followers.'},
+                {designation:'following',icon:'ios-people',title:'Following',blurb:'We will show you content from those you follow.'},
+                {designation:'',icon:'ios-globe',title:'Everything',blurb:'No filters applied'}
+                // {designation:'comments',icon:'ios-git-branch',title:'Most Viral',blurb:'We will show you content that has the longest PIF chains, representing the greatest impact and spread.'},
             ]
         }
 
@@ -35,7 +37,7 @@ export default class RefineFeedModal extends React.Component {
 
     saveSetting = async () => {
         console.log(this.state.selected)
-        this.props.route.params.setFeed(this.state.selected)
+        this.props.route.params.setFilter(this.state.selected)
     }
 
     render() {
@@ -52,7 +54,7 @@ export default class RefineFeedModal extends React.Component {
                     <Spacer spacing={.0125}/>
 
                     {this.state.options.map((val)=>{
-                        return(<TouchableOpacity onPress={()=>{this.setState({selected:val.designation})}} style={[{width:'100%',opacity:val.designation === this.state.selected ? 1 : .6,height:'30%',borderBottomWidth:1,borderColor:'#e3e3e3'}]}>
+                        return(<TouchableOpacity onPress={()=>{this.setState({selected:val.designation})}} style={[{width:'100%',opacity:val.designation === this.state.selected ? 1 : .6,height:'20%',borderBottomWidth:1,borderColor:'#e3e3e3'}]}>
                             <Hstack jc={'space-between'} style={[{backgroundColor:'white'}]} trueSize={false} height={1} width={.9}>
                                 <Ionicons name={val.icon} color={'red'} size={30}/>
                                 <VStack al={'flex-start'} height={.9} width={.8}>

@@ -6,104 +6,175 @@ import {
     Text,
     TouchableOpacity,
     Pressable,
-    SafeAreaView,
+    Image,
+    Dimensions,
     ScrollView,
-    RefreshControl,
-
+    FlatList,
+    RefreshControl, SafeAreaView
 } from 'react-native';
-import Spacer from "../../design/spacer";
-import {getMyAppreciations} from "../../firebase/fireInit";
-import Appreciation from "../../components/listings/appreciation";
+import {getAllPifs, initialize, addPif,getSpecificPif,getAllUsers} from '../../firebase/fireInit'
 import {flexing} from "../../styles/dimensions/dims";
+import {createCircle, createSquare} from '../../styles/globals/shapes'
+import {Ionicons} from "@expo/vector-icons";
+import Spacer from "../../design/spacer";
 import Pif from "../../components/listings/pif";
-
+import Header from "../../components/headers/header";
+import FilterButton from "../../components/buttons/filterButton";
+import {getInspiration, updateSavedList, returnUserSavedList,returnUserLikedList, updateLikedList, getAllDeeds} from "../../firebase/fireStarter";
+import UserTruncated from "../../components/listings/userTruncated";
+import {connect} from "react-redux";
+import {waitACertainTime} from "../../helperFuncs/timers/wait";
+import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
 
 export default class Inspo extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            refreshing:false,
-            appreciations:[],
-            index:0
-        }
+        this.state = {deeds:[],likedList:[],savedList:[],refreshing:true}
 
     }
 
     componentDidMount() {
-        this.getMyAppreciations();
+        this.getAllDeeds()
     }
 
-    getMyAppreciations = async () => {
-        let appreciations = await getMyAppreciations('KH5vtjQg6HPOTHEFTfln');
-        this.setState({appreciations})
+
+
+
+
+    getAllDeeds = async () => {
+        let response = await getInspiration();
+        let likedList = await returnUserLikedList();
+        let savedList = await returnUserSavedList();
+
+        if(response.passed) {
+            console.log(response.data,'this is data')
+            this.setState({deeds:response.data,savedList,likedList,refreshing:false})
+        }
     }
 
-    getMyInspirations = async () => {
-        let inspirations = await getMyAppreciations('KH5vtjQg6HPOTHEFTfln');
-        this.setState({inspirations})
-    }
 
-    doRefresh =   () => {
-        this.setState({refreshing:true},async()=>{
-            await this.getMyAppreciations();
-            await this.getMyInspirations()
-            return this.setState({refreshing:false})
+
+    likePost = async (postId,i) => {
+        let likedList = this.state.likedList;
+        likedList.push(postId);
+        console.log(likedList);
+        this.setState({likedList:[...likedList]},async()=>{
+            await updateLikedList(likedList);
         })
 
+
     }
 
-    returnSection = () => {
-        if(this.state.index === 0) {
-            return this.state.appreciations.map((val)=>(
-                <Appreciation data={val}/>
-            ))
-        }
+    unlikePost = async  (postId) => {
 
-        return this.state.appreciations.map((val)=>(
-            <Pif data={val}/>
-        ))
+        let likedList = this.state.likedList;
+        let index  = likedList.findIndex((val)=>{return val === postId})
+        likedList.splice(index,1)
+        console.log(likedList)
+
+        this.setState({likedList:[...likedList]},async()=>{
+            await updateLikedList(likedList);
+        })
+
+
+    }
+
+    savePost = async (postId,i) => {
+        let savedList = this.state.savedList;
+        savedList.push(postId);
+        console.log(savedList);
+        this.setState({savedList:[...savedList]},async()=>{
+            await updateSavedList(savedList);
+        })
+
+
+    }
+
+    unsavePost = async  (postId) => {
+
+        let savedList = this.state.savedList;
+        let index  = savedList.findIndex((val)=>{return val === postId})
+        savedList.splice(index,1)
+        console.log(savedList)
+
+        this.setState({savedList:[...savedList]},async()=>{
+            await updateSavedList(savedList);
+        })
+
+
     }
 
     render() {
+        let DATA = this.state.deeds;
         return (
+            <SafeAreaView>
+                <Animated.View style={[{marginTop:35,height:'100%',width:'100%',background:'white'}]}>
+                    <Spacer spacing={.05}/>
 
-            <SafeAreaView style={[{backgroundColor:'white',width:'100%',height:'100%'}]}>
-                <Spacer spacing={.1}/>
+                    {/*<TouchableOpacity onPress={()=>{this.props.navigation.navigate('RefineFeed')}} style={[{width:'90%',marginLeft:'5%',height:'6.25%',backgroundColor:'#e3e3e3',paddingLeft:'5%',borderRadius:30},flexing.centerColumn,{alignItems:'flex-start'}]}>*/}
+                    {/*   <View style={[flexing.rowStart]}>*/}
+                    {/*       <Ionicons name={'ios-list'} color={'darkslategray'} size={20}/>*/}
+                    {/*       <Spacer xAxis spacing={.025}/>*/}
+                    {/*       <Text style={[{color:'darkslategray'}]}>Refine Your Feed</Text>*/}
+                    {/*   </View>*/}
 
-                <View style={[flexing.rowAround,{width:'80%',marginLeft:'10%'}]}>
-                    <TouchableOpacity style={[{borderBottomWidth:this.state.index === 1 ? 1 : 0,borderColor:'red'}]} onPress={()=>{this.setState({index:1})}}>
-                        <Text style={[{fontSize:15,fontWeight:this.state.index === 1? 'bold' : '300',color:this.state.index === 1? 'firebrick' : 'gray'}]}>Saved Inspirations</Text>
-                    </TouchableOpacity>
+                    {/*</TouchableOpacity>*/}
+                    {/*<Spacer spacing={.025}/>*/}
 
-                    <TouchableOpacity style={[{borderBottomWidth:this.state.index === 0 ? 1 : 0,borderColor:'red'}]} onPress={()=>{this.setState({index:0})}}>
-                        <Text style={[{fontSize:15,fontWeight:this.state.index === 0? 'bold' : '300',color:this.state.index === 0 ? 'firebrick' : 'gray'}]}>My Appreciations</Text>
-                    </TouchableOpacity>
-                </View>
+                    {/*<View style={[flexing.rowBetween,{width:'90%',marginLeft:'5%'}]}>*/}
+                    {/*    <FilterButton active text={'Near Me'} icon={'ios-navigate'}/>*/}
+                    {/*    <FilterButton text={'Newest'} icon={'ios-timer'}/>*/}
+                    {/*    <FilterButton text={'Popular'} icon={'ios-bar-chart'}/>*/}
+                    {/*    <FilterButton text={'Viral'} icon={'ios-git-branch'}/>*/}
+                    {/*</View>*/}
 
-                <Spacer spacing={.025}/>
+                    <FlatList
+                        refreshControl={<RefreshControl
+                            colors={["#9Bd35A", "#689F38"]}
+                            refreshing={this.state.refreshing}
+                            onRefresh={()=>{
+                                this.getAllDeeds();
+                            }} />}
+                        contentContainerStyle={{width:'100%',marginLeft:'0%',paddingBottom:'25%'}}
+                        data={DATA}
+                        renderItem={({item,index}) => (
+                            <Pif
+                                ableToLoadComments={true}
+                                like={()=>{this.likePost(item.postId,index)}} unlike={()=>{this.unlikePost(item.postId,index)}}
+                                 save={()=>{this.savePost(item.postId,index)}} unsave={()=>{this.unsavePost(item.postId,index)}}
+                                 isSaved={this.state.savedList.indexOf(item.postId) !== -1}  isLiked={this.state.likedList.indexOf(item.postId) !== -1}  route={this.props.route} navigation={this.props.navigation} data={item} userUid={item.userUid}/>
+                        )}
+                        keyExtractor={item => item.id}
+                    />
 
-                <ScrollView
-                            contentContainerStyle={{}}
-                            refreshControl={
-                                <RefreshControl
-                                    refreshing={this.state.refreshing}
-                                    onRefresh={this.doRefresh}
-                                />
-                            }
-                        >
-                            {this.returnSection()}
-
-                        </ScrollView>
 
 
 
-</SafeAreaView>
 
-        );
+
+                </Animated.View>
+            </SafeAreaView>
+        )
     }
 
 
-
-
 }
+//
+// const mapStateToProps = (state) => {
+//     return {
+//         savedList:state.userData.publicData.savedList,
+//         likedList:state.userData.publicData.likedList,
+//     }
+// }
+//
+// const mapDispatchToProps = (dispatch) => {
+//     return {
+//
+//     }
+// }
+//
+//
+// export default connect(mapStateToProps,mapDispatchToProps)(Feed)
+
+

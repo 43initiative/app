@@ -12,11 +12,13 @@ import Navigation from "./reducers/navigation";
 import {setStore, storeControllers} from "./reducers/controllers";
 import UserSignUp from "./reducers/userSignUp";
 import UserData from "./reducers/userData";
+import Notifications from "./reducers/notifications";
 const rootReducer = combineReducers({
   globe:Globe,
     navigation:Navigation,
     userSignUp:UserSignUp,
-    userData:UserData
+    userData:UserData,
+    notifications:Notifications
 })
 const store = createStore(rootReducer)
 const Stack = createNativeStackNavigator();

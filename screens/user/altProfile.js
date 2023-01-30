@@ -118,12 +118,8 @@ export default class AltProfile extends React.Component {
 
     render() {
         return (
-            <Animated.View style={[{backgroundColor:'white',width:'100%',height:'100%'}]}>
-                <View style={[{position:'absolute',width:'90%',marginTop:'2.5%',marginLeft:'5%'}]}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.goBack()}}>
-                        <Ionicons name={'ios-arrow-back'} size={25} color={'black'}/>
-                    </TouchableOpacity>
-                </View>
+            <Animated.View style={[{backgroundColor:'white',width:'100%',height:'100%',marginTop:'15%'}]}>
+
                 <View style={[{marginTop:'15%',width:'100%',height:'100%'}]}>
                     <ScrollView style={[{width:'100%'}]}>
                         <TouchableOpacity onPress={()=>{

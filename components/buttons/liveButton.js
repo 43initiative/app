@@ -19,6 +19,7 @@ export default class LiveButton extends React.Component {
 
     activateButton = async () => {
         //must complete api call to like or unlike
+        this.props.pressed()
     }
 
     render() {
@@ -28,8 +29,8 @@ export default class LiveButton extends React.Component {
         let inactiveIcon = this.props.inactiveIcon;
         let activeColor = this.props.activeColor;
         return (
-            <TouchableOpacity onPress={this.activateButton} style={[flexing.rowStart]}>
-                {this.state.active ?
+            <TouchableOpacity onPress={this.props.pressed} style={[flexing.rowStart]}>
+                {this.props.active ?
                     <Ionicons name={activeIcon} color={activeColor} size={20}/>
 
                     :
@@ -38,7 +39,7 @@ export default class LiveButton extends React.Component {
                 }
                 <Spacer xAxis spacing={.0125}/>
 
-                <Text>Admire</Text>
+                <Text>{this.props.text}</Text>
             </TouchableOpacity>
         )
     }

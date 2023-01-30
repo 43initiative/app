@@ -17,7 +17,7 @@ export default class OutlineIconButton extends React.Component {
 
     render() {
         return (
-            <TouchableHighlight onPress={()=>{alert('pressed')}} activeOpacity={.9} underlayColor={'ghostwhite'}  style={[styles.outlineIconButton,...this.props.style,{backgroundColor:'transparent',borderColor:this.props.borderColor}]}>
+            <TouchableHighlight onPress={this.props.pressed} activeOpacity={.9} underlayColor={'ghostwhite'}  style={[styles.outlineIconButton,...this.props.style,{backgroundColor:'transparent',borderColor:this.props.borderColor}]}>
               <Hstack
                 jc={'flex-start'}
 

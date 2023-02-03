@@ -12,7 +12,7 @@ import OutlineIconButton from "../../components/buttons/outlineIconButton";
 import {branding} from "../../appSpecifics/branding";
 import CheckText from "../../components/text/checkText";
 import TextLink from "../../components/text/textLink";
-import {signUpUser} from "../../firebase/newFIre";
+import {signUpUser} from "../../firebase/fireStarter";
 import {activateLoading, deactivateLoading, showToastMessage} from "../../reducers/controllers";
 
 

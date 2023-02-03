@@ -263,6 +263,20 @@ const getDownloadUrl = async (storage,storageRef,userUid) => {
 
 }
 
+const signUpUser = async (email,password) => {
+    try {
+        auth = getAuth(app)
+        let x = await createUserWithEmailAndPassword(auth,email,password)
+        let userUid = x.user.uid;
+        console.log(auth,'here is the auths')
+        await AsyncStorage.setItem('exAccessToken',userUid)
+        return {passed:true,userUid}
+    } catch (e) {
+        return {passed:false,error:e.code,errorMsg:e.message}
+    }
+
+}
+
 const submitSignUpData = async (data) => {
     try {
         let signUpData = storeControllers.storeData().userSignUp;
@@ -1655,5 +1669,6 @@ module.exports = {
     chatGptImgUpload,
     doImgUpload,
     doVideoUpload,
-    testSecondOption
+    testSecondOption,
+    signUpUser
 }

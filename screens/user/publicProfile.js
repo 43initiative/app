@@ -193,7 +193,7 @@ export default class PublicProfile extends React.Component {
 
 
                 </View>
-                <PifListSection data={data.pifs}/>
+                <PifListSection navigation={this.props.navigation} route={this.props.route} data={data.pifs}/>
 
             </Animated.View>
 <Spacer spacing={.7}/>

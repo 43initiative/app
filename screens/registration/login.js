@@ -49,7 +49,7 @@ export default class Login extends React.Component {
                 }
             }
         } else {
-            showToastMessage('SignUp Failed','please try signing in again','ios-sad-outline')
+            showToastMessage('Login Failed',loginAttempt.errorMsg,'ios-sad-outline')
         }
         deactivateLoading()
 

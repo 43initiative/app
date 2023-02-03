@@ -166,17 +166,17 @@ export default function TabStack() {
                     })}
                     name="Inspo" component={InspoScreen} />
 
-                <Tab.Screen
-                    options={({route, navigation})=>({
-                        ...orgHeader(route,navigation),
-                        headerShown:true,
-                        tabBarLabel:'Orgs',
-                        title:'Orgs',
-                        tabBarInactiveTintColor:'gray',
-                        tabBarActiveTintColor:'#3EB489',
-                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-business-outline'} size={20} color={focused ?'#3EB489' : 'gray'}/>)}
-                    })}
-                    name="TestVideo" component={TestVideoScreen} />
+                {/*<Tab.Screen*/}
+                {/*    options={({route, navigation})=>({*/}
+                {/*        ...orgHeader(route,navigation),*/}
+                {/*        headerShown:true,*/}
+                {/*        tabBarLabel:'Orgs',*/}
+                {/*        title:'Orgs',*/}
+                {/*        tabBarInactiveTintColor:'gray',*/}
+                {/*        tabBarActiveTintColor:'#3EB489',*/}
+                {/*        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-business-outline'} size={20} color={focused ?'#3EB489' : 'gray'}/>)}*/}
+                {/*    })}*/}
+                {/*    name="TestVideo" component={TestVideoScreen} />*/}
 
 
                 <Tab.Screen

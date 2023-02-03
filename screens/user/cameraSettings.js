@@ -98,8 +98,7 @@ export default class CameraSettings extends React.Component {
 
                     {this.returnPermissionStatusResponse()}
 
-                    <Spacer spacing={.05}/>
-                    {this.returnPermissionButton()}
+
                 </View>
             </Animated.View>
         )

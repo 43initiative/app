@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    TouchableWithoutFeedback, View, Animated, Text, TouchableOpacity, Pressable, Image
+    TouchableWithoutFeedback, View, Animated, Text, TouchableOpacity, Pressable, Image, Dimensions
 } from 'react-native';
 import {flexing} from "../../styles/dimensions/dims";
 import {createCircle, createSquare,fixedShape} from "../../styles/globals/shapes";
@@ -12,6 +12,9 @@ import {convertTimeStamp, formatTimestamp} from "../../helperFuncs/dateTime";
 import {loadCommentSection, getUserProfile} from "../../firebase/fireStarter";
 import FastImage from "react-native-fast-image";
 import Share from 'react-native-share'
+import Video from "react-native-video";
+import RoundedButton from "../buttons/roundedButton";
+import * as WebBrowser from 'expo-web-browser';
 
 
 export default class Pif extends React.Component {
@@ -40,6 +43,11 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
             this.props.like()
         })
     }
+
+    openBrowser = async (url) => {
+    let action = await WebBrowser.openBrowserAsync(url);
+console.log(action)
+    };
 
     unlikePost = () => {
         let currentLikes = this.state.currentLikes;
@@ -72,10 +80,28 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
         }
     }
 
-    share = async () => {
-        const url = "https://www.plitnick.com/";
-        const title = "The 43 Initiative";
-        const message = "Be the one to spread the love by doing good deeds,check out The 43 Initiative on IOS";
+    share = async (data) => {
+        let url;
+        let title;
+        let message;
+
+            if(data?.isEvent) {
+                url =    "https://www.eventbrite.com/";
+                title =    "Awesome Event";
+                message = 'Check out this cool event I found on The 43 Initiative'
+            } else if (data?.isFundraiser) {
+                url =    "https://www.gofundme.com/";
+                title =    "Solid Fundraiser";
+                message = 'Check out this fundraiser event I found on The 43 Initiative'
+            } else {
+                title =    "The 43 Initiative";
+                url =    "https://www.plitnick.com/";
+               message =  "Be the one to spread the love by doing good deeds,check out The 43 Initiative on IOS";
+            }
+
+
+
+
 
         const options = {
             title,
@@ -170,6 +196,25 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
                     : <></>
                 }
 
+                {data.videoProvided
+
+                    ?
+                    <Video source={{uri: data.video}}
+                           ref={(ref) => {
+                               this.player = ref
+                           }}
+                           paused={true}
+                           muted={true}
+                           fullscreenAutorotate={true}
+                           disableFocus={false}
+                           controls={true}
+                           //onBuffer={(ev)=>{console.log(ev)}}
+                           onError={(error)=>{alert('video error occurred')}}
+                           resizeMode={'cover'}
+                           style={{width:'100%',height:250,borderRadius:0}} />
+                    : <></>
+                }
+
                 <Spacer  spacing={.025}/>
 
                 <View style={[flexing.rowBetween,{width:'95%',marginLeft:'2.5%'}]}>
@@ -243,6 +288,35 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
 
                     </TouchableOpacity>
                 </View>
+                <Spacer  spacing={.025}/>
+
+                {!data.isEvent ?
+                <></>
+                :
+                    <View style={[flexing.rowAround,{width:'90%',marginLeft:'5%'},flexing.rowStart]}>
+                        <Ionicons name={'ios-calendar'} color={'#3EB489'} size={25}/>
+                        <Spacer spacing={.025} xAxis/>
+                        <Text style={{fontSize:15}}>This post features an event.</Text>
+                        <Spacer spacing={.05} xAxis/>
+                        <TouchableOpacity onPress={()=>{this.openBrowser('https://www.eventbrite.com')}} style={[{backgroundColor:'#e3e3e3',borderWidth:0,borderRadius:5,height:Dimensions.get('window').height * .035,width:'25%'},flexing.centerColumn]}>
+                            <Text style={[{color:'black'}]}>View Event</Text>
+                        </TouchableOpacity>
+                    </View>
+                    }
+
+                {!data.isFundraiser ?
+                    <></>
+                    :
+                    <View style={[flexing.rowAround,{width:'90%',marginLeft:'5%'},flexing.rowStart]}>
+                        <Ionicons name={'ios-calendar'} color={'#3EB489'} size={25}/>
+                        <Spacer spacing={.025} xAxis/>
+                        <Text style={{fontSize:15}}>This post features a fundraiser.</Text>
+                        <Spacer spacing={.05} xAxis/>
+                        <TouchableOpacity onPress={()=>{this.openBrowser('https://www.gofundme.com')}} style={[{backgroundColor:'#e3e3e3',borderWidth:0,borderRadius:5,height:Dimensions.get('window').height * .035,width:'25%'},flexing.centerColumn]}>
+                            <Text style={[{color:'black'}]}>Learn More</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
                 <Spacer  spacing={.025}/>
 
             </Animated.View>

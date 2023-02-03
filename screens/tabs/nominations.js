@@ -85,7 +85,7 @@ export default class Nominations extends React.Component {
                 <View style={{width:'100%'}}>
                     <Text style={[{color:'black',fontWeight:'bold',fontSize:18,marginLeft:'5%',marginTop:'10%'}]}>Pending Nominations</Text>
                     {this.state.pendingSent.map((val)=>(
-                        <SentNom withdraw={()=>{this.withdrawNom(val.id)}} route={this.props.route} navigation={this.props.navigation} data={val}/>
+                        <SentNom viewPost={()=>{this.loadSinglePost(val.postId)}} withdraw={()=>{this.withdrawNom(val.id)}} route={this.props.route} navigation={this.props.navigation} data={val}/>
                     ))}
 
                     <Text style={[{color:'black',fontWeight:'bold',fontSize:18,marginLeft:'5%',marginTop:'10%'}]}>Completed Nominations</Text>

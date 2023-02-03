@@ -38,7 +38,7 @@ export default class AltProfile extends React.Component {
                 {icon:'ios-image',text:'Change Profile Pic',nav:false,useFunction:this.changeProfilePic},
                 {icon:'ios-document',text:'Change Your Bio',nav:false,useFunction:this.changeAboutMe},
                 {icon:'ios-list',text:'View Your Activity',nav:'UserActivityScreen'},
-                {icon:'ios-qr-code',text:'My QR Code',nav:'EditImg'},
+                // {icon:'ios-qr-code',text:'My QR Code',nav:'EditImg'},
                 {icon:'ios-settings',text:'Settings',nav:'Settings'},
                // {icon:'ios-log-out',text:'Log Out',nav:this.signOut},
             ],
@@ -164,7 +164,7 @@ export default class AltProfile extends React.Component {
                             </View>
                             <Spacer spacing={.025} xAxis/>
                             <View style={[flexing.startColumn]}>
-                                <Text style={[{fontSize:18,fontWeight:'bold'}]}>{this.state.displayName}</Text>
+                                <Text style={[{fontSize:18,fontWeight:'bold',width:'80%'}]}>{this.state.displayName}</Text>
                                 <Text style={[{fontSize:12}]}>View Public Profile</Text>
                             </View>
                         </TouchableOpacity>

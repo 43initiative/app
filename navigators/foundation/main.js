@@ -58,6 +58,7 @@ import OrgSearchUsers from "../../screens/orgTabs/orgSearchUsers";
 import CompleteFollowing from "../../screens/user/completeFollowing";
 import CompleteFollowers from "../../screens/user/completeFollowers";
 import CreateNewPost from "../../screens/user/testVideoUpload";
+import AllPifs from "../../screens/user/allPifs";
 const Stack = createNativeStackNavigator();
 
 function SplashScreen({route,navigation}) {
@@ -405,12 +406,22 @@ function CreateNewPostScreen({route,navigation}) {
     );
 }
 
+function AllPifScreen({route,navigation}) {
+    return (
+        <AllPifs route={route} navigation={navigation}/>
+    );
+}
+
 
 export function MainNavigator() {
     return (<Stack.Navigator initialRouteName={'SplashScreen'}>
         <Stack.Screen
             options={{headerShown: false}}
             name="SplashScreen" component={SplashScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="AllPifs" component={AllPifScreen}/>
 
         <Stack.Screen
             options={{headerShown: false}}

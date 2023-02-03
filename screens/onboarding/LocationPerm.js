@@ -8,7 +8,7 @@ import TextLink from "../../components/text/textLink";
 import Hstack from "../../designComps/hstack";
 import OutlineButton from "../../components/buttons/outlineButton";
 import {runInitialLocationChecks, startLocationTracking} from "../../permissionCalls/location";
-import {storeControllers} from "../../reducers/controllers";
+import {activateLoading, deactivateLoading, storeControllers} from "../../reducers/controllers";
 
 
 export default class LocationPerm extends React.Component {
@@ -20,14 +20,18 @@ export default class LocationPerm extends React.Component {
     }
 
     checkLocationTracking = async () => {
+        activateLoading()
         let response = await runInitialLocationChecks();
         if(response.passed) {
             let locationData = await startLocationTracking();
             let {lat,long} = locationData;
             let store = storeControllers.store;
             store.dispatch({type:'SET_LOCATION',payload: {lat,long}});
+            deactivateLoading()
             this.props.navigation.navigate('NotificationScreen')
         }
+        this.props.navigation.navigate('NotificationScreen')
+
     }
 
     render() {

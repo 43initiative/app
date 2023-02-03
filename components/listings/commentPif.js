@@ -24,7 +24,7 @@ export default class CommentPif extends React.Component {
 
     openBrowser = async (url) => {
         let action = await WebBrowser.openBrowserAsync(url);
-        console.log(action)
+
     };
 
     render() {
@@ -51,7 +51,7 @@ export default class CommentPif extends React.Component {
                     <View style={[flexing.centerColumn,{width:'100%'}]}>
 
                         <FastImage
-                            style={[{width:'100%',height:250}]}
+                            style={[{width:'100%',height:400}]}
                             source={{
                                 uri: data.img,
                                 priority: FastImage.priority.normal,
@@ -77,14 +77,14 @@ export default class CommentPif extends React.Component {
                         //onBuffer={(ev)=>{console.log(ev)}}
                            onError={(error)=>{alert('video error occurred')}}
                            resizeMode={'cover'}
-                           style={{width:'100%',height:250,borderRadius:0}} />
+                           style={{width:'100%',height:400,borderRadius:0}} />
                     : <></>
                 }
 
                 {!data.isEvent ?
                     <></>
                     :
-                    <View style={[flexing.rowAround,{width:'90%',marginLeft:'5%'},flexing.rowStart]}>
+                    <View style={[flexing.rowAround,{width:'90%',marginLeft:'5%',marginTop:'5%'},flexing.rowStart]}>
                         <Ionicons name={'ios-calendar'} color={'#3EB489'} size={25}/>
                         <Spacer spacing={.025} xAxis/>
                         <Text style={{fontSize:15}}>This post features an event.</Text>
@@ -98,7 +98,7 @@ export default class CommentPif extends React.Component {
                 {!data.isFundraiser ?
                     <></>
                     :
-                    <View style={[flexing.rowAround,{width:'90%',marginLeft:'5%'},flexing.rowStart]}>
+                    <View style={[flexing.rowAround,{width:'90%',marginLeft:'5%',marginTop:'5%'},flexing.rowStart]}>
                         <Ionicons name={'ios-calendar'} color={'#3EB489'} size={25}/>
                         <Spacer spacing={.025} xAxis/>
                         <Text style={{fontSize:15}}>This post features a fundraiser.</Text>

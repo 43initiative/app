@@ -9,9 +9,10 @@ import Circle from "../../designComps/circle";
 import Spacer from "../../design/spacer";
 import {acquireAnImage} from "../../permissionCalls/imgUpload";
 import {flexing} from "../../styles/dimensions/dims";
-import {updateProfilePic, transformBlob} from "../../firebase/fireStarter";
-import {activateLoading, deactivateLoading, storeControllers} from "../../reducers/controllers";
+import {updateProfilePic, transformBlob, doImgUploadForProfile} from "../../firebase/fireStarter";
+import {activateLoading, deactivateLoading, showToastMessage, storeControllers} from "../../reducers/controllers";
 import {UPDATE_IMG} from "../../reducers/actionTypes";
+import {waitACertainTime} from "../../helperFuncs/timers/wait";
 
 
 export default class ChangeProfilePic extends React.Component {
@@ -32,6 +33,7 @@ export default class ChangeProfilePic extends React.Component {
        console.log(data)
         this.setState({
             imgProvided:data.imgProvided,
+            prevImage:data.img,
             img:data.img,
             initials:data.initials,
             tempImg:null
@@ -57,6 +59,8 @@ export default class ChangeProfilePic extends React.Component {
 
     returnAnImage = async () => {
         let x = await acquireAnImage(true);
+        await waitACertainTime(4000)
+
         return this.uploadImg(x.link)
         // if(x.passed) {
         //     this.setState({profilePicLink:x.link},()=>{
@@ -64,6 +68,22 @@ export default class ChangeProfilePic extends React.Component {
         //     })
         // }
 
+    }
+
+    getImage = async () => {
+        activateLoading()
+        let x = await doImgUploadForProfile()
+        if(x.passed) {
+            this.setState({tempImg:x.link},()=>{
+                this.setState({imgProvided:true})
+                deactivateLoading()
+
+                console.log('uploaded new profile pic')
+            })
+        } else {
+            deactivateLoading()
+            showToastMessage('Oops','something went wrong','ios-sad-face')
+        }
     }
 
 
@@ -110,7 +130,7 @@ export default class ChangeProfilePic extends React.Component {
                             this.returnInitials()
                         }
                         <Spacer spacing={.025}/>
-                        <TextLink underline pressed={()=>{this.returnAnImage()}} textStyles={[{color:'gray'}]} text={this.state.imgProvided ? 'Change Profile Picture' : 'Add Profile Picture'}/>
+                        <TextLink underline pressed={()=>{this.getImage()}} textStyles={[{color:'gray'}]} text={this.state.imgProvided ? 'Change Profile Picture' : 'Add Profile Picture'}/>
                         {this.state.imgProvided ?
                             <View style={[{width:'100%',marginTop:'2.5%'},flexing.centerColumn]}>
                                 <Text style={[{color:'gray'}]}>Or</Text>

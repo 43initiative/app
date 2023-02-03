@@ -23,7 +23,7 @@ export default class UserNomination extends React.Component {
     render() {
         return (
             <Animated.View style={[{width:'90%',marginLeft:'5%',marginTop:'5%'},flexing.rowBetween]}>
-                <View style={[flexing.rowStart]}>
+                <View style={[flexing.rowStart,{width:'50%'}]}>
                     <InitialOrPic circleRadius={.0625} route={this.props.route} navigation={this.props.navigation} imgProvided={this.props.imgProvided} img={this.props.img} initials={this.props.initials}/>
                     <Spacer xAxis spacing={.025}/>
                     <Text>{this.props.displayName}</Text>

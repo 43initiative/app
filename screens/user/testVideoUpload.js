@@ -65,7 +65,13 @@ export default class CreateNewPost extends React.Component {
             didFundraiserLink:false,
             fundLink:null,
             eventLink:null,
-            mediaLoading:false
+            mediaLoading:false,
+            isFundRaiser:false,
+            isEvent:false,
+            imgProvided:false,
+            videoProvided:false,
+            img:null,
+            video:null
 
         }
 
@@ -114,31 +120,21 @@ export default class CreateNewPost extends React.Component {
     submitPost = async () => {
         try {
             activateLoading()
-            let imgLink = null;
-            if(this.state.chosenImageLink) {
-                console.log('1',this.state.chosenImageLink)
-                let fireLink =  await transformBlobForPost(this.state.chosenImageLink);
-                console.log('2',fireLink)
-                if(fireLink.passed) {
-                    console.log('3',fireLink.link)
-                    imgLink = fireLink.link;
-                }
-            }
-            console.log('4',imgLink)
             let data = storeControllers.storeData().userData.publicData
-
             let post = {
                 post:this.state.post,
                 isInspired:this.state.isInspired,
                 inspirationId:this.state.inspirationId,
-                nominationList:this.state.nominationList.map((val)=>{
-                    return val.id
-                }),
-                imgProvided:imgLink !== null,
-                videoProvided:null,
-                video:null,
+                nominationList:this.state.nominationList,
+                imgProvided:this.state.imgProvided,
+                videoProvided:this.state.videoProvided,
+                video:this.state.video,
                 isOrganization:data.isOrganization,
-                img:imgLink,
+                img:this.state.img,
+                isEvent:this.state.didEventLink,
+                eventLink:this.state.eventLink,
+                fundLink:this.state.fundLink,
+                isFundraiser:this.state.didFundraiserLink,
                 savedList:[],
                 likedList:[],
                 commentList:[],
@@ -274,7 +270,7 @@ export default class CreateNewPost extends React.Component {
 
                         <Text style={[{width:'60%',textAlign:'center',fontWeight:'500',fontSize:16}]}>Create A Post</Text>
 
-                        <RoundedButton disabled={this.state.post === ''} textStyles={{color:'white',textTransform:'capitalize'}} bgColor={'#3EB489'} text={'Post'} style={[{backgroundColor:'#3EB489',height:'70%',width:'15%',borderRadius:7}]}/>
+                        <RoundedButton pressed={()=>{this.submitPost()}} disabled={this.state.post === ''} textStyles={{color:'white',textTransform:'capitalize'}} bgColor={'#3EB489'} text={'Post'} style={[{backgroundColor:'#3EB489',height:'70%',width:'15%',borderRadius:7}]}/>
                     </Hstack>
 
                     <VStack jc={'flex-start'} height={.9} trueSize={false} width={1} style={[{backgroundColor:'white'}]}>

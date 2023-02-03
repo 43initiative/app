@@ -26,6 +26,8 @@ export default class NotificationPerm extends React.Component {
             // console.log(token)
             this.props.navigation.navigate('FinishScreen')
         }
+        this.props.navigation.navigate('FinishScreen')
+
     }
 
     render() {

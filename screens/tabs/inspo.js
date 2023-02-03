@@ -43,6 +43,7 @@ export default class Inspo extends React.Component {
 
 
     getAllDeeds = async () => {
+        this.setState({refreshing:true})
         let response = await getInspiration();
         let likedList = await returnUserLikedList();
         let savedList = await returnUserSavedList();

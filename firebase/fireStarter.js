@@ -1178,6 +1178,7 @@ const addPif = async (pif) => {
 
         return {passed:true}
     } catch (e) {
+        console.log(e)
         return {passed:false}
         //console.error("Error adding document: ", e);
     }
@@ -1529,11 +1530,52 @@ const doImgUpload = async () => {
         }
         const resp = await fetch(result.uri);
         const blob = await resp.blob()
-        // await waitACertainTime(3000)
+       await waitACertainTime(3000)
         let{auth} = firebaseCreds
         let userUid = auth.currentUser.uid;
         const storage = getStorage(firebaseCreds.app);
         const storageRef = ref(storage,`43vids/${Date.now()}${userUid}.jpg`);
+        await  uploadBytesResumable(storageRef,blob).then((snap)=>{
+
+        }).catch((e)=>{
+            return {passed:false,reason:'something went wrong with the upload'}
+        })
+
+        let url = await getDownloadURL(storageRef);
+        blob.close()
+        return {passed:true,link:url};
+    } catch (e) {
+
+    }
+
+
+
+}
+
+const doImgUploadForProfile = async () => {
+
+    try {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            //videoMaxDuration:30,
+            allowsMultipleSelection: false,
+            aspect: [4, 3],
+            quality: 1,
+            base64: true,
+        });
+
+        if(result.cancelled) {
+            return {passed:false,reason:'canceled'}
+        }
+        const resp = await fetch(result.uri);
+        const blob = await resp.blob()
+        await waitACertainTime(3000)
+        let{auth} = firebaseCreds
+        let userUid = auth.currentUser.uid;
+
+        const storage = getStorage(firebaseCreds.app);
+        const storageRef = ref(storage,`userProfilePics/${userUid}/profile.jpg`);
         await  uploadBytesResumable(storageRef,blob).then((snap)=>{
 
         }).catch((e)=>{
@@ -1572,7 +1614,7 @@ const doVideoUpload = async () => {
 
     const resp = await fetch(result.uri);
     const blob = await resp.blob()
-     await waitACertainTime(3000)
+     await waitACertainTime(6000)
     let{auth} = firebaseCreds
     let userUid = auth.currentUser.uid;
     const storage = getStorage(firebaseCreds.app);
@@ -1593,7 +1635,43 @@ const doVideoUpload = async () => {
 
 
 
+const getPifInspoTrend = async (inspoTrend,postId) => {
+let title;
+    try {
+        let list = [];
+        let {db} = firebaseCreds
+        let pifRef = collection(db,'pifs')
+        if(inspoTrend === 'inspo') {
+title='Inspiration'
+            let q = query(pifRef,where('inspirationId' ,'==', postId));
+            const querySnapshot = await getDocs(q);
 
+            querySnapshot.forEach((doc) => {
+                // doc.data() is never undefined for query doc snapshots
+                list.push({id:doc.id,...doc.data()})
+
+            });
+
+        } else {
+            title='Trending'
+            let q = query(pifRef,where('trendId' ,'==', postId));
+            const querySnapshot = await getDocs(q);
+
+            querySnapshot.forEach((doc) => {
+                // doc.data() is never undefined for query doc snapshots
+                list.push({id:doc.id,...doc.data()})
+
+            });
+        }
+
+        return {passed:true,data:list.sort((a,b)=>{
+            return a.timestamp-b.timestamp
+            }),title}
+    } catch (e) {
+        return {passed:false}
+    }
+
+}
 
 
 module.exports = {
@@ -1670,5 +1748,7 @@ module.exports = {
     doImgUpload,
     doVideoUpload,
     testSecondOption,
-    signUpUser
+    signUpUser,
+    getPifInspoTrend,
+    doImgUploadForProfile
 }

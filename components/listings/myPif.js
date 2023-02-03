@@ -9,7 +9,7 @@ import {Ionicons} from "@expo/vector-icons";
 import LiveButton from "../buttons/liveButton";
 import InitialOrPic from "../buttons/initialOrPic";
 import {convertTimeStamp} from "../../helperFuncs/dateTime";
-import {loadCommentSection, getUserProfile} from "../../firebase/fireStarter";
+import {loadCommentSection, getUserProfile, getPifInspoTrend} from "../../firebase/fireStarter";
 import FastImage from "react-native-fast-image";
 import * as WebBrowser from "expo-web-browser";
 import Video from "react-native-video";
@@ -44,11 +44,23 @@ export default class MyPif extends React.Component {
         }
     }
 
+
+    returnInspo = async (type,postId) => {
+        let list = await getPifInspoTrend(type,postId);
+        if(list.passed) {
+            this.props.navigation.push('AllPifs',{
+                data:list.data,
+                title:list.title
+            })
+        } else {
+            console.log('fail grab')
+        }
+    }
     render() {
         let data = this.props.data;
 
         return (
-            <Animated.View style={[flexing.startColumn,{width:'90%',marginLeft:'5%',backgroundColor:'ghostwhite',marginTop:'5%',borderRadius:20}]}>
+            <View style={[flexing.startColumn,{width:'90%',marginLeft:'5%',backgroundColor:'ghostwhite',marginTop:'5%',borderRadius:20}]}>
                 <View style={[flexing.rowStart,{width:'95%',marginLeft:'2.5%',marginTop:'2.5%'}]}>
 
                     <View style={[flexing.rowStart,{width:'80%',borderWidth:0,borderColor:'red'}]}>
@@ -71,13 +83,18 @@ export default class MyPif extends React.Component {
                     </View>
 
                     <View style={[flexing.rowAround,{width:'20%',borderWidth:0,borderColor:'red'}]}>
-                        {data.trendId === data.id && data.trendList ?
+                        {data.trendId !== data.id && data.trendList ?
                             <View style={[createSquare(.035, 0, 'purple'), {backgroundColor: 'white'}]}>
 
-                                <TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={()=>{
+                                        if(data?.inspirationList && data.inspirationList.length > 0) {
+                                            this.returnInspo('trend',data.postId)
+                                        }
+                                    }}>
                                     <Ionicons name={'ios-pulse-outline'} color={'#3EB489'} size={25}/>
-                                </TouchableOpacity> :
-                                <></>
+                                </TouchableOpacity>
+
 
 
                             </View>
@@ -87,11 +104,7 @@ export default class MyPif extends React.Component {
                         }
 
                     </View>
-                    {/*<View style={[createSquare(.035,1,'purple'),{backgroundColor:'purple'}]}>*/}
-                    {/*    <TouchableOpacity>*/}
-                    {/*        <Ionicons name={'ios-git-branch-outline'} color={'white'} size={25}/>*/}
-                    {/*    </TouchableOpacity>*/}
-                    {/*</View>*/}
+
                 </View>
 
                 <Text style={[{width:'95%',marginLeft:'2.5%',marginTop:'5%'}]}>
@@ -104,17 +117,17 @@ export default class MyPif extends React.Component {
                     ?
                     <View style={[flexing.centerColumn,{width:'100%'}]}>
                         <FastImage
-                            style={[{width:'100%',height:250}]}
+                            style={[{width:'100%',height:400}]}
                             source={{
                                 uri: data.img,
                                 priority: FastImage.priority.normal,
                             }}
                             resizeMode={FastImage.resizeMode.cover}
                         />
-                        {/*<Image source={{uri:data.img}} resizeMode={'cover'} style={[{width:'100%',height:250}]}/>*/}
 
                     </View>
-                    : <></>
+                    :
+                    <></>
                 }
 
                 {data.videoProvided
@@ -129,11 +142,12 @@ export default class MyPif extends React.Component {
                            fullscreenAutorotate={true}
                            disableFocus={false}
                            controls={true}
-                        //onBuffer={(ev)=>{console.log(ev)}}
+
                            onError={(error)=>{alert('video error occurred')}}
                            resizeMode={'cover'}
-                           style={{width:'100%',height:250,borderRadius:0}} />
-                    : <></>
+                           style={{width:'100%',height:400,borderRadius:0}}/>
+                    :
+                    <></>
                 }
 
                 <Spacer  spacing={.025}/>
@@ -155,49 +169,53 @@ export default class MyPif extends React.Component {
                         </TouchableOpacity>
                         <Spacer xAxis spacing={.05125}/>
 
-                        <View style={[flexing.rowStart]}>
-                            <Text>{data.savedList.length}</Text>
+                        <TouchableOpacity  onPress={()=>{
+                            if(data?.inspirationList && data.inspirationList.length > 0) {
+                                this.returnInspo('inspo',data.id)
+                            }
+                        }} style={[flexing.rowStart]}>
+                            <Text>{data?.inspirationList ? data.inspirationList.length: 0}</Text>
                             <Spacer xAxis spacing={.005125}/>
 
                             <Text>Inspo{data.savedList.length === 1 ? '':'s'}</Text>
-                        </View>
+                        </TouchableOpacity>
 
 
                     </View>
 
-                    {!data.isEvent ?
-                        <></>
-                        :
-                        <View style={[flexing.rowAround,{width:'90%',marginLeft:'5%'},flexing.rowStart]}>
-                            <Ionicons name={'ios-calendar'} color={'#3EB489'} size={25}/>
-                            <Spacer spacing={.025} xAxis/>
-                            <Text style={{fontSize:15}}>This post features an event.</Text>
-                            <Spacer spacing={.05} xAxis/>
-                            <TouchableOpacity onPress={()=>{this.openBrowser('https://www.eventbrite.com')}} style={[{backgroundColor:'#e3e3e3',borderWidth:0,borderRadius:5,height:Dimensions.get('window').height * .035,width:'25%'},flexing.centerColumn]}>
-                                <Text style={[{color:'black'}]}>View Event</Text>
-                            </TouchableOpacity>
-                        </View>
-                    }
+                    {/*{!data.isEvent ?*/}
+                    {/*    <></>*/}
+                    {/*    :*/}
+                    {/*    <View style={[flexing.rowAround,{width:'90%',marginLeft:'5%'},flexing.rowStart]}>*/}
+                    {/*        <Ionicons name={'ios-calendar'} color={'#3EB489'} size={25}/>*/}
+                    {/*        <Spacer spacing={.025} xAxis/>*/}
+                    {/*        <Text style={{fontSize:15}}>This post features an event.</Text>*/}
+                    {/*        <Spacer spacing={.05} xAxis/>*/}
+                    {/*        <TouchableOpacity onPress={()=>{this.openBrowser('https://www.eventbrite.com')}} style={[{backgroundColor:'#e3e3e3',borderWidth:0,borderRadius:5,height:Dimensions.get('window').height * .035,width:'25%'},flexing.centerColumn]}>*/}
+                    {/*            <Text style={[{color:'black'}]}>View Event</Text>*/}
+                    {/*        </TouchableOpacity>*/}
+                    {/*    </View>*/}
+                    {/*}*/}
 
-                    {!data.isFundraiser ?
-                        <></>
-                        :
-                        <View style={[flexing.rowAround,{width:'90%',marginLeft:'5%'},flexing.rowStart]}>
-                            <Ionicons name={'ios-calendar'} color={'#3EB489'} size={25}/>
-                            <Spacer spacing={.025} xAxis/>
-                            <Text style={{fontSize:15}}>This post features a fundraiser.</Text>
-                            <Spacer spacing={.05} xAxis/>
-                            <TouchableOpacity onPress={()=>{this.openBrowser('https://www.gofundme.com')}} style={[{backgroundColor:'#e3e3e3',borderWidth:0,borderRadius:5,height:Dimensions.get('window').height * .035,width:'25%'},flexing.centerColumn]}>
-                                <Text style={[{color:'black'}]}>Learn More</Text>
-                            </TouchableOpacity>
-                        </View>
-                    }
+                    {/*{!data.isFundraiser ?*/}
+                    {/*    <></>*/}
+                    {/*    :*/}
+                    {/*    <View style={[flexing.rowAround,{width:'90%',marginLeft:'5%'},flexing.rowStart]}>*/}
+                    {/*        <Ionicons name={'ios-calendar'} color={'#3EB489'} size={25}/>*/}
+                    {/*        <Spacer spacing={.025} xAxis/>*/}
+                    {/*        <Text style={{fontSize:15}}>This post features a fundraiser.</Text>*/}
+                    {/*        <Spacer spacing={.05} xAxis/>*/}
+                    {/*        <TouchableOpacity onPress={()=>{this.openBrowser('https://www.gofundme.com')}} style={[{backgroundColor:'#e3e3e3',borderWidth:0,borderRadius:5,height:Dimensions.get('window').height * .035,width:'25%'},flexing.centerColumn]}>*/}
+                    {/*            <Text style={[{color:'black'}]}>Learn More</Text>*/}
+                    {/*        </TouchableOpacity>*/}
+                    {/*    </View>*/}
+                    {/*}*/}
 
                 </View>
                 <Spacer  spacing={.0125}/>
                 <Spacer  spacing={.0125}/>
 
-            </Animated.View>
+            </View>
         )
     }
 

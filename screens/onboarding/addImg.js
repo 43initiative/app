@@ -9,8 +9,9 @@ import Circle from "../../designComps/circle";
 import Spacer from "../../design/spacer";
 import {acquireAnImage} from "../../permissionCalls/imgUpload";
 import {flexing} from "../../styles/dimensions/dims";
-import {transformBlob} from "../../firebase/fireStarter";
-import {storeControllers} from "../../reducers/controllers";
+import {doImgUploadForProfile, transformBlob} from "../../firebase/fireStarter";
+import {activateLoading, deactivateLoading, showToastMessage, storeControllers} from "../../reducers/controllers";
+import {waitACertainTime} from "../../helperFuncs/timers/wait";
 
 
 export default class AddImg extends React.Component {
@@ -41,27 +42,54 @@ export default class AddImg extends React.Component {
         )
     }
 
-    returnAnImage = async () => {
-        let x = await acquireAnImage(true);
-        console.log(x)
-        await this.uploadImg(x.link)
-        // if(x.passed) {
-        //     this.setState({profilePicLink:x.link},()=>{
-        //         this.setState({profilePicAdded:true})
-        //     })
-        // }
+    // returnAnImage = async () => {
+    //     let x = await acquireAnImage(true);
+    //     console.log(x)
+    //     await this.uploadImg(x.link)
+    //     // if(x.passed) {
+    //     //     this.setState({profilePicLink:x.link},()=>{
+    //     //         this.setState({profilePicAdded:true})
+    //     //     })
+    //     // }
+    //
+    // }
+    //
+    // uploadImg = async (img) => {
+    //     try {
+    //
+    //     } catch (e) {
+    //
+    //     }a
+    //     activateLoading()
+    //    await  waitACertainTime(3000)
+    //     let x = await transformBlob(img)
+    //     if(x.link) {
+    //         console.log(x.link)
+    //         this.setState({profilePicLink:x.link},()=>{
+    //                   this.setState({profilePicAdded:true})
+    //
+    //             console.log(this.state.profilePicLink,'this ran')
+    //         })
+    //         deactivateLoading()
+    //
+    //     } else {
+    //         deactivateLoading()
+    //     }
+    // }
 
-    }
+    getImage = async () => {
+activateLoading()
+        let x = await doImgUploadForProfile()
+        if(x.passed) {
+                    this.setState({profilePicLink:x.link},()=>{
+                              this.setState({profilePicAdded:true},()=>{
+                                  deactivateLoading()
+                              })
 
-    uploadImg = async (img) => {
-        let x = await transformBlob(img)
-        if(x.link) {
-            console.log(x.link)
-            this.setState({profilePicLink:x.link},()=>{
-                      this.setState({profilePicAdded:true})
-
-                console.log(this.state.profilePicLink,'this ran')
-            })
+                    })
+        } else {
+            deactivateLoading()
+            showToastMessage('Oops','something went wrong','ios-sad-face')
         }
     }
 
@@ -87,7 +115,7 @@ export default class AddImg extends React.Component {
                             this.returnInitials()
                         }
 <Spacer spacing={.025}/>
-                        <TextLink underline pressed={()=>{this.returnAnImage()}} textStyles={[{color:'gray'}]} text={this.state.profilePicAdded ? 'Change Profile Picture' : 'Add Profile Picture'}/>
+                        <TextLink underline pressed={()=>{this.getImage()}} textStyles={[{color:'gray'}]} text={this.state.profilePicAdded ? 'Change Profile Picture' : 'Add Profile Picture'}/>
                         {this.state.profilePicAdded ?
                             <View style={[{width:'100%',marginTop:'2.5%'},flexing.centerColumn]}>
                                 <Text style={[{color:'gray'}]}>Or</Text>

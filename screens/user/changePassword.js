@@ -29,7 +29,7 @@ export default class ChangePassword extends React.Component {
         console.log(response)
         //if password reset went well
         deactivateLoading();
-        showToastMessage('Submitted','Your password has been changed','ios-lock');
+        showToastMessage('Submitted','Your password has been changed','ios-lock-closed');
         await waitACertainTime(2000);
         this.props.navigation.goBack()
 
@@ -74,7 +74,7 @@ export default class ChangePassword extends React.Component {
 
 
                     <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'15%'}]}>
-                        <RoundedButton disabled={this.state.password !== '' || this.state.password.length >=6} pressed={()=>{this.submitNewPassword()}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#c6302c'} text={'Submit Email'}/>
+                        <RoundedButton disabled={this.state.password === '' || this.state.password.length <6} pressed={()=>{this.submitNewPassword()}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#c6302c'} text={'Submit Password'}/>
 
                     </View>
                 </Animated.View>

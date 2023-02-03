@@ -25,7 +25,7 @@ export default class SentNom extends React.Component {
                     <Text style={[{fontSize:18,fontWeight:'bold',color:'black'}]}>{displayName}</Text>
                     <Text style={[{fontSize:15,fontWeight:'400',color:'black'}]}>"..{message}.."</Text>
                     <View style={[flexing.rowAround,{width:'75%'}]}>
-                        <TouchableOpacity onPress={this.props.postNow} style={[flexing.centerColumn,{borderColor:'black',borderWidth:1,width:'45%',borderRadius:15,height:Dimensions.get('window').height * .0325}]}>
+                        <TouchableOpacity onPress={this.props.viewPost} style={[flexing.centerColumn,{borderColor:'black',borderWidth:1,width:'45%',borderRadius:15,height:Dimensions.get('window').height * .0325}]}>
                             <Text style={[{color:'black'}]}>View Post</Text>
                         </TouchableOpacity>
 

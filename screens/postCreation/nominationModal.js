@@ -16,17 +16,19 @@ export default class NominationModal extends React.Component {
             nominationList: [],
             selectedNoms:[],
             nomMsg:'',
-            disableFeedback:true
+            disableFeedback:true,
+            selectionObject:{}
         }
 
     }
 
     componentDidMount() {
         let data = this.props.route.params;
-        if(data.length !== 0) {
-            let selectionObject = {}
+        let selectionObject = {}
+        if(data.list.length !== 0) {
+
             for (let i = 0; i < data.list.length; i++) {
-                let user = data.list[i].id
+                let user = data.list[i]
                 selectionObject[user] = true;
             }
             this.setState({selectedNoms:data.list,selectionObject,nomMsg:data.nomMsg})
@@ -62,8 +64,8 @@ export default class NominationModal extends React.Component {
         }
 let list =[]
         for (const selectObjKey in selectObj) {
-            if(selectObj[selectObjKey]) {
-                list.push(selectObj[selectObjKey])
+            if(selectObj[selectObjKey] === true) {
+                list.push(selectObjKey)
             }
         }
 

@@ -30,7 +30,7 @@ export default class Inspo extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {deeds:[],likedList:[],savedList:[],refreshing:true}
+        this.state = {deeds:[],likedList:[],savedList:[],refreshing:false}
 
     }
 
@@ -106,7 +106,10 @@ export default class Inspo extends React.Component {
     }
 
     render() {
-        let DATA = this.state.deeds;
+        let DATA = this.state.deeds.sort((a,b)=>{
+            return b.timestamp - a.timestamp
+        });
+
         return (
             <SafeAreaView>
                 <Animated.View style={[{marginTop:35,height:'100%',width:'100%',background:'white'}]}>
@@ -129,24 +132,34 @@ export default class Inspo extends React.Component {
                     {/*    <FilterButton text={'Viral'} icon={'ios-git-branch'}/>*/}
                     {/*</View>*/}
 
-                    <FlatList
-                        refreshControl={<RefreshControl
-                            colors={["#9Bd35A", "#689F38"]}
-                            refreshing={this.state.refreshing}
-                            onRefresh={()=>{
-                                this.getAllDeeds();
-                            }} />}
-                        contentContainerStyle={{width:'100%',marginLeft:'0%',paddingBottom:'25%'}}
-                        data={DATA}
-                        renderItem={({item,index}) => (
-                            <Pif
-                                ableToLoadComments={true}
-                                like={()=>{this.likePost(item.postId,index)}} unlike={()=>{this.unlikePost(item.postId,index)}}
-                                 save={()=>{this.savePost(item.postId,index)}} unsave={()=>{this.unsavePost(item.postId,index)}}
-                                 isSaved={this.state.savedList.indexOf(item.postId) !== -1}  isLiked={this.state.likedList.indexOf(item.postId) !== -1}  route={this.props.route} navigation={this.props.navigation} data={item} userUid={item.userUid}/>
-                        )}
-                        keyExtractor={item => item.id}
-                    />
+
+
+                        <FlatList
+                            refreshControl={<RefreshControl
+                                colors={["#9Bd35A", "#689F38"]}
+                                refreshing={this.state.refreshing}
+
+                                onRefresh={()=>{
+                                    this.getAllDeeds();
+                                }} />}
+                            ListEmptyComponent={()=>{return(<View style={[{width:'100%',height:Dimensions.get('window').height * .8,backgroundColor:'transparent'},flexing.centerColumn]}>
+                                <Text style={[{fontSize:18,color:'darkslategray',width:'75%',textAlign:'center'}]}>Seems like you haven't saved any inspiration yet, check out the  <Ionicons name={'ios-home'} size={20} color={'darkslategray'}/> home tab to get inspired!</Text>
+                            </View>)}}
+                            contentContainerStyle={{width:'100%',marginLeft:'0%',paddingBottom:'25%'}}
+                            data={DATA}
+                            renderItem={({item,index}) => (
+                                <Pif
+                                    ableToLoadComments={true}
+                                    like={()=>{this.likePost(item.postId,index)}} unlike={()=>{this.unlikePost(item.postId,index)}}
+                                    save={()=>{this.savePost(item.postId,index)}} unsave={()=>{this.unsavePost(item.postId,index)}}
+                                    isSaved={this.state.savedList.indexOf(item.postId) !== -1}  isLiked={this.state.likedList.indexOf(item.postId) !== -1}  route={this.props.route} navigation={this.props.navigation} data={item} userUid={item.userUid}/>
+                            )}
+                            keyExtractor={item => item.id}
+                        />
+
+
+
+
 
 
 

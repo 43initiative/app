@@ -13,6 +13,7 @@ export const SET_EVENT_DETAILS = 'SET_EVENT_DETAILS';
 
 
 export const SET_USER_BASIC_DETAILS = 'SET_USER_BASIC_DETAILS'
+export const SET_ORG_BASIC_DETAILS = 'SET_ORG_BASIC_DETAILS'
 export const SET_USER_ABOUT_ME = 'SET_USER_ABOUT_ME'
 export const SET_USER_IMAGING = 'SET_USER_IMAGING';
 export const SET_LOCATION = 'SET_LOCATION';
@@ -22,3 +23,12 @@ export const UPDATE_IMG = 'UPDATE_IMG';
 export const UPDATE_BIO = 'UPDATE_BIO';
 
 export const SET_NOTIF = "SET_NOTIF"
+export const UPDATE_USER_PRIVATE_DATA = 'UPDATE_USER_DATA';
+
+export const SET_ORG_PUBLIC = 'SET_ORG_PUBLIC';
+export const SET_ORG_PRIVATE = 'SET_ORG_PRIVATE';
+export const SET_ORG_ID = 'SET_ORG_ID'
+
+export const UPDATE_ORG_IMG = 'UPDATE_ORG_IMG';
+export const UPDATE_ORG_BIO = 'UPDATE_ORG_BIO';
+export const SET_ORG_NOTIF = "SET_ORG_NOTIF"

@@ -62,14 +62,14 @@ export default class InspirationSelectionModal extends React.Component {
                 <ScrollView style={{width:'100%',height:'70%'}}>
 
                     <View style={[flexing.rowAround,{width:'75%',marginLeft:'5%',height:Dimensions.get('window').height * .05}]}>
-                        <RoundedButton pressed={()=>{this.setState({segment:'inspo'})}} doOutline={this.state.segment !== 'inspo'} bgColor={'firebrick'} textStyles={[{color:'white'}]} text={'Saved Inspo'} style={[{height:'80%',width:'45%'}]}/>
-                        <RoundedButton pressed={()=>{this.setState({segment:'nominations'})}}  doOutline={this.state.segment !== 'nominations'} bgColor={'firebrick'} textStyles={[{color:'white'}]} text={'Nominations'} style={[{height:'80%',width:'40%'}]}/>
+                        <RoundedButton pressed={()=>{this.setState({segment:'inspo'})}} doOutline={this.state.segment !== 'inspo'} bgColor={'#3EB489'} textStyles={[{color:'white'}]} text={'Saved Inspo'} style={[{height:'80%',width:'45%'}]}/>
+                        <RoundedButton pressed={()=>{this.setState({segment:'nominations'})}}  doOutline={this.state.segment !== 'nominations'} bgColor={'#3EB489'} textStyles={[{color:'white'}]} text={'Nominations'} style={[{height:'80%',width:'40%'}]}/>
                     </View>
                     {this.returnSegment()}
                     <Spacer spacing={.25}/>
                 </ScrollView>
                 <View style={[{width:'80%',marginLeft:'10%',height:'15%',backgroundColor:'white'},flexing.centerColumn]}>
-                    <RoundedButton pressed={()=>{this.sendBackData()}} disabled={this.state.selectedId === null} style={[{backgroundColor:'firebrick',height:'50%',width:'100%'}]} textStyles={{color:'white'}}  bgColor={'firebrick'} text={'Use Selected'}/>
+                    <RoundedButton pressed={()=>{this.sendBackData()}} disabled={this.state.selectedId === null} style={[{backgroundColor:'#3EB489',height:'50%',width:'100%'}]} textStyles={{color:'white'}}  bgColor={'#3EB489'} text={'Use Selected'}/>
                 </View>
 
             </Animated.View>

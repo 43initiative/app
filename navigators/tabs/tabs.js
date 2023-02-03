@@ -18,6 +18,9 @@ import Social from "../../screens/tabs/social";
 import ContentHeader from "../../components/headers/contentHeader";
 import SavedHeader from "../../components/headers/savedHeader";
 import NominationsHeader from "../../components/headers/nominationsHeader";
+import Organizations from "../../screens/tabs/organizations";
+import OrgHeader from "../../components/headers/orgHeader";
+import TestVideoUpload from "../../screens/user/testVideoUpload";
 
 function FeedScreen({route,navigation}) {
     return (
@@ -69,6 +72,14 @@ function SocialScreen({route,navigation}) {
     );
 }
 
+function TestVideoScreen({route,navigation}) {
+    return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <TestVideoUpload route={route} navigation={navigation}/>
+        </View>
+    );
+}
+
 const Tab = createBottomTabNavigator();
 const tabHeaderOptions=  (route,navigation)=>({
     headerShown:true,
@@ -109,6 +120,14 @@ const nominationHeader=  (route,navigation)=>({
     headerTransparent:true,
     headerShadowVisible:false,
 })
+
+const orgHeader=  (route,navigation)=>({
+    headerShown:true,
+    header: () => (<OrgHeader route={route} navigation={navigation}/>),
+    title: '',
+    headerTransparent:true,
+    headerShadowVisible:false,
+})
 export default function TabStack() {
     return (
             <Tab.Navigator>
@@ -119,9 +138,9 @@ export default function TabStack() {
                         tabBarLabel:'Home',
                        // tabBarLabelStyle:{color:'red'},
                         tabBarInactiveTintColor:'gray',
-                        tabBarActiveTintColor:'red',
+                        tabBarActiveTintColor:'#3EB489',
                         title:'Home',
-                        tabBarIcon:({focused})=>{return(<Ionicons name={'home-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'home-outline'} size={20} color={focused ?'#3EB489' : 'gray'}/>)}
                     })}
                     name="Feed" component={FeedScreen} />
                 <Tab.Screen
@@ -131,8 +150,8 @@ export default function TabStack() {
                         tabBarLabel:'My Content',
                         title:'My Content',
                         tabBarInactiveTintColor:'gray',
-                        tabBarActiveTintColor:'red',
-                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-albums-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
+                        tabBarActiveTintColor:'#3EB489',
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-albums-outline'} size={20} color={focused ?'#3EB489' : 'gray'}/>)}
                     })}
                     name="Pifs" component={DeedsScreen} />
                 <Tab.Screen
@@ -142,22 +161,22 @@ export default function TabStack() {
                         tabBarLabel:'Saved',
                         title:'Saved',
                         tabBarInactiveTintColor:'gray',
-                        tabBarActiveTintColor:'red',
-                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-bookmarks-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
+                        tabBarActiveTintColor:'#3EB489',
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-bookmarks-outline'} size={20} color={focused ?'#3EB489' : 'gray'}/>)}
                     })}
                     name="Inspo" component={InspoScreen} />
 
                 <Tab.Screen
                     options={({route, navigation})=>({
-                        ...tabHeaderOptions(route,navigation),
+                        ...orgHeader(route,navigation),
                         headerShown:true,
-                        tabBarLabel:'Social',
-                        title:'Social',
+                        tabBarLabel:'Orgs',
+                        title:'Orgs',
                         tabBarInactiveTintColor:'gray',
-                        tabBarActiveTintColor:'red',
-                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-people'} size={20} color={focused ?'red' : 'gray'}/>)}
+                        tabBarActiveTintColor:'#3EB489',
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-business-outline'} size={20} color={focused ?'#3EB489' : 'gray'}/>)}
                     })}
-                    name="Social" component={SocialScreen} />
+                    name="TestVideo" component={TestVideoScreen} />
 
 
                 <Tab.Screen
@@ -167,8 +186,8 @@ export default function TabStack() {
                         tabBarLabel:'Nominations',
                         title:'Nominations',
                         tabBarInactiveTintColor:'gray',
-                        tabBarActiveTintColor:'red',
-                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-hand-right-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
+                        tabBarActiveTintColor:'#3EB489',
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-hand-right-outline'} size={20} color={focused ?'#3EB489' : 'gray'}/>)}
                     })}
                     name="Nominations" component={NominationTabScreen} />
                 <Tab.Screen
@@ -178,8 +197,8 @@ export default function TabStack() {
                         tabBarLabel:'Menu',
                         title:'Menu',
                         tabBarInactiveTintColor:'gray',
-                        tabBarActiveTintColor:'red',
-                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-person-outline'} size={20} color={focused ?'red' : 'gray'}/>)}
+                        tabBarActiveTintColor:'#3EB489',
+                        tabBarIcon:({focused})=>{return(<Ionicons name={'ios-person-outline'} size={20} color={focused ?'#3EB489' : 'gray'}/>)}
                     })}
                     name="Menu" component={ProfileTabScreen} />
             </Tab.Navigator>

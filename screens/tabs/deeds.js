@@ -106,29 +106,46 @@ export default class Deeds extends React.Component {
     // }
 
     render() {
+      // let DATA = [];
         let DATA = this.state.deeds;
-
+        const EmptyListMessage = ({ item }) => {
+            return (
+                // Flat List Item
+                <Text style={{padding: 10,
+                    fontSize: 18,
+                    textAlign: 'center'}}>
+                    No Data Found
+                </Text>
+            );
+        };
         return (
             <Animated.View style={[{height:'100%',width:'100%',background:'white'}]}>
                 <Spacer spacing={.075}/>
-
                 <FlatList
                     refreshControl={<RefreshControl
-                        colors={["#9Bd35A", "#689F38"]}
-                        refreshing={this.state.refreshing}
-                        onRefresh={()=>{
-                            this.getMyDeeds();
-                        }} />}
+                    colors={["#9Bd35A", "#689F38"]}
+                    refreshing={this.state.refreshing}
+                    onRefresh={()=>{
+                    this.getMyDeeds();
+                }} />}
+                    ListEmptyComponent={()=>{return(<View style={[{width:'100%',height:Dimensions.get('window').height * .8,backgroundColor:'transparent'},flexing.centerColumn]}>
+                        <Text style={[{fontSize:18,color:'darkslategray',width:'75%',textAlign:'center'}]}>Seems like you haven't posted any good deeds yet, press the  <Ionicons name={'ios-add-circle'} size={20} color={'darkslategray'}/> icon above to make your first post!</Text>
+                    </View>)}}
                     contentContainerStyle={{width:'100%',marginLeft:'0%',paddingBottom:'25%'}}
                     data={DATA}
                     renderItem={({item,index}) => (
-                        <MyPif
-                            ableToLoadComments={true}
+                    <MyPif
+                    ableToLoadComments={true}
 
-                              route={this.props.route} navigation={this.props.navigation} data={item} userUid={item.userUid}/>
+                    route={this.props.route} navigation={this.props.navigation} data={item} userUid={item.userUid}/>
                     )}
                     keyExtractor={item => item.id}
-                />
+                    />
+
+
+
+
+
 
 
 

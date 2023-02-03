@@ -10,6 +10,7 @@ import AddBio from "../../screens/onboarding/addBio";
 import NotificationPerm from "../../screens/onboarding/NotificationPerm";
 import LocationPerm from "../../screens/onboarding/LocationPerm";
 import Finish from "../../screens/onboarding/finish";
+import OrganizationSignUp from "../../screens/onboarding/organization";
 const Stack = createNativeStackNavigator();
 
 function WelcomeScreen({route,navigation}) {
@@ -21,6 +22,13 @@ function WelcomeScreen({route,navigation}) {
 function PersonDetailsScreen({route,navigation}) {
     return(
         <Personal route={route} navigation={navigation}/>
+    )
+}
+
+
+function OrgDetailsScreen({route,navigation}) {
+    return(
+        <OrganizationSignUp route={route} navigation={navigation}/>
     )
 }
 
@@ -64,6 +72,10 @@ export function OnboardingStack() {
         <Stack.Screen
             options={{headerShown: false}}
             name="PersonalScreen" component={PersonDetailsScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="OrgSignUpScreen" component={OrgDetailsScreen}/>
 
         <Stack.Screen
             options={{headerShown: false}}

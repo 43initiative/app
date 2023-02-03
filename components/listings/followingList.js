@@ -23,6 +23,8 @@ export default class FollowingList extends React.Component {
         this.retrieveFollowing()
     }
 
+
+
     retrieveFollowing = async () => {
         let fetchFollowers = await getFollowing(this.props.isSelf,this.props.userUid)
         if(fetchFollowers.passed) {
@@ -77,7 +79,14 @@ export default class FollowingList extends React.Component {
             <View style={[flexing.startColumn,{width:'100%',marginTop:'5%',marginLeft:'0%'}]}>
                 <View style={[flexing.rowBetween,{width:'90%'}]}>
                     <Text style={[{fontSize:15,fontWeight:'500',paddingLeft:'5%'}]}>Following ({this.state.followingList.length})</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{
+                        console.log('here',this.props)
+                        this.props.navigation.navigate('CompleteFollowing',{
+                            displayName:this.props.displayName,
+                            userUid:this.props.userUid,
+                            isSelf:this.props.isSelf
+                        })
+                    }}>
                         <Text  style={[{textDecorationLine:'underline'}]}>See All</Text>
                     </TouchableOpacity>
                 </View>

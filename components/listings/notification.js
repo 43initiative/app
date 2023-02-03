@@ -23,10 +23,11 @@ export default class NotificationListing extends React.Component {
         await this.clearNotification(data.id);
         switch(data.type) {
             case 'follow' : {
-                return getUserProfile(this.props.navigation,this.props.route,null,data.userUid)
+                return getUserProfile(this.props.navigation,this.props.route,false,data.followerId)
             }
 
             case 'nomination' : {
+                console.log(data.nominatorId)
                 return getUserProfile(this.props.navigation,this.props.route,null,data.nominatorId)
             }
         }
@@ -36,6 +37,18 @@ export default class NotificationListing extends React.Component {
         return this.props.clearNotification(id)
     }
 
+    returnText = (data) => {
+        switch(data.type) {
+            case 'follow' : {
+                return data.message
+            }
+
+            case 'nomination' : {
+                return `You have been nominated by ${data.displayName}. Their message: "${data.message}". Check the nominations tab to see it.`
+            }
+        }
+    }
+
     render() {
         let data = this.props.data;
         return (
@@ -43,10 +56,12 @@ export default class NotificationListing extends React.Component {
                 {/*<TouchableOpacity>*/}
                 {/*<Circle size={.05}/>*/}
                 {/*</TouchableOpacity>*/}
-                <InitialOrPic noPress={false} circleRadius={.075} navigation={this.props.navigation} route={this.props.route} initials={data.initials} imgProvided={data.imgProvided} img={data.img} userUid={data.userUid}/>
+                <InitialOrPic noPress={false} circleRadius={.075} navigation={this.props.navigation} route={this.props.route} initials={data.initials} imgProvided={data.imgProvided} img={data.img} userUid={
+                    data.type === 'follow' ? data.followerId : data.nominatorId
+                }/>
                 <Spacer xAxis spacing={.0275} />
                 <View style={[{width:'65%'},flexing.startColumn]}>
-                    <Text style={[{fontSize:14}]}>{data.message}</Text>
+                    <Text style={[{fontSize:14}]}>{this.returnText(data)}</Text>
                     <Spacer spacing={.005}/>
                     <Text style={[{fontSize:10,color:"#101010"}]}>{convertTimeStamp(data.timestamp)}</Text>
                 </View>

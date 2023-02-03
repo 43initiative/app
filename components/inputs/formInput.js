@@ -24,6 +24,7 @@ export default class FormInput extends React.Component {
                 <Text style={[{color:'gray',fontSize:12.5}]}>{this.props.label}</Text>
                 <Hstack width={1} height={1} jc={'space-between'}>
                     <TextInput
+                        placeholderTextColor={'black'}
                         maxLength={this.props.isPhone ? 10 : 100}
                         autoComplete={this.props.autoComplete}
                         keyboardType={this.props.isPhone ? 'phone-pad': 'default'}

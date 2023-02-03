@@ -30,12 +30,12 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
     constructor(props) {
         super(props);
 
-        this.state = {deeds:[],likedList:[],savedList:[],refreshing:false,orderBy:'newest',filterBy:'inspired',following:[],followers:[]}
+        this.state = {deeds:[],likedList:[],savedList:[],refreshing:false,orderBy:'newest',filterBy:'',following:[],followers:[]}
 
     }
 
     componentDidMount() {
-        this.openOrgModal()
+
         this.setState({refreshing:true})
         this.getAllDeeds();
         this.getFollowStats();
@@ -44,8 +44,7 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
 
 
     openCreateOrg = async () => {
-        this.props.navigation.goBack();
-        console.log('s')
+
         this.props.navigation.push('CreateOrg')
     }
 
@@ -202,7 +201,7 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
       }
 
     render() {
-        let DATA;
+        let DATA = [];
         switch(this.state.orderBy) {
             case 'newest': {
                 let arr  = this.state.deeds.sort((a,b)=>{
@@ -241,6 +240,7 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
             <View style={[{height:'100%',width:'100%',background:'white'}]}>
                 <Spacer spacing={.1}/>
 
+
         <CollapsibleHeaderFlatList
             refreshControl={<RefreshControl
                 colors={["#9Bd35A", "#689F38"]}
@@ -250,6 +250,9 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
                 onRefresh={()=>{
                     this.getAllDeeds();
                 }}/>}
+            ListEmptyComponent={()=>{return(<View style={[{width:'100%',height:Dimensions.get('window').height * .6,backgroundColor:'transparent'},flexing.centerColumn]}>
+                <Text style={[{fontSize:18,color:'darkslategray',width:'75%',textAlign:'center'}]}>Whoa, that can't be right, no good deeds? Tap the filter icon <Ionicons name={'ios-filter'} size={20} color={'darkslategray'}/> broaden your search, and see if that changes anything!</Text>
+            </View>)}}
             contentContainerStyle={{width:'100%',marginLeft:'0%',paddingBottom:'25%'}}
             data={DATA}
             renderItem={({item,index}) => (
@@ -263,8 +266,8 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
 
             CollapsibleHeaderComponent={
                 <View style={[flexing.rowBetween,{width:'95%'}]}>
-                    <View style={[{width:'60%'},flexing.rowStart]}>
-                        <TouchableOpacity onPress={()=>{this.doFeedMenu()}} style={[{width:'47.5%',marginLeft:'5%',borderWidth:1.5,borderColor:'#c7c7c7c',height:Dimensions.get('window').height * .05,backgroundColor:'white',paddingLeft:'5%',borderRadius:15},flexing.centerColumn,{alignItems:'flex-start'}]}>
+                    <View style={[{width:'65%'},flexing.rowStart]}>
+                        <TouchableOpacity onPress={()=>{this.doFeedMenu()}} style={[{width:'49%',marginLeft:'5%',borderWidth:1.5,borderColor:'#c7c7c7c',height:Dimensions.get('window').height * .05,backgroundColor:'white',paddingLeft:'5%',borderRadius:15},flexing.centerColumn,{alignItems:'flex-start'}]}>
                             <View style={[flexing.rowStart]}>
                                 <Ionicons name={'ios-list'} color={'#c7c7c7c'} size={20}/>
                                 <Spacer xAxis spacing={.0125}/>
@@ -273,7 +276,7 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
 
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={()=>{this.doFilterMenu()}} style={[{width:'47.5%',marginLeft:'5%',borderWidth:1.5,borderColor:'#c7c7c7c',height:Dimensions.get('window').height * .05,backgroundColor:'white',paddingLeft:'5%',borderRadius:15},flexing.centerColumn,{alignItems:'flex-start'}]}>
+                        <TouchableOpacity onPress={()=>{this.doFilterMenu()}} style={[{width:'49%',marginLeft:'5%',borderWidth:1.5,borderColor:'#c7c7c7c',height:Dimensions.get('window').height * .05,backgroundColor:'white',paddingLeft:'5%',borderRadius:15},flexing.centerColumn,{alignItems:'flex-start'}]}>
                             <View style={[flexing.rowStart]}>
                                 <Ionicons name={'ios-filter'} color={'#c7c7c7c'} size={20}/>
                                 <Spacer xAxis spacing={.0125}/>

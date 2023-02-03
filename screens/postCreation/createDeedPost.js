@@ -61,7 +61,8 @@ export default class CreateDeedPost extends React.Component {
             pifData:null,
             nominationData:null,
             viewOriginalPost:false,
-            isInspired:false
+            isInspired:false,
+            trendId:null
 
         }
 
@@ -129,36 +130,57 @@ export default class CreateDeedPost extends React.Component {
     }
 
     submitPost = async () => {
-        activateLoading()
-        let imgLink = null;
-        if(this.state.chosenImageLink) {
-           let fireLink =  await transformBlobForPost(this.state.chosenImageLink);
-           if(fireLink.passed) {
-               imgLink = fireLink.link;
-           }
-        }
-        let post = {
-            post:this.state.post,
-            isInspired:this.state.isInspired,
-            inspirationId:this.state.inspirationId,
-            nominationList:this.state.nominationList.map((val)=>{
-                return val.id
-            }),
-            imgProvided:imgLink !== null,
-            img:imgLink,
-            savedList:[],
-            likedList:[],
-            commentList:[],
-            nominationMsg:this.state.nomMsg,
-            trendId:this.state.trendId,
-            isNomination:this.state.isNomination
+        try {
+            activateLoading()
+            let imgLink = null;
+            if(this.state.chosenImageLink) {
+                console.log('1',this.state.chosenImageLink)
+                let fireLink =  await transformBlobForPost(this.state.chosenImageLink);
+                console.log('2',fireLink)
+                if(fireLink.passed) {
+                    console.log('3',fireLink.link)
+                    imgLink = fireLink.link;
+                }
+            }
+            console.log('4',imgLink)
+            let post = {
+                post:this.state.post,
+                isInspired:this.state.isInspired,
+                inspirationId:this.state.inspirationId,
+                nominationList:this.state.nominationList.map((val)=>{
+                    return val.id
+                }),
+                imgProvided:imgLink !== null,
+                img:imgLink,
+                savedList:[],
+                likedList:[],
+                commentList:[],
+                nominationMsg:this.state.nomMsg,
+                trendId:this.state.trendId,
+                isNomination:this.state.isNomination
+            }
+
+            let response = await addPif(post)
+            //console.log(response)
+            if(response.passed) {
+                deactivateLoading()
+                showToastMessage('Post submitted','Your deed has posted','ios-thumbs-up');
+                waitACertainTime(2000);
+            } else {
+                deactivateLoading()
+                showToastMessage('Something went wrong','Your deed didnt post','ios-thumbs-down');
+                waitACertainTime(2000);
+                console.log(response)
+            }
+
+            this.props.navigation.goBack()
+    } catch (e) {
+            // console.log('error here')
+            deactivateLoading()
+            showToastMessage('Something went wrong','Please change the image','ios-thumbs-down');
+
         }
 
-        await addPif(post)
-        deactivateLoading()
-        showToastMessage('Post submitted','Your deed has posted','ios-thumbs-up');
-        waitACertainTime(2000);
-        this.props.navigation.goBack()
     }
 
 

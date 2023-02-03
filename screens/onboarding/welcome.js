@@ -23,9 +23,11 @@ export default class Welcome extends React.Component {
                 <VStack jc={'space-around'} style={{}} width={1} trueSize={false} height={.3}>
                     <VStack jc={'space-around'} width={.9} trueSize={false} height={.35}>
                         <Text style={[{fontSize:20,fontWeight:'bold',color:'#101010'}]}>Welcome To the 43Initiative</Text>
-                        <Text style={[{fontSize:13.75,color:'gray',textAlign:'center'}]}>Spreading positivity one good deed at a time and reminding you to have half a heart and pay it forward.</Text>
+                        <Text style={[{fontSize:13.75,color:'gray',textAlign:'center'}]}>Are you signing up as an individual or an organization (business, non-profit, government institution).</Text>
                     </VStack>
-                  <RoundedButton pressed={()=>{this.props.navigation.navigate('PersonalScreen')}} style={[{width:'80%',height:'20%'}]} bgColor={'#c6302c'} text={'Get Started'}/>
+                  <RoundedButton pressed={()=>{this.props.navigation.navigate('PersonalScreen')}} style={[{width:'80%',height:'20%'}]} bgColor={'#c6302c'} text={'Individual'}/>
+                    <RoundedButton doOutline pressed={()=>{this.props.navigation.navigate('OrgSignUpScreen')}} style={[{width:'80%',height:'20%'}]} bgColor={'#c6302c'} text={'Organization'}/>
+
                 </VStack>
             </Animated.View>
         )

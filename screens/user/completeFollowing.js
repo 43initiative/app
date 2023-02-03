@@ -1,0 +1,117 @@
+import React from 'react';
+import {
+    TouchableWithoutFeedback, View, Animated, Text, TouchableOpacity, Pressable, TextInput, FlatList, SafeAreaView
+} from 'react-native';
+import {flexing} from "../../styles/dimensions/dims";
+import {Ionicons} from "@expo/vector-icons";
+import {updateFollowingList, returnUserFollowingList, getAllUsers, getFollowing} from "../../firebase/fireStarter";
+import Spacer from "../../design/spacer";
+import UserTruncated from "../../components/listings/userTruncated";
+
+
+export default class CompleteFollowing extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            list:[],
+            searchField:'',
+            followingList:[]
+        }
+
+    }
+
+    componentDidMount() {
+        this.getUsers()
+    }
+
+    retrieveFollowing = async () => {
+        let data = this.props.route.params;
+        console.log(data)
+        let fetchFollowers = await getFollowing(data.isSelf,data.userUid)
+        if(fetchFollowers.passed) {
+
+            return fetchFollowers.data
+        }
+    }
+
+    getUsers = async () => {
+        let users = await this.retrieveFollowing();
+        console.log(users,'look here')
+        //this is retreived from store
+        let followingList = await returnUserFollowingList();
+        console.log(followingList,'followList')
+        this.setState({list:users,followingList:[...followingList]});
+
+    }
+
+    doFollowAction = async (action,userUid) => {
+        console.log(action,userUid);
+        let followingList
+        if(action === 'follow') {
+            followingList = this.state.followingList
+            followingList.push(userUid);
+        } else {
+            followingList = this.state.followingList;
+            let index = followingList.indexOf(userUid)
+            followingList.splice(index,1)
+        }
+
+        this.setState({followingList},async()=>{
+            let updateFollow = await updateFollowingList(this.state.followingList)
+            if(updateFollow.passed) {
+                console.log('good')
+            } else {
+                console.log('bad')
+            }
+
+        })
+
+
+    }
+
+    render() {
+        const DATA = this.state.list.filter((val)=>{
+            return val.displayName && val.displayName.includes(this.state.searchField)
+        });
+        let displayName = this.props.route.params.displayName
+        return (
+            <SafeAreaView>
+                <Animated.View style={[{backgroundColor:'white',height:'100%',width:'100%',position:'relative'}]}>
+                    <View style={[{top:0,left:0,width:'90%',marginLeft:'5%',height:'10%',backgroundColor:'white'},flexing.rowBetween]}>
+                        <TouchableOpacity onPress={()=>{this.props.navigation.goBack()}}>
+                            <Ionicons name={'ios-arrow-back-outline'} size={25} color={'black'}/>
+                        </TouchableOpacity>
+                        <TextInput
+                            placeholderTextColor={'black'}
+                            onChangeText={(val)=>{this.setState({searchField:val})}}
+                            value={this.state.searchField}
+                            placeholder={`Search ${displayName}'s Following`}
+                            style={[{width:'90%',paddingLeft:'5%',backgroundColor:'#e3e3e3',borderRadius:20,height:'60%'}]}
+                        />
+                    </View>
+                    <Spacer spacing={.025}/>
+
+                    <FlatList
+                        contentContainerStyle={{width:'90%',marginLeft:'5%'}}
+                        data={DATA}
+                        renderItem={({item}) => (
+                            <UserTruncated pressed={(action)=>{this.doFollowAction(action,item.id)}} isFollowing={this.state.followingList.indexOf(item.id) !== -1} route={this.props.route} navigation={this.props.navigation} displayName={item.displayName} userUid={item.id} img={item.img} imgProvided={item.imgProvided} initials={item.initials}/>
+
+
+                        )}
+                        keyExtractor={item => item.id}
+                    />
+
+                    {/*{this.state.list.map((val)=>(*/}
+                    {/*    <View>*/}
+                    {/*        <Text>{val.displayName}</Text>*/}
+                    {/*    </View>*/}
+                    {/*))}*/}
+                </Animated.View>
+            </SafeAreaView>
+        )
+    }
+
+
+}

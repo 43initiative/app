@@ -16,15 +16,24 @@ export default class Finish extends React.Component {
 
 
     submitData = async () => {
-        await submitSignUpData();
-        let storeData = await storeUserData()
-        if(storeData.passed) {
-            this.props.navigation.navigate('TabStack')
+        try {
+            let x = await submitSignUpData();
+            console.log(x)
+            if(!x.passed) {
+                return alert('failed in submit')
+            }
+            let storeData = await storeUserData()
+            if(storeData.passed) {
+                this.props.navigation.navigate('TabStack')
 
-        } else {
-            alert('login failed due to data not being present')
+            } else {
+               return alert('login failed due to data not being present')
+            }
+            this.props.navigation.navigate('TabStack')
+        } catch (e) {
+
         }
-        this.props.navigation.navigate('TabStack')
+
     }
 
     render() {

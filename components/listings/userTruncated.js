@@ -22,10 +22,10 @@ export default class UserTruncated extends React.Component {
     render() {
         return (
             <Animated.View style={[{width:'100%',marginLeft:'0%',marginTop:'5%'},flexing.rowBetween]}>
-                <View style={[flexing.rowStart]}>
+                <View style={[flexing.rowStart,{width:'80%'}]}>
                     <InitialOrPic noPress={false} circleRadius={.0625} route={this.props.route} navigation={this.props.navigation} userUid={this.props.userUid} imgProvided={this.props.imgProvided} img={this.props.img} initials={this.props.initials}/>
                     <Spacer xAxis spacing={.025}/>
-                    <Text>{this.props.displayName}</Text>
+                    <Text style={[{width:'50%'}]}>{this.props.displayName}</Text>
                 </View>
 
                 <FollowButton pressed={(action)=>{this.props.pressed(action)}} isFollowing={this.props.isFollowing}/>

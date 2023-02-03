@@ -20,10 +20,10 @@ export default class ProfileHeader extends React.Component {
         return (
             <Animated.View style={[{width:'100%',marginLeft:'0%',paddingLeft:'5%',paddingRight:'5%',height:dimensions.returnHeight(.08),backgroundColor:'white'},flexing.rowBetween]}>
                 <View style={[flexing.rowStart,{width:'25%'}]}>
-                    <Text style={[{color:'#101010',fontStyle:'normal',fontWeight:'bold',fontSize:30}]}>Menu</Text>
+                    <Text style={[{color:'#3EB489',fontStyle:'normal',fontWeight:'bold',fontSize:30}]}>Menu</Text>
                 </View>
                 <View style={[flexing.rowStart]}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('AltPoster')}}>
+                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('CreateNewPost')}}>
                         <View style={[createCircle(.0425,0,'black'),{backgroundColor:'lightgray'}]}>
                             <Ionicons style={[{fontWeight:'bold'}]} name={'ios-add'} size={20} color={'black'}/>
                         </View>

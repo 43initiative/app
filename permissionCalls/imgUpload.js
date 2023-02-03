@@ -45,9 +45,11 @@ const acquireAnImage = async(followDenialWithAlert,options,firebaseReference,buc
 //granted
 const selectAnImage = async (options ,firebaseReference,bucket,name) => {
     try {
+
         let result = await ImagePicker.launchImageLibraryAsync(options ? options: {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false,
+            allowsEditing: true,
+            allowsMultipleSelection:false,
             aspect: [4, 3],
             quality:1,
             base64:false
@@ -55,7 +57,8 @@ const selectAnImage = async (options ,firebaseReference,bucket,name) => {
         console.log(result)
 
         if (!result.canceled) {
-            let selectedImage = result.uri;
+            let selectedImage = result.assets[0].uri;
+           // console.log(result.assets,'assets')
             console.log(selectedImage)
             return {passed:true,link:selectedImage,}
             // return transformBlob(selectedImage,firebaseReference,bucket,name)

@@ -59,7 +59,9 @@ export default class Notifications extends React.Component {
                         }
                     </View>
                     <View style={[{width:dimensions.returnWidth(1),height:dimensions.returnHeight(1),backgroundColor:'white'}]}>
-                        {this.state.notifications.map((val)=>(
+                        {this.state.notifications.sort((a,b)=>{
+                            return b.timestamp - a.timestamp
+                        }).map((val)=>(
                             <NotificationListing clearNotification={(id)=>{this.clearNotif(id)}} navigation={this.props.navigation} route={this.props.route} data={val}/>
 
                         ))}

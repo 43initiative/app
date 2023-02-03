@@ -49,7 +49,7 @@ export default class Nominations extends React.Component {
         let pifData = await getPifPost(nomData.postId);
         console.log(pifData)
         if(pifData.passed) {
-            this.props.navigation.push('CreateDeedPost',{
+            this.props.navigation.push('CreateNewPost',{
                 isNomination:true,
                 nomData,
                 pifData:pifData.data
@@ -104,7 +104,7 @@ export default class Nominations extends React.Component {
 
                 <Text style={[{color:'black',fontWeight:'bold',fontSize:18,marginLeft:'5%',marginTop:'10%'}]}>Completed Nominations</Text>
                 {this.state.completedRec.map((val)=>(
-                    <RecNom postNow={()=>{this.postNow(val)}}  viewPost={()=>{this.loadSinglePost(val.postId)}} route={this.props.route} navigation={this.props.navigation} data={val}/>
+                    <RecNom postNow={()=>{this.postNow(val)}} completed={true}  viewPost={()=>{this.loadSinglePost(val.postId)}} route={this.props.route} navigation={this.props.navigation} data={val}/>
                 ))}
             </View>
         )
@@ -130,8 +130,8 @@ export default class Nominations extends React.Component {
 
                <ScrollView style={{width:'100%'}}>
                    <View style={[flexing.rowAround,{width:'50%',marginLeft:'5%',height:Dimensions.get('window').height * .05}]}>
-                       <RoundedButton pressed={()=>{this.setState({segment:'received'})}} doOutline={this.state.segment !== 'received'} bgColor={'firebrick'} textStyles={[{color:'white'}]} text={'Received'} style={[{height:'80%',width:'45%'}]}/>
-                       <RoundedButton pressed={()=>{this.setState({segment:'sent'})}}  doOutline={this.state.segment !== 'sent'} bgColor={'firebrick'} textStyles={[{color:'white'}]} text={'Sent'} style={[{height:'80%',width:'40%'}]}/>
+                       <RoundedButton pressed={()=>{this.setState({segment:'received'})}} doOutline={this.state.segment !== 'received'} bgColor={'#3EB489'} textStyles={[{color:'white'}]} text={'Received'} style={[{height:'80%',width:'45%'}]}/>
+                       <RoundedButton pressed={()=>{this.setState({segment:'sent'})}}  doOutline={this.state.segment !== 'sent'} bgColor={'#3EB489'} textStyles={[{color:'white'}]} text={'Sent'} style={[{height:'80%',width:'40%'}]}/>
                    </View>
                    {this.returnSegments()}
                </ScrollView>

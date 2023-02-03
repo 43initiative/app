@@ -1,14 +1,25 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp,getApps } from "firebase/app";
-import {getStorage,ref,uploadBytes,getDownloadURL} from 'firebase/storage'
+import {getStorage,ref,uploadBytes,getDownloadURL,uploadString,uploadBytesResumable} from 'firebase/storage'
 import {getAuth, createUserWithEmailAndPassword, signOut,signInWithEmailAndPassword,sendPasswordResetEmail,updateEmail,updatePassword} from "firebase/auth";
+import * as ImagePicker from 'expo-image-picker';
 
 import { doc, getDocs,getFirestore,collection,getDoc,addDoc,query, where ,updateDoc,onSnapshot,serverTimestamp,orderBy} from "firebase/firestore";
 import {storeControllers} from "../reducers/controllers";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {returnStore} from "./fireInit";
-import {SET_NOTIF, STORE_PRIVATE_DATA, STORE_PUBLIC_DATA} from "../reducers/actionTypes";
+import {
+    SET_NOTIF, SET_ORG_NOTIF,
+    SET_ORG_PRIVATE,
+    SET_ORG_PUBLIC,
+    STORE_PRIVATE_DATA,
+    STORE_PUBLIC_DATA,
+    UPDATE_USER_PRIVATE_DATA
+} from "../reducers/actionTypes";
 import firebase from "firebase/compat";
+import {img} from "react-native/Libraries/Animated/AnimatedWeb";
+import {waitACertainTime} from "../helperFuncs/timers/wait";
+import {Platform} from "react-native";
 let app;
 let db;
 let auth;
@@ -91,7 +102,9 @@ const checkForOnboarding = async () => {
 
 const transformBlob = async (img,fire,bucket,name) => {
     try {
+      //  console.log('2aa',img)
         const response = await fetch(img);
+     //   console.log('2a',response)
         const blob = await response.blob();
         return uploadToFirebase(blob,fire,bucket,name)
     } catch (e) {
@@ -104,6 +117,7 @@ const transformBlob = async (img,fire,bucket,name) => {
 const uploadToFirebase = async (img,fire,bucket,name) => {
     try {
         let userUid;
+
         const storage = getStorage(firebaseCreds.app);
 
 // Create a storage reference from our storage service
@@ -126,18 +140,87 @@ const uploadToFirebase = async (img,fire,bucket,name) => {
 }
 
 
+const getImage = async (img) => {
+    return fetch(img)
+        .then((response) => {
+            if (response.ok) {
+                return response.blob();
+            }
+            throw new Error('Failed to fetch image');
+        })
+        .then((blob) => {
+
+            return blob;
+            // Use the image data (stored in the blob) here
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}
+
 //add image to post
 const transformBlobForPost = async (img,fire,bucket,name) => {
     try {
-        const response = await fetch(img);
-        const blob = await response.blob();
+        console.log('2aa',img)
+
+
+        //console.log('2a',response)
+       // console.log(response,'response')
+        const blob = await getImage(img)
+       // console.log(blob,'blob')
         return uploadToFirebaseForPost(blob,fire,bucket,name)
     } catch (e) {
-        console.log(e)
+       // console.log(e)
         return {passed:false,e:e}
     }
 
 }
+
+const chatGptImgUpload = async () => {
+    const storage = getStorage(firebaseCreds.app);
+
+    const response = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    });
+
+    if (!response.cancelled) {
+        const source = { uri: response.uri };
+        const media = response.uri;
+
+        const blob = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                resolve(xhr.response);
+            };
+            xhr.onerror = function(e) {
+                console.log(e);
+                reject(new TypeError('Network request failed'));
+            };
+            xhr.responseType = 'blob';
+            xhr.open('GET', media, true);
+            xhr.send(null);
+        });
+
+        const byteArray = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                resolve(new Uint8Array(reader.result));
+            };
+            reader.readAsArrayBuffer(blob);
+        });
+        console.log(byteArray)
+        const storageRef = ref(storage,`43pics/kjfd'/${Date.now()}/xyz`);
+
+       // const mediaRef = storage.child(`${response.type === 'video' ? 'videos' : 'images'}/${media.uri}`);
+        const snapshot = await uploadBytes(storageRef,byteArray);
+        return getDownloadUrl(storage,storageRef)
+
+    }
+
+}
+
+
+
 
 const uploadToFirebaseForPost = async (img,fire,bucket,name) => {
     try {
@@ -151,11 +234,12 @@ const uploadToFirebaseForPost = async (img,fire,bucket,name) => {
         } else {
             userUid = firebaseCreds.auth.currentUser.uid;
         }
-        const storageRef = ref(storage,`43pics/${userUid}/${Date.now()}`);
-        //let ref = fire.storage().ref(`${bucket}/${userUid}/${name}`);
-        //let searchRef = fire.storage().ref(`${bucket}/${userUid}/${name}_200x200`);
+        const storageRef = ref(storage,`43pics/${userUid}/${Date.now()}/xyz.jpg`);
+    if(img) {
         await uploadBytes(storageRef, img)
         return getDownloadUrl(storage,storageRef)
+    }
+
     } catch (e) {
         return {passed:false,e:e}
 
@@ -182,9 +266,19 @@ const getDownloadUrl = async (storage,storageRef,userUid) => {
 const submitSignUpData = async (data) => {
     try {
         let signUpData = storeControllers.storeData().userSignUp;
+        console.log(signUpData,'sign up data')
+        // if(signUpData.isOrganization) {
+        //     let response = await checkForPlaceIdExists(signUpData.placeId);
+        //     console.log(response)
+        //     if(response.exists) {
+        //         return {passed:false,reason:'A profile for this organization already exists.'}
+        //     }
+        // }
+
         let db = firebaseCreds.db;
         let auth = firebaseCreds.auth
         let userUid = auth.currentUser.uid;
+
         const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
         const res = await updateDoc(userRef,signUpData)
         return {passed:true,reason:res}
@@ -200,6 +294,15 @@ const submitSignUpData = async (data) => {
 
 const signOutUser = async (navigation) => {
     try {
+
+        if(userWatcher) {
+            userWatcher();
+
+        }
+
+        if(unsubscribeNotifWatcher) {
+            unsubscribeNotifWatcher()
+        }
         let x = await signOut(firebaseCreds.auth);
         console.log(x)
         //console.log(auth.currentUser.uid,'this the current users')
@@ -264,8 +367,24 @@ const getUserPrivateData = async (userUid) => {
     }
 }
 
+const checkForPlaceIdExists = async (placeId) => {
+    let activityRef = collection(db,'publicUsers')
+    let q = query(activityRef,where('placeId' ,'==', placeId));
+    const querySnapshot = await getDocs(q);
+    let list = []
+    querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        list.push({id:doc.id,...doc.data()})
+        console.log(doc.id, " => ", doc.data());
+    });
+    console.log(list);
+    return {exists:list.length > 0};
+}
+
 const storeUserData = async () => {
     try {
+        let storePublicData =  storeControllers.storeData().userData.publicData;
+
         console.log('starting storeUserData')
         let {auth,app,db} = firebaseCreds;
         const userUid = auth.currentUser.uid;
@@ -275,9 +394,12 @@ const storeUserData = async () => {
         let privateData = await getUserPrivateData(userUid);
         if(privateData.passed && publicData.passed) {
             store.dispatch({type:STORE_PRIVATE_DATA,payload:privateData.data})
-            store.dispatch({type:STORE_PUBLIC_DATA,payload:publicData.data});
+            store.dispatch({type:STORE_PUBLIC_DATA,payload: {userUid,...publicData.data}});
            let storePrivateData =  storeControllers.storeData().userData.privateData;
            let storePublicData =  storeControllers.storeData().userData.publicData;
+          // console.log('data watch start')
+           userDataWatcher();
+
            console.log(storePublicData,storePrivateData);
             return {passed:true}
 
@@ -311,6 +433,402 @@ const updateProfilePic = async (imgProvided,img) => {
     }
 }
 
+
+//all org functions
+
+const updateOrgProfilePic = async (imgProvided,img) => {
+    try {
+        let auth = firebaseCreds.auth
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
+        const res = await updateDoc(userRef,{imgProvided,img})
+        return {passed:true,reason:res}
+
+    } catch (e) {
+        return {passed:false,reason:e}
+    }
+}
+
+const updateOrgBio = async (bio) => {
+    try {
+        let auth = firebaseCreds.auth
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
+        const res = await updateDoc(userRef,{aboutMe:bio})
+        return {passed:true,reason:res}
+
+    } catch (e) {
+        return {passed:false,reason:e}
+    }
+}
+
+const getOrgActivity = async () => {
+    try {
+        let {auth,db,app} = firebaseCreds
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        let activityRef = collection(db,'userActivity')
+        let q = query(activityRef,where('userUid' ,'==', userUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+        console.log(list);
+        return list;
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+}
+
+const submitOrgFeedback = async (message) => {
+    try {
+        let {db,auth} = firebaseCreds;
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        await addDoc(collection(db, "feedback"), {
+            userUid: userUid,
+            feedback:message
+        });
+        return {passed:true}
+    }catch (e) {
+        return {passed:false}
+    }
+
+}
+
+const getOrgFollowers = async () => {
+    try {
+        let {auth,db} = firebaseCreds;
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+
+        const userRef = collection(db,'publicUsers');
+        const q = query(userRef,where('followingList','array-contains',userUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+
+        return {passed:true,data:list}
+    } catch (e) {
+        return {passed:false}
+    }
+
+}
+
+const getOrgFollowing = async () => {
+    try {
+        let {auth,db} = firebaseCreds;
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        const userRef = collection(db,'publicUsers');
+        const q = query(userRef,where('followList','array-contains',userUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+
+        return {passed:true,data:list}
+    } catch (e) {
+        return {passed:false}
+    }
+
+
+}
+
+const getOrgDeeds = async () => {
+    try {
+        let {auth,db} = firebaseCreds;
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        const userRef = collection(db,'pifs');
+        const q = query(userRef,where('userUid','==',userUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+
+        return {passed:true,data:list}
+    } catch (e) {
+        return {passed:false}
+    }
+}
+
+const returnOrgFollowingList = async () => {
+    let followingList = storeControllers.storeData().orgData.publicData.followingList;
+    console.log(followingList)
+    return followingList;
+}
+
+const returnOrgFollowerList = async () => {
+    let followingList = storeControllers.storeData().orgData.publicData.followList;
+    console.log(followingList,'look for follow')
+    return followingList;
+}
+
+const returnOrgLikedList = async () => {
+    let likedList = storeControllers.storeData().orgData.publicData.likedList;
+    return likedList;
+}
+
+const returnOrgSavedList = async () => {
+    let savedList = storeControllers.storeData().orgData.publicData.savedList;
+    return savedList;
+}
+
+const updateOrgFollowingList = async (followingList) => {
+    let auth = firebaseCreds.auth
+    let userUid = storeControllers.storeData().orgData.activeOrgId;
+    const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
+    const res = await updateDoc(userRef,{followingList})
+    return {passed:true,reason:res}
+}
+
+const updateOrgSavedList = async (savedList) => {
+    let auth = firebaseCreds.auth
+    let userUid = storeControllers.storeData().orgData.activeOrgId;
+    const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
+    const res = await updateDoc(userRef,{savedList})
+    return {passed:true,reason:res}
+}
+
+const updateOrgLikedList = async (likedList) => {
+    let auth = firebaseCreds.auth
+    let userUid = storeControllers.storeData().orgData.activeOrgId;
+    const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
+    const res = await updateDoc(userRef,{likedList})
+    return {passed:true,reason:res}
+}
+
+const getOrgNotifications = async () => {
+    try {
+        let {auth,db,app} = firebaseCreds
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        let activityRef = collection(db,'notifications')
+        let q = query(activityRef,where('userUid' ,'==', userUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+
+
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+        console.log(list);
+        return {data:list,passed:true};
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+}
+
+
+
+const getOrgInspiration = async () => {
+    let {auth,db,app} = firebaseCreds
+    let userUid = storeControllers.storeData().orgData.activeOrgId;
+    const q = query(collection(db, "pifs"), where("savedList", "array-contains", userUid));
+
+    const querySnapshot = await getDocs(q);
+    let list = []
+    querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        list.push({postId:doc.id,id:doc.id,...doc.data()})
+        console.log(doc.id, " => ", doc.data());
+    });
+
+    if(list.length > 0) {
+        return {passed:true,data:list}
+
+    }
+
+    return {passed:false,data:[]}
+
+}
+
+const addOrgPif = async (pif) => {
+
+    try {
+        console.log(pif)
+        let {auth,db,app} = firebaseCreds
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        pif.userUid = userUid;
+        pif.timestamp = Date.now()
+        const docRef = await addDoc(collection(db, "pifs"), pif);
+        console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+        console.error("Error adding document: ", e);
+    }
+}
+
+const submitOrgComment = async (post,postId) => {
+
+    try {
+        let {db,auth} = firebaseCreds;
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        let {img,imgProvided,initials,displayName} = storeControllers.storeData().orgData.publicData
+
+        let comment = {
+            img,
+            imgProvided,displayName,initials,
+            comment:post,
+            postId:postId,
+            timestamp:Date.now(),
+            userUid
+        }
+        await addDoc(collection(db, "comments"), comment);
+        return {passed:true,comment}
+    }catch (e) {
+        return {passed:false}
+    }
+
+}
+
+let unsubscribeOrgNotifWatcher = null;
+
+const orgNotifWatcher = async () => {
+    if(unsubscribeOrgNotifWatcher !== null) {
+        return
+    }
+    let {db,auth} = firebaseCreds;
+    let userUid = storeControllers.storeData().orgData.activeOrgId;
+    const q = query(collection(db, "notifications"), where("userUid", "==", userUid));
+    unsubscribeOrgNotifWatcher = onSnapshot(q, (querySnapshot) => {
+        const notifs = [];
+        querySnapshot.forEach((doc) => {
+            notifs.push({id:doc.id,...doc.data()});
+        });
+        console.log(notifs,'notifs')
+        let newNotification = notifs.filter((val)=>{
+            return !val.read
+        })
+        storeControllers.store.dispatch({type:SET_ORG_NOTIF,payload:{newNotifications: newNotification.length > 0,notifCount:newNotification.length,notificationList:notifs}})
+    });
+}
+
+let orgPrivateWatcher;
+
+const orgPrivateDataWatcher = async () => {
+    // if(userWatcher !== null) {
+    //     return
+    // }
+    //  console.log('activated watcher')
+    let {db,auth} = firebaseCreds;
+    let userUid = storeControllers.storeData().orgData.activeOrgId;
+    let data;
+    orgPrivateWatcher = onSnapshot(doc(db, "privateUsers", userUid), (doc) => {
+        data = doc.data();
+        //  console.log("Private watcher live ", doc.data());
+        console.log(data,'data here')
+        storeControllers.store.dispatch({type:SET_ORG_PRIVATE,payload:data})
+    });
+
+
+}
+
+let orgPublicWatcher;
+
+const orgPublicDataWatcher = async () => {
+    // if(userWatcher !== null) {
+    //     return
+    // }
+    //  console.log('activated watcher')
+    let {db,auth} = firebaseCreds;
+    let userUid = storeControllers.storeData().orgData.activeOrgId;
+    let data;
+    orgPublicWatcher = onSnapshot(doc(db, "publicUsers", userUid), (doc) => {
+        data = doc.data();
+        //  console.log("Private watcher live ", doc.data());
+        console.log(data,'data here')
+        storeControllers.store.dispatch({type:SET_ORG_PRIVATE,payload:data})
+    });
+
+
+}
+
+
+const markOrgNotifRead = async (id) => {
+    try {
+        const notifRef = doc(firebaseCreds.db, "notifications", id);
+        const res = await updateDoc(notifRef,{read:true})
+        return {passed:true,reason:res}
+    } catch (e) {
+        console.warn(e,'warning')
+    }
+
+}
+
+
+const getOrgSentNominations = async () => {
+    try {
+        let {auth,db,app} = firebaseCreds
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        let activityRef = collection(db,'nominations')
+        let q = query(activityRef,where('nominatorId' ,'==', userUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+            console.log(doc.id, " => ", doc.data());
+        });
+        console.log(list);
+        return list;
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+
+
+}
+
+const getOrgRecNominations = async () => {
+
+
+    try {
+        let {auth,db,app} = firebaseCreds
+        let userUid = storeControllers.storeData().orgData.activeOrgId;
+        let activityRef = collection(db,'nominations')
+        let q = query(activityRef,where('nominatedId' ,'==', userUid));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+        });
+        console.log(list);
+        return {passed:true,data:list};
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+}
+
+const rejectOrgNominations = async (nomId) => {
+    let {db,auth} = firebaseCreds;
+
+    const nomRef = doc(db, "nominations", nomId);
+    const res = await updateDoc(nomRef,{pending:false,accepted:false})
+}
+
+const withdrawOrgNominations = async (nomId) => {
+    let {db,auth} = firebaseCreds;
+
+    const nomRef = doc(db, "nominations", nomId);
+    const res = await updateDoc(nomRef,{withdrawn:true,pending:false})
+}
+
+//start
+
 //edit bio
 
 const updateUserBio = async (bio) => {
@@ -325,30 +843,6 @@ const updateUserBio = async (bio) => {
         return {passed:false,reason:e}
     }
 }
-
-//start notification watcher
-
-//like a Pif
-
-
-//comment a Pif
-
-
-//add to inspiration
-
-
-//create a pif
-
-
-//add image to users photobucket
-
-
-//follow a user
-
-
-//follow an organization
-
-//forgot password
 
 
 const forgotPassword = async (email) => {
@@ -422,21 +916,24 @@ const submitFeedback = async (message) => {
 
 }
 
+//come back
+//always null for is self on org side
 const getUserProfile = async (navigation,route,isSelf,userUid) => {
     try {
-        console.log('here')
+        console.log('here',userUid)
         let auth = firebaseCreds.auth;
-        let myUid = auth.currentUser.uid;
-        let isSelfUid = (myUid === userUid) || isSelf;
-        let searchUid = isSelfUid ? myUid : userUid;
-        const docRef = doc(firebaseCreds.db, "publicUsers", searchUid);
+         let myUid = auth.currentUser.uid;
+        // let isSelfUid = (myUid === userUid) || isSelf;
+        // let searchUid = isSelfUid ? myUid : userUid;
+        const docRef = doc(firebaseCreds.db, "publicUsers", userUid ? userUid: myUid);
         const docSnap = await getDoc(docRef);
-console.log('called')
+        let pifs = await getUserDeeds(false,userUid)
+console.log('called and got pifs',pifs.data)
         if (docSnap.exists()) {
             console.log(docSnap.data());
-            let data = {userUid:searchUid,isSelf,...docSnap.data()}
+            let data = {pifs:pifs.data.slice(0,pifs.data.length < 5 ? pifs.data.length : 5),userUid:userUid,isSelf,...docSnap.data()}
             navigation.push('PublicProfile',data)
-            return {data: {userUid:searchUid,isSelf,...docSnap.data()},passed:true}
+            return {data: {pifs:pifs.data,userUid:userUid,isSelf,...docSnap.data()},passed:true}
         } else {
             console.log("No such document!");
             return {data:null,passed:false,reason:'no such document exists'}
@@ -559,6 +1056,7 @@ const getAllUsers = async () => {
     return {passed:true,data:list}
 }
 
+
 const returnUserFollowingList = async () => {
     let followingList = storeControllers.storeData().userData.publicData.followingList;
     console.log(followingList)
@@ -604,6 +1102,8 @@ const updateLikedList = async (likedList) => {
     const res = await updateDoc(userRef,{likedList})
     return {passed:true,reason:res}
 }
+
+
 
 const getNotifications = async () => {
     try {
@@ -655,17 +1155,20 @@ const getInspiration = async () => {
 const addPif = async (pif) => {
 
     try {
-        console.log(pif.inspirationId)
+        console.log(pif)
         let {auth,db,app} = firebaseCreds
         let userUid = auth.currentUser.uid;
         pif.userUid = userUid;
-        pif.timestamp = serverTimestamp()
-        const docRef = await addDoc(collection(db, "pifs"), pif);
-        console.log("Document written with ID: ", docRef.id);
+        pif.timestamp = Date.now()
+        await addDoc(collection(db, "pifs"), pif);
+
+        return {passed:true}
     } catch (e) {
-        console.error("Error adding document: ", e);
+        return {passed:false}
+        //console.error("Error adding document: ", e);
     }
 }
+
 
 const getAllDeeds = async () => {
     let {auth,db} = firebaseCreds;
@@ -699,7 +1202,7 @@ const loadCommentSection = async (navigation,route,postId,pifData,moveToTop,post
     try {
         let {auth,db,app} = firebaseCreds
         console.log(postId)
-        let userUid = auth.currentUser.uid;
+
         const q = query(collection(db, "comments"), where("postId", "==", postId));
 
         const querySnapshot = await getDocs(q);
@@ -732,7 +1235,6 @@ const loadFullCommentSection = async (navigation,route,postId,pifData,moveToTop,
     try {
         let {auth,db,app} = firebaseCreds
         console.log(postId)
-        let userUid = auth.currentUser.uid;
         const q = query(collection(db, "comments"), where("postId", "==", postId));
 
         const querySnapshot = await getDocs(q);
@@ -804,6 +1306,25 @@ const notifWatcher = async () => {
         })
         storeControllers.store.dispatch({type:SET_NOTIF,payload:{newNotifications: newNotification.length > 0,notifCount:newNotification.length,notificationList:notifs}})
     });
+}
+let userWatcher;
+
+const userDataWatcher = async () => {
+    // if(userWatcher !== null) {
+    //     return
+    // }
+  //  console.log('activated watcher')
+    let {db,auth} = firebaseCreds;
+    let userUid = auth.currentUser.uid;
+    let data;
+    userWatcher = onSnapshot(doc(db, "privateUsers", userUid), (doc) => {
+       data = doc.data();
+      //  console.log("Private watcher live ", doc.data());
+        console.log(data,'data here')
+        storeControllers.store.dispatch({type:UPDATE_USER_PRIVATE_DATA,payload:data})
+    });
+
+
 }
 
 
@@ -878,6 +1399,172 @@ const withdrawNominations = async (nomId) => {
     const res = await updateDoc(nomRef,{withdrawn:true,pending:false})
 }
 
+//end
+//end
+
+
+//Business Organization Section
+
+
+const checkForOrganization = async (placeId) => {
+    try {
+        let {auth,db,app} = firebaseCreds
+        let activityRef = collection(db,'potentialOrgProfiles')
+        let q = query(activityRef,where('placeId' ,'==', placeId));
+        const querySnapshot = await getDocs(q);
+        let list = []
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            list.push({id:doc.id,...doc.data()})
+        });
+        let document = null;
+        if(list.length > 0) {
+            document = list[0]
+        }
+        return {passed:true,data:list,isActivated:document?.hasBeenActivated,exists:list.length > 0};
+    } catch (e) {
+        return {data:null,passed:false,reason:e}
+
+    }
+}
+
+const matchCode = async (placeId,code) => {
+    let {auth,db,app} = firebaseCreds
+    let codeRef = collection(db,'codeRef')
+    let q = query(codeRef,where('code' ,'==', code));
+    const querySnapshot = await getDocs(q);
+    let list = []
+    querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        list.push({id:doc.id,...doc.data()})
+    });
+
+    return {
+        passed:true,
+        list,
+        exists:list.length > 0
+    }
+
+}
+
+const orgCreateRequest = async (placeId,placeInfo) => {
+    try {
+        let {auth,db,app} = firebaseCreds;
+        let userUid = auth.currentUser.uid;
+        await addDoc(collection(db, "orgCreation"), {
+           name:placeInfo.name,
+            imgProvided:placeInfo.imgProvided,
+            img:placeInfo.imgProvided ? placeInfo.img : null,
+            city:placeInfo.city,
+            state:placeInfo.state,
+            formatted_address:placeInfo['formatted_address'],
+            lat:placeInfo.lat,
+            long:placeInfo.long,
+            website:placeInfo.website,
+            userUid,
+            placeId,
+            appMsg:placeInfo.appMsg,
+            applicantName:placeInfo.applicantName
+        });
+        return {passed:true}
+    } catch (e) {
+        return {passed:false,reason:e}
+    }
+
+}
+
+const signOutOrg = async () => {
+
+}
+
+const testSecondOption = async (options) => {
+    let result = await ImagePicker.launchImageLibraryAsync(options ? options : {
+        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+        allowsEditing: true,
+        //videoMaxDuration:30,
+        allowsMultipleSelection: false,
+        aspect: [4, 3],
+        quality: 1,
+        base64: true,
+    });
+console.log(result)
+    // const uri = Platform.OS === 'ios' ? result.uri.replace('file://','') : result.uri;
+    // const storage = getStorage(firebaseCreds.app);
+    // const storageRef = ref(storage,`43vids/${Date.now()}`);
+    // await uploadString(storageRef, uri, 'data_url').then((snapshot) => {
+    //     console.log('Uploaded a base64 string!');
+    // });
+
+}
+
+const doImgUpload = async () => {
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        //videoMaxDuration:30,
+        allowsMultipleSelection: false,
+        aspect: [4, 3],
+        quality: 1,
+        base64: true,
+    });
+
+
+    const resp = await fetch(result.uri);
+    const blob = await resp.blob()
+   // await waitACertainTime(3000)
+    let{auth} = firebaseCreds
+    let userUid = auth.currentUser.uid;
+        const storage = getStorage(firebaseCreds.app);
+        const storageRef = ref(storage,`43vids/${Date.now()}${userUid}.jpg`);
+   await  uploadBytesResumable(storageRef,blob).then((snap)=>{
+
+   }).catch((e)=>{
+        return {passed:false,reason:'something went wrong with the upload'}
+   })
+
+    let url = await getDownloadURL(storageRef);
+    blob.close()
+    return {passed:true,link:url};
+
+}
+
+const doVideoUpload = async () => {
+
+    let result = await ImagePicker.launchImageLibraryAsync( {
+        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+        allowsEditing: true,
+        //videoMaxDuration:30,
+        allowsMultipleSelection: false,
+        aspect: [4, 3],
+        quality: 1,
+        base64: true,
+    });
+
+
+    const resp = await fetch(result.uri);
+    const blob = await resp.blob()
+     await waitACertainTime(3000)
+    let{auth} = firebaseCreds
+    let userUid = auth.currentUser.uid;
+    const storage = getStorage(firebaseCreds.app);
+    const storageRef = ref(storage,`43vids/${Date.now()}${userUid}.mp4`);
+    await  uploadBytesResumable(storageRef,blob).then((snap)=>{
+
+    }).catch((e)=>{
+        return {passed:false,reason:'something went wrong with the upload'}
+    })
+
+    let url = await getDownloadURL(storageRef);
+    blob.close()
+    return {passed:true,link:url};
+
+}
+
+// Create a storage reference from our storage service
+
+
+
 
 
 
@@ -926,5 +1613,33 @@ module.exports = {
     rejectNominations,
     getDeed,
     getPifPost,
-    returnFollowerList
+    returnFollowerList,
+    checkForOrganization,
+    matchCode,
+    orgCreateRequest,
+    userDataWatcher,
+    returnOrgFollowingList,
+    returnOrgFollowerList,
+    updateOrgLikedList,
+    updateOrgSavedList,
+    updateOrgFollowingList,
+
+    returnOrgLikedList,
+    returnOrgSavedList,
+    getOrgDeeds,
+    getOrgRecNominations,
+    getOrgSentNominations,
+    rejectOrgNominations,
+    withdrawOrgNominations,
+    getOrgInspiration,
+    updateOrgBio,
+    updateOrgProfilePic,
+    orgNotifWatcher,
+    signOutOrg,
+    getOrgNotifications,
+    markOrgNotifRead,
+    chatGptImgUpload,
+    doImgUpload,
+    doVideoUpload,
+    testSecondOption
 }

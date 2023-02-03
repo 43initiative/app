@@ -71,6 +71,7 @@ export default class SearchUsers extends React.Component {
                         <Ionicons name={'ios-arrow-back-outline'} size={25} color={'black'}/>
                     </TouchableOpacity>
                     <TextInput
+                        placeholderTextColor={'black'}
                         onChangeText={(val)=>{this.setState({searchField:val})}}
                         value={this.state.searchField}
                         placeholder={'Search Users and Organizations'}

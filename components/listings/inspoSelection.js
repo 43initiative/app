@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    TouchableWithoutFeedback, View, Animated, Text, TouchableOpacity, Pressable, Image
+    TouchableWithoutFeedback, View, Animated, Text, TouchableOpacity, Pressable, Image, Dimensions
 } from 'react-native';
 import {flexing} from "../../styles/dimensions/dims";
 import {createCircle, createSquare,fixedShape} from "../../styles/globals/shapes";
@@ -11,6 +11,7 @@ import InitialOrPic from "../buttons/initialOrPic";
 import {convertTimeStamp} from "../../helperFuncs/dateTime";
 import {loadCommentSection, getUserProfile} from "../../firebase/fireStarter";
 import FastImage from "react-native-fast-image";
+import RoundedButton from "../buttons/roundedButton";
 
 
 export default class InspoSelection extends React.Component {
@@ -41,7 +42,7 @@ export default class InspoSelection extends React.Component {
             <Animated.View style={[flexing.startColumn,{width:'90%',marginLeft:'5%',backgroundColor:'ghostwhite',marginTop:'5%',borderRadius:20}]}>
                 <View style={[flexing.rowStart,{width:'95%',marginLeft:'2.5%',marginTop:'2.5%'}]}>
 
-                    <View style={[flexing.rowStart,{width:'80%',borderWidth:0,borderColor:'red'}]}>
+                    <View style={[flexing.rowStart,{width:'70%',borderWidth:0,borderColor:'red'}]}>
 
                         <InitialOrPic circleRadius={.05} initials={pifData.userInitials} route={this.props.route} navigation={this.props.navigation} userUid={pifData.userUid} imgProvided={pifData.userImgProvided} img={pifData.userImg}/>
 
@@ -60,17 +61,14 @@ export default class InspoSelection extends React.Component {
                         </TouchableOpacity>
                     </View>
 
-                    <Spacer xAxis={true} spacing={.095}/>
+                    <Spacer xAxis={true} spacing={.00}/>
 
-                    <TouchableOpacity style={[createSquare(.035,1,'purple'),{borderColor:'blue',borderWidth:2},flexing.centerColumn]}>
+                    <TouchableOpacity style={[{borderColor:'blue',width:'25%',height:Dimensions.get('window').height * .04},flexing.centerColumn]}>
                         {this.props.selectedId === (this.props.isNomination ? pifData.id : pifData.postId) ?
-                            <TouchableOpacity style={[{width:'100%',height:'100%'}]} onPress={()=>{this.props.unselected()}}>
-                                <Ionicons name={'ios-checkmark'} color={'blue'} size={25}/>
-                            </TouchableOpacity> :
-                            <TouchableOpacity style={[{width:'100%',height:'100%'}]} onPress={()=>{this.props.selected();console.log(pifData.postId)}}>
-                                <Ionicons name={'ios-checkmark'} color={'white'} size={25}/>
+                            <RoundedButton pressed={()=>{this.props.unselected()}} doOutline={true} bgColor={'#3EB489'} textStyles={[{color:'#3EB489',fontSize:10}]} text={'Unselect'} style={[{height:'80%',width:'90%',borderWidth:2,borderColor:'#3EB489'}]}/>
+                            :
+                            <RoundedButton pressed={()=>{this.props.selected()}} doOutline={false} bgColor={'#3EB489'} textStyles={[{color:'white',fontSize:12}]} text={'Select'} style={[{height:'80%',width:'90%'}]}/>
 
-                            </TouchableOpacity>
                         }
 
                     </TouchableOpacity>

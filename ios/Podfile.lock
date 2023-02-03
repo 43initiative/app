@@ -258,6 +258,8 @@ PODS:
   - React-jsinspector (0.70.5)
   - React-logger (0.70.5):
     - glog
+  - react-native-blob-util (0.17.1):
+    - React-Core
   - react-native-netinfo (9.3.7):
     - React-Core
   - react-native-safe-area-context (4.4.1):
@@ -266,6 +268,11 @@ PODS:
     - RCTTypeSafety
     - React-Core
     - ReactCommon/turbomodule/core
+  - react-native-video (5.2.1):
+    - React-Core
+    - react-native-video/Video (= 5.2.1)
+  - react-native-video/Video (5.2.1):
+    - React-Core
   - React-perflogger (0.70.5)
   - React-RCTActionSheet (0.70.5):
     - React-Core/RCTActionSheetHeaders (= 0.70.5)
@@ -343,6 +350,8 @@ PODS:
   - RNScreens (3.18.2):
     - React-Core
     - React-RCTImage
+  - RNShare (8.1.0):
+    - React-Core
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
@@ -385,8 +394,10 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
+  - react-native-blob-util (from `../node_modules/react-native-blob-util`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-video (from `../node_modules/react-native-video`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -403,6 +414,7 @@ DEPENDENCIES:
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNShare (from `../node_modules/react-native-share`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -477,10 +489,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
+  react-native-blob-util:
+    :path: "../node_modules/react-native-blob-util"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-video:
+    :path: "../node_modules/react-native-video"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -513,6 +529,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fast-image"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -526,7 +544,7 @@ SPEC CHECKSUMS:
   EXFont: 955655aa111e20756af96d7c5c0b23add0cdc303
   EXImageLoader: 2457c9c38b2bc012b05c408aac3aa8de4147b602
   EXLocation: f055213f19bc3acce4c9a07de3a5eabaa03ac23c
-  EXNotifications: babce2a87b7922051354fcfe7a74dd279b7e272a
+  EXNotifications: 8c85301e03edc87fe090a95c795815f6e1c3ba8a
   Expo: bdf852f46647982fbda24197e648a9d490759be9
   ExpoImagePicker: 5ef434be342ab7ade755399a64240fc34d2b265e
   ExpoKeepAwake: f8aae9b3d48116f253418cde831cf71af424d563
@@ -551,8 +569,10 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 31564fa6912459921568e8b0e49024285a4d584b
   React-jsinspector: badd81696361249893a80477983e697aab3c1a34
   React-logger: fdda34dd285bdb0232e059b19d9606fa0ec3bb9c
+  react-native-blob-util: 4949dcc0dd5ee25fcb5abe0687f67fa3d5cdf05a
   react-native-netinfo: 85f4311a8272324a2bf56583248f0a0bba5315a8
   react-native-safe-area-context: ec0d85aca8110dae9327430a9541fec165352dab
+  react-native-video: 79a186e378d327b6c08bc3982c17ef455c6bd75c
   React-perflogger: e68d3795cf5d247a0379735cbac7309adf2fb931
   React-RCTActionSheet: 05452c3b281edb27850253db13ecd4c5a65bc247
   React-RCTAnimation: 578eebac706428e68466118e84aeacf3a282b4da
@@ -569,6 +589,7 @@ SPEC CHECKSUMS:
   RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
+  RNShare: 48b3113cd089a2be8ff0515c3ae7a46a4db8a76b
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   Yoga: eca980a5771bf114c41a754098cd85e6e0d90ed7

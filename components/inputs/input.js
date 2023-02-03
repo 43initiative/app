@@ -24,7 +24,9 @@ export default class Input extends React.Component {
             height={.05}
             >
                 <Ionicons style={[{width:'10%'}]} name={this.props.icon} size={this.props.size} color={this.props.color}/>
-                <TextInput style={[
+                <TextInput
+                    placeholderTextColor={'black'}
+                    style={[
                     {width:'80%'}
                 ]}
                 value={this.props.value}

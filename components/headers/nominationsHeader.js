@@ -27,13 +27,13 @@ class NominationsHeader extends React.Component {
         return (
             <Animated.View style={[{width:'100%',marginLeft:'0%',paddingLeft:'5%',paddingRight:'5%',height:dimensions.returnHeight(.065),backgroundColor:'white'},flexing.rowBetween]}>
                 <View style={[flexing.rowStart,{width:'45%'}]}>
-                    <Text style={[{color:'#101010',fontStyle:'normal',fontWeight:'bold',fontSize:25}]}>Nominations</Text>
+                    <Text style={[{color:'#3EB489',fontStyle:'normal',fontWeight:'bold',fontSize:25}]}>Nominations</Text>
 
                     {/*<Ionicons name={'ios-heart-half'} size={30} color={'firebrick'}/>*/}
 
                 </View>
                 <View style={[flexing.rowAround,{width:'40%'}]}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('AltPoster')}}>
+                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('CreateNewPost')}}>
                         <View style={[createCircle(.0425,0,'black'),{backgroundColor:'lightgray'}]}>
                             <Ionicons style={[{fontWeight:'bold'}]} name={'ios-add'} size={20} color={'black'}/>
                         </View>

@@ -43,12 +43,62 @@ import InspirationSelectionModal from "../../screens/postCreation/selectInspirat
 import RefineFilterModal from "../../screens/tabs/refineFilterModal";
 import OrgModal from "../../screens/tabs/orgModal";
 import OrgCreation from "../../screens/org/orgCreation";
-
+import EditOrgBio from "../../screens/orgTabs/editOrgBio";
+import ChangeOrgProfilePic from "../../screens/orgTabs/changeOrgProfilePic";
+import OrgTabStack from "../tabs/orgTabs";
+import OrgSettings from "../../screens/orgTabs/orgSettings";
+//add these back
+import OrgNominations from "../../screens/orgTabs/orgNominations";
+import OrgInspo from "../../screens/orgTabs/orgInspo";
+import OrgProfile from "../../screens/orgTabs/orgProfile";
+import OrgDeeds from "../../screens/orgTabs/orgDeeds";
+import OrgFeed from "../../screens/orgTabs/orgFeed";
+import OrgNotifications from "../../screens/orgTabs/orgNotifications";
+import OrgSearchUsers from "../../screens/orgTabs/orgSearchUsers";
+import CompleteFollowing from "../../screens/user/completeFollowing";
+import CompleteFollowers from "../../screens/user/completeFollowers";
+import CreateNewPost from "../../screens/user/testVideoUpload";
 const Stack = createNativeStackNavigator();
 
 function SplashScreen({route,navigation}) {
     return(
         <AltSPlash route={route} navigation={navigation}/>
+    )
+}
+
+function OrgNominationsScreen({route,navigation}) {
+    return(
+        <OrgNominations route={route} navigation={navigation}/>
+    )
+}
+
+function OrgProfileScreen({route,navigation}) {
+    return(
+        <OrgProfile route={route} navigation={navigation}/>
+    )
+}
+
+function OrgDeedScreen({route,navigation}) {
+    return(
+        <OrgDeeds route={route} navigation={navigation}/>
+    )
+}
+
+function OrgFeedScreen({route,navigation}) {
+    return(
+        <OrgFeed route={route} navigation={navigation}/>
+    )
+}
+
+function OrgNotificationsScreen({route,navigation}) {
+    return(
+        <OrgNotifications route={route} navigation={navigation}/>
+    )
+}
+
+function OrgInspoScreen({route,navigation}) {
+    return(
+        <OrgInspo route={route} navigation={navigation}/>
     )
 }
 
@@ -64,6 +114,12 @@ function TabNavigator({route,navigation}) {
     )
 }
 
+function OrgTabNavigator({route,navigation}) {
+    return (
+        <OrgTabStack route={route} navigation={navigation}/>
+    )
+}
+
 function ProfileScreen({route,navigation}) {
     return (
         <Profile route={route} navigation={navigation}/>
@@ -74,6 +130,12 @@ function ProfileScreen({route,navigation}) {
 function SettingsScreen({route,navigation}) {
     return (
         <Settings route={route} navigation={navigation}/>
+    )
+}
+
+function OrgSettingsScreen({route,navigation}) {
+    return (
+        <OrgSettings route={route} navigation={navigation}/>
     )
 }
 
@@ -219,6 +281,18 @@ function EditImgScreen({route,navigation}) {
     )
 }
 
+function EditOrgBioScreen({route,navigation}) {
+    return(
+        <EditOrgBio  route={route} navigation={navigation}/>
+    )
+}
+
+function EditOrgImgScreen({route,navigation}) {
+    return(
+        <ChangeOrgProfilePic  route={route} navigation={navigation}/>
+    )
+}
+
 function ChangeEmailScreen({route,navigation}) {
     return(
         <ChangeEmail  route={route} navigation={navigation}/>
@@ -312,6 +386,25 @@ function OrgCreationScreen({route,navigation}) {
     );
 }
 
+function CompleteFollowingScreen({route,navigation}) {
+    return (
+        <CompleteFollowing route={route} navigation={navigation}/>
+    );
+}
+
+function CompleteFollowerScreen({route,navigation}) {
+    return (
+        <CompleteFollowers route={route} navigation={navigation}/>
+    );
+}
+
+
+function CreateNewPostScreen({route,navigation}) {
+    return (
+        <CreateNewPost route={route} navigation={navigation}/>
+    );
+}
+
 
 export function MainNavigator() {
     return (<Stack.Navigator initialRouteName={'SplashScreen'}>
@@ -322,6 +415,21 @@ export function MainNavigator() {
         <Stack.Screen
             options={{headerShown: false}}
             name="CreateOrg" component={OrgCreationScreen}/>
+
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="CreateNewPost" component={CreateNewPostScreen}/>
+
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="CompleteFollowing" component={CompleteFollowingScreen}/>
+
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="CompleteFollowers" component={CompleteFollowerScreen}/>
 
         <Stack.Screen
             options={{headerShown: false}}
@@ -334,6 +442,14 @@ export function MainNavigator() {
         <Stack.Screen
             options={{headerShown: false}}
             name="TabStack" component={TabNavigator}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="OrgTabStack" component={OrgTabNavigator}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="OrgNotif" component={OrgNotificationsScreen}/>
 
         <Stack.Screen
             options={{headerShown: false}}
@@ -362,6 +478,20 @@ export function MainNavigator() {
         <Stack.Screen
             options={{headerShown: false}}
             name="Settings" component={SettingsScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="OrgSettings" component={OrgSettingsScreen}/>
+
+
+
+
+
+
+
+
+
+
 
         <Stack.Screen
             options={{headerShown: false}}
@@ -403,6 +533,14 @@ export function MainNavigator() {
 
         <Stack.Screen
             options={{headerShown: false}}
+            name="EditOrgBio" component={EditOrgBioScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="EditOrgImg" component={EditOrgImgScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
             name="UserActivityScreen" component={UserActivityScreen}/>
 
         <Stack.Screen
@@ -427,6 +565,10 @@ export function MainNavigator() {
 
         <Stack.Screen
             options={{headerShown: false}}
+            name="OrgSearchUsers" component={OrgSearchUsers}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
             name="CreateDeedPost" component={CreateDeedPostScreen}/>
 
         <Stack.Screen
@@ -437,11 +579,11 @@ export function MainNavigator() {
             options={{headerShown: false}}
             name="ViewSinglePost" component={ViewSinglePostScreen}/>
 
-
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="PublicProfile" component={PublicProfileScreen}/>
         <Stack.Group screenOptions={{presentation:'fullScreenModal'}}>
-            <Stack.Screen
-                options={{headerShown: false}}
-                name="PublicProfile" component={PublicProfileScreen}/>
+
             <Stack.Screen
                 options={{headerShown: false}}
                 name="CreatePif" component={CreatePifScreen}/>

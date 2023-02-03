@@ -11,6 +11,7 @@ import InitialOrPic from "../buttons/initialOrPic";
 import {convertTimeStamp, formatTimestamp} from "../../helperFuncs/dateTime";
 import {loadCommentSection, getUserProfile} from "../../firebase/fireStarter";
 import FastImage from "react-native-fast-image";
+import Share from 'react-native-share'
 
 
 export default class Pif extends React.Component {
@@ -27,6 +28,8 @@ export default class Pif extends React.Component {
 
     componentDidMount() {
         let data = this.props.data;
+        console.log(data.trendId,data.id,data.inspirationId)
+        console.log(data.inspirationList ? data.inspirationList.length : 0)
 this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationList ? data.inspirationList.length : 0})
     }
 
@@ -69,6 +72,25 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
         }
     }
 
+    share = async () => {
+        const url = "https://www.plitnick.com/";
+        const title = "The 43 Initiative";
+        const message = "Be the one to spread the love by doing good deeds,check out The 43 Initiative on IOS";
+
+        const options = {
+            title,
+            url,
+            message,
+        };
+        Share.open(options)
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                err && console.log(err);
+            });
+    }
+
     render() {
         let data = this.props.data;
 
@@ -76,7 +98,7 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
             <Animated.View style={[flexing.startColumn,{width:'100%',backgroundColor:'white',marginTop:'5%',borderTopWidth:8,borderColor:'#d3d3d3'}]}>
                 <View style={[flexing.rowStart,{width:'95%',marginLeft:'2.5%',marginTop:'2.5%'}]}>
 
-                    <View style={[flexing.rowStart,{width:'80%'}]}>
+                    <View style={[flexing.rowStart,{width:'75%'}]}>
 
                         <InitialOrPic circleRadius={.05} initials={data.userInitials} route={this.props.route} navigation={this.props.navigation} userUid={data.userUid} imgProvided={data.userImgProvided} img={data.userImg}/>
 
@@ -95,13 +117,28 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
                         </TouchableOpacity>
                     </View>
 
-                    <Spacer xAxis={true} spacing={.095}/>
+                    <Spacer xAxis={true} spacing={.02}/>
+                    <View style={[flexing.rowAround,{width:'20%'}]}>
+                        <View style={[createSquare(.035,0,'purple'),{backgroundColor:'white'}]}>
+                            {data.trendId === data.id && data.trendList ?
+                                <TouchableOpacity>
+                                    <Ionicons name={'ios-pulse-outline'} color={'#3EB489'} size={25}/>
+                                </TouchableOpacity> :
+                                <></>
+                            }
 
-                    <View style={[createSquare(.035,1,'purple'),{backgroundColor:'purple'}]}>
-                        <TouchableOpacity>
-                        <Ionicons name={'ios-git-branch-outline'} color={'white'} size={25}/>
+                        </View>
+
+                        <TouchableOpacity style={[createSquare(.04,0,'black'),{backgroundColor:'white',width:'45%'},flexing.centerColumn]}>
+
+                            <Image source={require('../../assets/img/43v8.png')} style={{width:'100%',height:'100%'}} resizeMode={'contain'}/>
+
+
+
                         </TouchableOpacity>
                     </View>
+
+
                 </View>
 
                 <Text style={[{width:'95%',marginLeft:'2.5%',marginTop:'5%'}]}>
@@ -129,8 +166,8 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
 
                 <Spacer  spacing={.025}/>
 
-                <View style={[flexing.rowStart,{width:'95%',marginLeft:'2.5%'}]}>
-                    <TouchableOpacity style={[flexing.rowStart,{width:'30%'}]}>
+                <View style={[flexing.rowBetween,{width:'95%',marginLeft:'2.5%'}]}>
+                    <TouchableOpacity style={[flexing.rowStart,{width:'20%'}]}>
                         <Ionicons name={'ios-heart-circle'} color={'red'} size={20}/>
                         <Spacer xAxis spacing={.0125}/>
 
@@ -152,6 +189,9 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
 
                             <Text>Inspo{this.state.savedCount === 1 ? '':'s'}</Text>
                         </TouchableOpacity>
+                        <Spacer xAxis spacing={.05125}/>
+
+
 
 
                     </View>
@@ -188,6 +228,14 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
                         text={'Saved'}
                     />
 
+                    <TouchableOpacity onPress={()=>{this.share()}} style={[flexing.rowStart,{justifyContent:'center'}]}>
+                        <Ionicons name={'ios-share-outline'} size={20} color={'gray'}/>
+                        <Spacer xAxis spacing={.005125}/>
+
+                        <Text>Share</Text>
+
+
+                    </TouchableOpacity>
                 </View>
                 <Spacer  spacing={.025}/>
 

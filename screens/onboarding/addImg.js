@@ -33,9 +33,10 @@ export default class AddImg extends React.Component {
     }
 
     returnInitials = () => {
+        let initials = storeControllers.storeData().userSignUp.initials
         return(
             <Circle backgroundColor={'#c6302c'} size={.2} borderRadius={100} borderColor={'lightgray'} borderWidth={8}>
-                <Text style={[{color:'white',fontSize:50,opacity:.7}]}>J.M</Text>
+                <Text style={[{color:'white',fontSize:50,opacity:.7}]}>{initials}</Text>
             </Circle>
         )
     }

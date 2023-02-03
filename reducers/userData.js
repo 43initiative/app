@@ -1,4 +1,12 @@
-import {SHOW_TOAST, SET_LOADING, STORE_PUBLIC_DATA, STORE_PRIVATE_DATA, UPDATE_BIO, UPDATE_IMG} from "./actionTypes";
+import {
+    SHOW_TOAST,
+    SET_LOADING,
+    STORE_PUBLIC_DATA,
+    STORE_PRIVATE_DATA,
+    UPDATE_BIO,
+    UPDATE_IMG,
+    UPDATE_USER_PRIVATE_DATA
+} from "./actionTypes";
 
 const INITIAL_STATE = {
     publicData:null,
@@ -41,6 +49,16 @@ const UserData  = (state = INITIAL_STATE, action) => {
             return {
                 ...state,
                 publicData: data
+            }
+        }
+
+        case UPDATE_USER_PRIVATE_DATA : {
+            console.log('here')
+            let data = action.payload;
+            console.log('updating private data')
+            return {
+                ...state,
+                privateData: data
             }
         }
 

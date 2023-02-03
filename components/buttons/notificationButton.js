@@ -18,6 +18,7 @@ export default class NotificationButton extends React.Component {
         return (
             <TouchableOpacity onPress={()=>{
                 //console.log(this.props)
+                console.log('here')
                 this.props.navigation.push('Profile')
             }} style={[{width:'50%',borderWidth:0,borderColor:'black'},flexing.centerColumn]}>
                 <Ionicons name={'ios-notifications-outline'} color={'black'} size={30}/>

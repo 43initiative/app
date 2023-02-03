@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    TouchableWithoutFeedback, View, Animated, Text, TouchableOpacity, Pressable, ScrollView, Alert
+    TouchableWithoutFeedback, View, Animated, Text, TouchableOpacity, Pressable, ScrollView, Alert, TextInput
 } from 'react-native';
 import {getFollowing, getFollowers} from "../../firebase/fireStarter";
 import UserNomination from "../../components/listings/userNomination";
@@ -14,15 +14,16 @@ export default class NominationModal extends React.Component {
 
         this.state = {
             nominationList: [],
-            selectedNoms:[]
+            selectedNoms:[],
+            nomMsg:''
         }
 
     }
 
     componentDidMount() {
-        let data = this.props.route.params.list;
+        let data = this.props.route.params;
         if(data.length !== 0) {
-            this.setState({selectedNoms:data})
+            this.setState({selectedNoms:data.list,nomMsg:data.nomMsg})
         }
         this.getNominationOptions();
     }
@@ -37,7 +38,7 @@ export default class NominationModal extends React.Component {
     }
 
     depositNominations = async () => {
-        this.props.route.params.shareNominations(this.state.selectedNoms)
+        this.props.route.params.shareNominations(this.state.selectedNoms,this.state.nomMsg)
 
     }
 
@@ -68,7 +69,15 @@ export default class NominationModal extends React.Component {
     render() {
 
         return (
+            <TouchableWithoutFeedback>
             <Animated.View style={[{width:'100%',height:'100%'}]}>
+
+                <TextInput
+                    value={this.state.nomMsg}
+                    onChangeText={(val)=>{this.setState({nomMsg:val})}}
+                    style={{width:'90%',marginLeft:'5%',borderWidth:1,borderRadius:10,height:'25%',padding:'5%'}}
+
+                />
                 <View style={[{width:'90%',marginLeft:'5%',marginTop:'10%'},flexing.rowBetween]}>
                     <Text style={[{fontWeight:'bold'}]}> You can nominate 5 total users.</Text>
                     <Text> {this.state.selectedNoms.length}/5 selected</Text>
@@ -85,6 +94,7 @@ export default class NominationModal extends React.Component {
                     <RoundedButton pressed={()=>{this.depositNominations()}} disabled={false} style={[{backgroundColor:'firebrick',height:'50%',width:'100%'}]} textStyles={{color:'white'}}  bgColor={'firebrick'} text={'Save'}/>
                 </View>
             </Animated.View>
+            </TouchableWithoutFeedback>
         )
     }
 

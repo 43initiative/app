@@ -40,7 +40,7 @@ import {connect} from "react-redux";
                 <Text style={[{color:'#101010',fontStyle:'normal',fontWeight:'bold',fontSize:18}]}>Initiative</Text>
             </View>
                 <View style={[flexing.rowAround,{width:'40%',borderColor:'red',borderWidth:0}]}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('AltPoster')}}>
+                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('CreateNewPost')}}>
                     <View style={[createCircle(.0425,0,'black'),{backgroundColor:'lightgray'}]}>
                         <Ionicons style={[{fontWeight:'bold'}]} name={'ios-add'} size={20} color={'black'}/>
                     </View>

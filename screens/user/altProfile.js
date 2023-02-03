@@ -1,6 +1,15 @@
 import React from 'react';
 import {
-    TouchableWithoutFeedback, View, Animated, Text, TouchableOpacity, Pressable, ScrollView, Image
+    TouchableWithoutFeedback,
+    View,
+    Animated,
+    Text,
+    TouchableOpacity,
+    Pressable,
+    ScrollView,
+    Image,
+    Dimensions,
+    RefreshControl
 } from 'react-native';
 import {Ionicons} from "@expo/vector-icons";
 import dimensions, {flexing} from "../../styles/dimensions/dims";
@@ -8,7 +17,7 @@ import {createCircle, createSquare, fixedShape} from "../../styles/globals/shape
 import Spacer from "../../design/spacer";
 import Circle from "../../designComps/circle";
 import {storeControllers} from "../../reducers/controllers";
-import {getUserProfile} from "../../firebase/fireStarter";
+import {getUserProfile, signOutUser} from "../../firebase/fireStarter";
 import FollowerList from "../../components/listings/followerList";
 import FollowingList from "../../components/listings/followingList";
 
@@ -31,14 +40,27 @@ export default class AltProfile extends React.Component {
                 {icon:'ios-list',text:'View Your Activity',nav:'UserActivityScreen'},
                 {icon:'ios-qr-code',text:'My QR Code',nav:'EditImg'},
                 {icon:'ios-settings',text:'Settings',nav:'Settings'},
-                {icon:'ios-log-out',text:'Log Out',nav:'Settings'},
+               // {icon:'ios-log-out',text:'Log Out',nav:this.signOut},
             ],
             aboutMe:'',
             img:'',
             imgProvided:false,
-            initials:''
+            initials:'',
+            refreshing:false
         }
 
+    }
+    signOut = async () => {
+        let response = await signOutUser();
+        console.log(response)
+        if(response.passed) {
+            this.props.navigation.reset({
+                index: 0,
+                routes: [{ name:'SplashScreen'}],
+            });
+        } else {
+            alert('sign out failed')
+        }
     }
 
 
@@ -60,13 +82,16 @@ export default class AltProfile extends React.Component {
 
     populateUserData = async () => {
         let data = storeControllers.storeData().userData.publicData;
-        console.log(data.img)
-        let {aboutMe,img,displayName,imgProvided,initials} = data;
-        this.setState({aboutMe,img,displayName,imgProvided,initials})
+        console.log(data.userUid,'look for uid')
+        let {aboutMe,img,displayName,imgProvided,initials,userUid} = data;
+        this.setState({aboutMe,img,displayName,imgProvided,initials,userUid,refreshing:false})
     }
 
     updateTheState =  (info) => {
-        this.populateUserData()
+        console.log('ran')
+        this.populateUserData();
+        this.followerList.retrieveFollowers();
+        this.followingList.retrieveFollowing();
     }
 
     changeProfilePic = async () => {
@@ -121,9 +146,18 @@ export default class AltProfile extends React.Component {
             <Animated.View style={[{backgroundColor:'white',width:'100%',height:'100%',marginTop:'15%'}]}>
 
                 <View style={[{marginTop:'15%',width:'100%',height:'100%'}]}>
-                    <ScrollView style={[{width:'100%'}]}>
+                    <ScrollView
+                        refreshControl={<RefreshControl
+                            colors={["#9Bd35A", "#689F38"]}
+                            refreshing={this.state.refreshing}
+                            onRefresh={()=>{
+                                this.updateTheState();
+                            }}
+                            />}
+                        style={[{width:'100%'}]}>
                         <TouchableOpacity onPress={()=>{
-                            getUserProfile(this.props.navigation,this.props.route,true)
+                            console.log(this.state.userUid)
+                            getUserProfile(this.props.navigation,this.props.route,true,this.state.userUid)
                         }} style={[flexing.rowStart,{width:'90%',marginLeft:'5%'}]}>
                             <View style={[createCircle(.05,0,'black')]}>
                                 {this.state.imgProvided ? this.returnProfilePic() : this.returnInitials()}
@@ -145,31 +179,31 @@ export default class AltProfile extends React.Component {
 
                         <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>
 
-                        <FollowerList navigation={this.props.navigation} route={this.props.route} isSelf={true}/>
+                        <FollowerList  ref={(ref)=>{this.followerList = ref;}} displayName={this.state.displayName} userUid={this.state.userUid}  navigation={this.props.navigation} route={this.props.route} isSelf={true}/>
 
                         <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>
-                        <FollowingList navigation={this.props.navigation} route={this.props.route} isSelf={true}/>
+                        <FollowingList  ref={(ref)=>{this.followingList = ref;}} refreshing={this.state.refreshing} displayName={this.state.displayName} userUid={this.state.userUid} navigation={this.props.navigation} route={this.props.route} isSelf={true}/>
 
                         <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>
-                        <View style={[flexing.startColumn,{width:'90%',marginTop:'5%',marginLeft:'5%'}]}>
-                            <Text style={[{fontSize:15,fontWeight:'500'}]}>Your Organizations</Text>
-                            <View style={[flexing.rowStart,{width:'100%',borderColor:'red',borderWidth:0}]}>
-                            {this.state.organizations.map((val)=>(
-                                <View style={[flexing.centerColumn,{marginTop:'5%',borderWidth:0,borderColor:'blue',width:'20%'}]}>
-                                    <TouchableOpacity style={[createCircle(.0625,2,'black'),{backgroundColor:'black'}]}>
-                                        {val.type === 'button' ?
-                                            <Ionicons name={'ios-add'} color={'white'} size={40}/> :
-                                            <Image source={require('../../assets/img/43v8.png')} resizeMode={'contain'} style={[createCircle(.05,0,'black')]}/>
+                        {/*<View style={[flexing.startColumn,{width:'90%',marginTop:'5%',marginLeft:'5%'}]}>*/}
+                        {/*    <Text style={[{fontSize:15,fontWeight:'500'}]}>Your Organizations</Text>*/}
+                        {/*    <View style={[flexing.rowStart,{width:'100%',borderColor:'red',borderWidth:0}]}>*/}
+                        {/*    {this.state.organizations.map((val)=>(*/}
+                        {/*        <View style={[flexing.centerColumn,{marginTop:'5%',borderWidth:0,borderColor:'blue',width:'20%'}]}>*/}
+                        {/*            <TouchableOpacity style={[createCircle(.0625,2,'black'),{backgroundColor:'black'}]}>*/}
+                        {/*                {val.type === 'button' ?*/}
+                        {/*                    <Ionicons name={'ios-add'} color={'white'} size={40}/> :*/}
+                        {/*                    <Image source={require('../../assets/img/43v8.png')} resizeMode={'contain'} style={[createCircle(.05,0,'black')]}/>*/}
 
-                                        }
-                                            </TouchableOpacity>
-                                    <Text numberOfLines={2} style={{width:'75%',marginTop:'5%',textAlign:'center'}}>{val.text}</Text>
-                                </View>
+                        {/*                }*/}
+                        {/*                    </TouchableOpacity>*/}
+                        {/*            <Text numberOfLines={2} style={{width:'75%',marginTop:'5%',textAlign:'center'}}>{val.text}</Text>*/}
+                        {/*        </View>*/}
 
-                                ))}
-                            </View>
+                        {/*        ))}*/}
+                        {/*    </View>*/}
 
-                        </View>
+                        {/*</View>*/}
 
                         <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>
                         <View style={[flexing.startColumn,{width:'90%',marginTop:'5%',marginLeft:'5%'}]}>

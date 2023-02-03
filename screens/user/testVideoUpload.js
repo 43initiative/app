@@ -10,7 +10,8 @@ import {
     Keyboard,
     TextInput,
     Switch,
-    Dimensions
+    Dimensions,
+    ActivityIndicator
 } from 'react-native';
 import {flexing} from "../../styles/dimensions/dims";
 import {doImgUpload,
@@ -63,7 +64,8 @@ export default class CreateNewPost extends React.Component {
             didEventLink:false,
             didFundraiserLink:false,
             fundLink:null,
-            eventLink:null
+            eventLink:null,
+            mediaLoading:false
 
         }
 
@@ -71,9 +73,13 @@ export default class CreateNewPost extends React.Component {
 
     componentDidMount() {
         let data = this.props.route.params;
-        // if(data.isNomination) {
-        //     this.setState({isNomination:true,pifData:data.pifData,nominationData:data.nomData,isInspired:true,inspirationId:data.pifData.id,trendId:data.pifData.trendId})
-        // }
+        if(data.isNomination) {
+            this.setState({isNomination:true,pifData:data.pifData,nominationData:data.nomData,isInspired:true,inspirationId:data.pifData.id,trendId:data.pifData.trendId})
+        }
+
+        if(data.isInspired) {
+            this.setState({isNomination:false,pifData:data.pifData,isInspired:true,inspirationId:data.pifData.id,trendId:data.pifData.trendId})
+        }
 
         this.fetchInspiration();
     }
@@ -210,23 +216,32 @@ export default class CreateNewPost extends React.Component {
     }
 
     addPhoto = async () => {
+
+        this.setState({mediaLoading:true})
         let downloadLink = await doImgUpload();
         console.log(downloadLink)
         if(downloadLink.passed) {
             this.setState({imgProvided:true,img:downloadLink.link})
         } else {
-
+            console.log(downloadLink)
         }
+        this.setState({mediaLoading:false})
     }
 
     addVideo = async () => {
+        this.setState({mediaLoading:true})
+
         let downloadLink = await doVideoUpload();
         console.log(downloadLink)
         if(downloadLink.passed) {
             this.setState({videoProvided:true,video:downloadLink.link})
         } else {
+            console.log(downloadLink)
 
         }
+        this.setState({mediaLoading:false})
+
+
     }
 
     shareNominations = (list,nomMsg) => {
@@ -283,6 +298,19 @@ export default class CreateNewPost extends React.Component {
                         <TextInput placeholderTextColor={'#101010'} onChangeText={(val)=>{this.setState({post:val})}} value={this.state.deed} placeholder={'Tell the people about your good deed!'} multiline={true} style={[{width:'95%',height:'22.5%',borderWidth:0,borderColor:'green'}]}/>
 
                         <View style={[{width:'90%',marginLeft:'5%',borderColor:'red',borderWidth:0,height:Dimensions.get('window').height * .08}]}>
+
+                            {this.state.mediaLoading
+                            ?
+                                <View style={[{width:'25%',height:'100%'},flexing.centerColumn]}>
+                                 <ActivityIndicator size={'large'}/>
+
+                                </View>
+                                :
+
+                                <></>
+                            }
+
+
                            {this.state.imgProvided ?
                                <View style={{width:'25%',height:'100%'}}>
                                    <Image source={{uri:this.state.img}} style={{width:'100%',height:'100%',borderRadius:20}} resizeMode={'contain'}/>
@@ -350,7 +378,7 @@ export default class CreateNewPost extends React.Component {
                                                     placeholder={'Paste your event url here'}
                                                     placeholderTextColor={'#101010'}
                                                 />
-                                                <Spacer spacing={.05} xAxis/>
+                                                <Spacer spacing={.0425} xAxis/>
                                                 <TouchableOpacity onPress={()=>{this.setState({didEventLink:false,eventLink:null})}}>
                                                     <Ionicons name={'ios-close-circle'} color={'black'} size={25}/>
                                                 </TouchableOpacity>
@@ -383,7 +411,7 @@ export default class CreateNewPost extends React.Component {
                                                     placeholder={'Paste your fundraiser url here'}
                                                     placeholderTextColor={'#101010'}
                                                 />
-                                                <Spacer spacing={.05} xAxis/>
+                                                <Spacer spacing={.0425} xAxis/>
                                                 <TouchableOpacity onPress={()=>{this.setState({didFundraiserLink:false,fundLink:null})}}>
                                                     <Ionicons name={'ios-close-circle'} color={'black'} size={25}/>
                                                 </TouchableOpacity>
@@ -433,7 +461,7 @@ export default class CreateNewPost extends React.Component {
                                 <Ionicons name={'ios-body-outline'} color={'firebrick'} size={30}/>
                                 <Spacer spacing={.025} xAxis/>
                                 <Text style={[{color:'black',fontWeight:'bold'}]}>{this.state.isNomination || this.state.isInspired ? 'Change' : 'Add'} Inspiration</Text>
-                                <Spacer spacing={.425} xAxis/>
+                                <Spacer spacing={.4} xAxis/>
                                 {this.state.isNomination || this.state.isInspired ?
 
                                     <Ionicons name={'ios-checkmark'} size={20} color={'black'}/>
@@ -450,7 +478,8 @@ export default class CreateNewPost extends React.Component {
                                 <Ionicons name={'ios-hand-right-outline'} color={'#875f9a'} size={30}/>
                                 <Spacer spacing={.025} xAxis/>
                                 <Text style={[{color:'black',fontWeight:'bold'}]}>{this.state.nominationList.length > 0 ? 'Change Nominations' :'Nominate Followers'}</Text>
-                                {this.state.isNomination || this.state.isInspired ?
+                                <Spacer spacing={.4} xAxis/>
+                                {this.state.nominationList.length > 0 ?
 
                                     <Ionicons name={'ios-checkmark'} size={20} color={'black'}/>
                                     :
@@ -458,9 +487,17 @@ export default class CreateNewPost extends React.Component {
 
                                 }
                             </TouchableOpacity>
+                            <Spacer spacing={.025}/>
 
                             {this.state.nominationList.length > 0 ?
-                            <View style={[]}>
+                            <View style={[{width:'75%'},flexing.startColumn]}>
+                                <Text style={[{fontSize:15}]}>Your Nomination Message:</Text>
+                                <Spacer spacing={.0125}/>
+                                <Text style={[{fontSize:13}]}>"...{this.state.nomMsg}..."</Text>
+                                <Spacer spacing={.0125}/>
+                                <TouchableOpacity onPress={()=>{this.popNominationModal()}}>
+                                    <Text style={[{color:'#3EB489',textDecorationLine:'underline'}]}>Edit Nominations</Text>
+                                </TouchableOpacity>
                             </View>
                             :
                             <></>

@@ -1499,37 +1499,47 @@ console.log(result)
 
 const doImgUpload = async () => {
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        //videoMaxDuration:30,
-        allowsMultipleSelection: false,
-        aspect: [4, 3],
-        quality: 1,
-        base64: true,
-    });
+    try {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            //videoMaxDuration:30,
+            allowsMultipleSelection: false,
+            aspect: [4, 3],
+            quality: 1,
+            base64: true,
+        });
 
-
-    const resp = await fetch(result.uri);
-    const blob = await resp.blob()
-   // await waitACertainTime(3000)
-    let{auth} = firebaseCreds
-    let userUid = auth.currentUser.uid;
+        if(result.cancelled) {
+            return {passed:false,reason:'canceled'}
+        }
+        const resp = await fetch(result.uri);
+        const blob = await resp.blob()
+        // await waitACertainTime(3000)
+        let{auth} = firebaseCreds
+        let userUid = auth.currentUser.uid;
         const storage = getStorage(firebaseCreds.app);
         const storageRef = ref(storage,`43vids/${Date.now()}${userUid}.jpg`);
-   await  uploadBytesResumable(storageRef,blob).then((snap)=>{
+        await  uploadBytesResumable(storageRef,blob).then((snap)=>{
 
-   }).catch((e)=>{
-        return {passed:false,reason:'something went wrong with the upload'}
-   })
+        }).catch((e)=>{
+            return {passed:false,reason:'something went wrong with the upload'}
+        })
 
-    let url = await getDownloadURL(storageRef);
-    blob.close()
-    return {passed:true,link:url};
+        let url = await getDownloadURL(storageRef);
+        blob.close()
+        return {passed:true,link:url};
+    } catch (e) {
+
+    }
+
+
 
 }
 
 const doVideoUpload = async () => {
+
+
 
     let result = await ImagePicker.launchImageLibraryAsync( {
         mediaTypes: ImagePicker.MediaTypeOptions.Videos,
@@ -1540,6 +1550,10 @@ const doVideoUpload = async () => {
         quality: 1,
         base64: true,
     });
+
+    if(result.cancelled) {
+        return {passed:false,reason:'canceled'}
+    }
 
 
     const resp = await fetch(result.uri);

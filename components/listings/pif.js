@@ -129,7 +129,13 @@ this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationLi
 
                         </View>
 
-                        <TouchableOpacity style={[createSquare(.04,0,'black'),{backgroundColor:'white',width:'45%'},flexing.centerColumn]}>
+                        <TouchableOpacity onPress={()=>{
+                            this.props.navigation.push("CreateNewPost",{
+                                isNomination:false,
+                                isInspired:true,
+                                pifData:data
+                            })
+                        }} style={[createSquare(.04,0,'black'),{backgroundColor:'white',width:'45%'},flexing.centerColumn]}>
 
                             <Image source={require('../../assets/img/43v8.png')} style={{width:'100%',height:'100%'}} resizeMode={'contain'}/>
 

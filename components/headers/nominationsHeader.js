@@ -33,7 +33,10 @@ class NominationsHeader extends React.Component {
 
                 </View>
                 <View style={[flexing.rowAround,{width:'40%'}]}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('CreateNewPost')}}>
+                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('CreateNewPost',{
+                        isNomination:false,
+                        isInspired:false
+                    })}}>
                         <View style={[createCircle(.0425,0,'black'),{backgroundColor:'lightgray'}]}>
                             <Ionicons style={[{fontWeight:'bold'}]} name={'ios-add'} size={20} color={'black'}/>
                         </View>

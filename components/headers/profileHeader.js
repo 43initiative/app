@@ -23,7 +23,10 @@ export default class ProfileHeader extends React.Component {
                     <Text style={[{color:'#3EB489',fontStyle:'normal',fontWeight:'bold',fontSize:30}]}>Menu</Text>
                 </View>
                 <View style={[flexing.rowStart]}>
-                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('CreateNewPost')}}>
+                    <TouchableOpacity onPress={()=>{this.props.navigation.navigate('CreateNewPost',{
+                        isNomination:false,
+                        isInspired:false
+                    })}}>
                         <View style={[createCircle(.0425,0,'black'),{backgroundColor:'lightgray'}]}>
                             <Ionicons style={[{fontWeight:'bold'}]} name={'ios-add'} size={20} color={'black'}/>
                         </View>

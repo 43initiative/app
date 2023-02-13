@@ -59,6 +59,7 @@ import CompleteFollowing from "../../screens/user/completeFollowing";
 import CompleteFollowers from "../../screens/user/completeFollowers";
 import CreateNewPost from "../../screens/user/testVideoUpload";
 import AllPifs from "../../screens/user/allPifs";
+import RefineTags from "../../screens/tabs/refineTags";
 const Stack = createNativeStackNavigator();
 
 function SplashScreen({route,navigation}) {
@@ -225,6 +226,12 @@ return(
 function RefineFilterScreen({route,navigation}) {
     return(
         <RefineFilterModal  route={route} navigation={navigation}/>
+    )
+}
+
+function RefineTagScreen({route,navigation}) {
+    return(
+        <RefineTags  route={route} navigation={navigation}/>
     )
 }
 
@@ -619,6 +626,10 @@ export function MainNavigator() {
             <Stack.Screen
                 options={{headerShown: true,title:'Filter Content'}}
                 name="RefineFilter" component={RefineFilterScreen}/>
+
+            <Stack.Screen
+                options={{headerShown: true,title:'Search With Tags'}}
+                name="RefineTags" component={RefineTagScreen}/>
 
             <Stack.Screen
                 options={{headerShown: true,title:'Select Inspiration'}}

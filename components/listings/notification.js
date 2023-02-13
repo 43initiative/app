@@ -27,7 +27,7 @@ export default class NotificationListing extends React.Component {
             }
 
             case 'nomination' : {
-                console.log(data.nominatorId)
+                //console.log(data.nominatorId)
                 return getUserProfile(this.props.navigation,this.props.route,null,data.nominatorId)
             }
         }
@@ -52,7 +52,7 @@ export default class NotificationListing extends React.Component {
     render() {
         let data = this.props.data;
         return (
-            <TouchableOpacity onPress={this.navigateNotification} style={[flexing.rowStart,{width:'100%',padding:'2.5%',backgroundColor:'#e3e3e3'}]}>
+            <TouchableOpacity onPress={this.navigateNotification} style={[flexing.rowStart,{width:'100%',padding:'2.5%',backgroundColor:data.read ?  'white':'#e3e3e3'}]}>
                 {/*<TouchableOpacity>*/}
                 {/*<Circle size={.05}/>*/}
                 {/*</TouchableOpacity>*/}

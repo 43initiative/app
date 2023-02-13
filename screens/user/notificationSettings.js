@@ -7,7 +7,8 @@ import Spacer from "../../design/spacer";
 import RoundedButton from "../../components/buttons/roundedButton";
 import {flexing} from "../../styles/dimensions/dims";
 import {checkLocationPermissions} from "../../permissionCalls/location";
-import {getPermissions} from "../../permissionCalls/notifications";
+import {grabPushToken, getPermissions} from "../../permissionCalls/notifications";
+import {updatePushToken} from "../../firebase/fireStarter";
 
 
 export default class NotificationSettings extends React.Component {
@@ -24,6 +25,15 @@ export default class NotificationSettings extends React.Component {
 
     componentDidMount() {
         this.checkNotification();
+    }
+
+    startPermissionRequest = async () => {
+        let response = await getPermissions(true);
+        if(response.permitted) {
+            let answer = await grabPushToken();
+            return updatePushToken(answer)
+
+        }
     }
 
 
@@ -61,17 +71,24 @@ export default class NotificationSettings extends React.Component {
 
     checkNotification = async () => {
         let check = await getPermissions(false);
+        console.log(check,'notif check')
         if(check.permitted) {
             this.setState({permVerified:true,granted:true})
+            let response = await grabPushToken();
+            return updatePushToken(response)
         } else {
-            this.setState({permVerified:true,granted:false,canAskAgain:check.canAskAgain})
+            if(check.canAskAgain) {
+
+            } else {
+                this.setState({permVerified:true,granted:false,canAskAgain:check.canAskAgain})
+            }
         }
     }
 
     returnPermissionButton = () => {
         if(!this.state.granted && this.state.canAskAgain) {
-            return( <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'15%'}]}>
-                <RoundedButton pressed={()=>{this.getPermissions(true)}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#c6302c'} text={'Submit Email'}/>
+            return( <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'10%'}]}>
+                <RoundedButton pressed={()=>{this.startPermissionRequest()}} style={[{width:'90%',marginLeft:'5%',height:'100%'}]} bgColor={'#c6302c'} text={'Turn On Notifications'}/>
 
             </View>)
         }
@@ -97,7 +114,7 @@ export default class NotificationSettings extends React.Component {
 
                     {this.returnPermissionStatusResponse()}
 
-                    <Spacer spacing={.05}/>
+                    <Spacer spacing={.6}/>
                     {this.returnPermissionButton()}
                 </View>
             </Animated.View>

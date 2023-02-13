@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "43 Initiative",
-    "slug": "43 Initiative",
+    "name": "43project",
+    "slug": "43project",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
@@ -12,11 +12,13 @@
         {
           "photosPermission": "custom photos permission",
           "cameraPermission": "Allow $(PRODUCT_NAME) to open the camera",
-
           "//": "Disables the microphone permission",
           "microphonePermission": false
         }
       ]
-    ]
+    ],
+    "ios": {
+      "bundleIdentifier": "com.mangicode.43project"
+    }
   }
 }

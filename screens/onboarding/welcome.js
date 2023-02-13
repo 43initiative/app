@@ -25,8 +25,8 @@ export default class Welcome extends React.Component {
                         <Text style={[{fontSize:20,fontWeight:'bold',color:'#101010'}]}>Welcome To the 43Initiative</Text>
                         <Text style={[{fontSize:13.75,color:'gray',textAlign:'center'}]}>Are you signing up as an individual or an organization (business, non-profit, government institution).</Text>
                     </VStack>
-                  <RoundedButton pressed={()=>{this.props.navigation.navigate('PersonalScreen')}} style={[{width:'80%',height:'20%'}]} bgColor={'#c6302c'} text={'Individual'}/>
-                    <RoundedButton doOutline pressed={()=>{this.props.navigation.navigate('OrgSignUpScreen')}} style={[{width:'80%',height:'20%'}]} bgColor={'#c6302c'} text={'Organization'}/>
+                  <RoundedButton pressed={()=>{this.props.navigation.navigate('PersonalScreen')}} style={[{width:'80%',height:'20%'}]} bgColor={'#3EB489'} text={'Individual'}/>
+                    <RoundedButton doOutline pressed={()=>{this.props.navigation.navigate('OrgSignUpScreen')}} style={[{width:'80%',height:'20%'}]} bgColor={'#3EB489'} text={'Organization'}/>
 
                 </VStack>
             </Animated.View>

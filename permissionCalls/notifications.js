@@ -11,6 +11,7 @@ const getPermissions = async (proceedToRequest) => {
         canAskAgain:currentPermissions.canAskAgain,
         expiration:currentPermissions.expires,
     }
+    console.log(permissionResponse)
 
     if(proceedToRequest && !permissionResponse.permitted) {
         if(permissionResponse.canAskAgain) {
@@ -22,7 +23,7 @@ const getPermissions = async (proceedToRequest) => {
 }
 
 const grabPushToken = async () => {
-    let pushToken =  (await Notifications.getExpoPushTokenAsync({experienceId:'@mangicode/foodee'})).data;
+    let pushToken =  (await Notifications.getExpoPushTokenAsync({experienceId:'@mangicode/43project'})).data;
     return pushToken;
 }
 
@@ -72,7 +73,7 @@ const deliverNotification = async (title,body) => {
             handleNotification: async () => ({
                 shouldShowAlert: true,
                 shouldPlaySound: true,
-                shouldSetBadge: true,
+                shouldSetBadge: false,
             }),
         });
         return  Notifications.scheduleNotificationAsync({

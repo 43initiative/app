@@ -7,7 +7,8 @@ import {waitACertainTime} from "../helperFuncs/timers/wait";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {branding} from "../appSpecifics/branding";
 import {flexing, screens} from '../styles/dimensions/dims'
-import  {getData,addData,initialize} from "../firebase/newFIre";
+//import  {getData,addData,initialize} from "../firebase/newFIre";
+import {startNetworkWatcher, initialize} from '../firebase/fireStarter'
 import Spacer from "../design/spacer";
 import {checkForUser,checkForSignUpCompletion} from "../firebase/newFIre";
 import {showToastMessage, storeControllers} from "../reducers/controllers";
@@ -29,6 +30,8 @@ export default class Splash extends React.Component {
 
     startFire = async () => {
         //initialize the firebase database
+        console.log('starting net watcher')
+        startNetworkWatcher();
         const {db,app} = await initialize();
         console.log('start fire has commenceed', db)
         let store = storeControllers.store;

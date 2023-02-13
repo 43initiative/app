@@ -48,8 +48,8 @@ export default class LocationPerm extends React.Component {
                         <Image resizeMode={'contain'} style={[{width:'100%'}]} source={require('../../assets/img/location.png')}/>
                     </VStack>
                     <Hstack jc={'space-around'} width={.9} trueSize={false} height={.2}>
-                        <OutlineButton  borderWidth={1} pressed={()=>{this.props.navigation.navigate('NotificationScreen')}} style={[{width:'45%',height:'35%'}]} borderColor={'#c6302c'} textColor={'#c6302c'} text={`Don't Share`}/>
-                        <RoundedButton pressed={()=>{this.checkLocationTracking()}} style={[{width:'45%',height:'35%'}]} bgColor={'#c6302c'} text={`Share Location`}/>
+                        <OutlineButton  borderWidth={1} pressed={()=>{this.props.navigation.navigate('NotificationScreen')}} style={[{width:'45%',height:'35%'}]} borderColor={'#3EB489'} textColor={'#c6302c'} text={`Don't Share`}/>
+                        <RoundedButton pressed={()=>{this.checkLocationTracking()}} style={[{width:'45%',height:'35%'}]} bgColor={'#3EB489'} text={`Share Location`}/>
 
                     </Hstack>
                     <TextLink pressed={()=>{this.props.navigation.goBack()}} textStyles={[{color:'red'}]} text={'Go Back'}/>

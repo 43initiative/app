@@ -1,6 +1,15 @@
 import React from 'react';
 import {
-    TouchableWithoutFeedback, View, Animated, Text, TouchableOpacity, Pressable, Dimensions, SafeAreaView, ScrollView
+    TouchableWithoutFeedback,
+    View,
+    Animated,
+    Text,
+    TouchableOpacity,
+    Pressable,
+    Dimensions,
+    SafeAreaView,
+    ScrollView,
+    RefreshControl
 } from 'react-native';
 import {flexing} from "../../styles/dimensions/dims";
 import RoundedButton from "../../components/buttons/roundedButton";
@@ -23,7 +32,8 @@ export default class Nominations extends React.Component {
             completedRec:[],
             completedSent:[],
             pendingRec:[],
-            pendingSent:[]
+            pendingSent:[],
+            refreshing:false
         }
 
     }
@@ -59,6 +69,7 @@ export default class Nominations extends React.Component {
     }
 
     getSegments = async () => {
+        this.setState({refreshing:true})
         let recCall = await getRecNominations();
         let sent = await getSentNominations();
         let rec = recCall.data;
@@ -75,8 +86,9 @@ export default class Nominations extends React.Component {
         let pendingSent = sent.filter((val)=>{
             return val.pending
         })
-        this.setState({pendingRec,pendingSent,completedSent,completedRec});
-        console.log(this.state)
+        console.log(pendingSent)
+        this.setState({pendingRec,pendingSent,completedSent,completedRec,refreshing:false});
+
     }
 
     returnSegments = () => {
@@ -85,7 +97,7 @@ export default class Nominations extends React.Component {
                 <View style={{width:'100%'}}>
                     <Text style={[{color:'black',fontWeight:'bold',fontSize:18,marginLeft:'5%',marginTop:'10%'}]}>Pending Nominations</Text>
                     {this.state.pendingSent.map((val)=>(
-                        <SentNom viewPost={()=>{this.loadSinglePost(val.postId)}} withdraw={()=>{this.withdrawNom(val.id)}} route={this.props.route} navigation={this.props.navigation} data={val}/>
+                        <SentNom  data={val} viewPost={()=>{this.loadSinglePost(val.postId)}} withdraw={()=>{this.withdrawNom(val.id)}} route={this.props.route} navigation={this.props.navigation}/>
                     ))}
 
                     <Text style={[{color:'black',fontWeight:'bold',fontSize:18,marginLeft:'5%',marginTop:'10%'}]}>Completed Nominations</Text>
@@ -128,7 +140,15 @@ export default class Nominations extends React.Component {
                 <Spacer spacing={.08}/>
 
 
-               <ScrollView style={{width:'100%'}}>
+               <ScrollView
+                   refreshControl={<RefreshControl
+                       colors={["#9Bd35A", "#689F38"]}
+                       refreshing={this.state.refreshing}
+                       onRefresh={()=>{
+                           this.getSegments();
+                       }}
+                   />}
+                   style={{width:'100%'}}>
                    <View style={[flexing.rowAround,{width:'50%',marginLeft:'5%',height:Dimensions.get('window').height * .05}]}>
                        <RoundedButton pressed={()=>{this.setState({segment:'received'})}} doOutline={this.state.segment !== 'received'} bgColor={'#3EB489'} textStyles={[{color:'white'}]} text={'Received'} style={[{height:'80%',width:'45%'}]}/>
                        <RoundedButton pressed={()=>{this.setState({segment:'sent'})}}  doOutline={this.state.segment !== 'sent'} bgColor={'#3EB489'} textStyles={[{color:'white'}]} text={'Sent'} style={[{height:'80%',width:'40%'}]}/>

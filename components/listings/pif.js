@@ -36,6 +36,10 @@ export default class Pif extends React.Component {
 this.setState({currentLikes:data.likedList.length,savedCount: data.inspirationList ? data.inspirationList.length : 0})
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+       console.log(this.props.play)
+    }
+
     likePost = () => {
         let currentLikes = this.state.currentLikes;
         currentLikes += 1;
@@ -129,6 +133,20 @@ console.log(action)
         }
     }
 
+
+    returnTagList = (data) => {
+
+        if(data.tagList && data.tagList.length > 0) {
+            return(  <View style={[{width:'95%',marginLeft:'2.5%',marginTop:'2.5%'},flexing.rowStart,{flexWrap:'wrap'}]}>
+                {data.tagList.map((val)=>{
+                    return(<Text style={[{fontWeight:'600',marginRight:'1.25%'}]}>
+                        #{val}
+                    </Text>)
+                })}
+            </View>)
+        }
+    }
+
     render() {
         let data = this.props.data;
 
@@ -195,6 +213,9 @@ console.log(action)
                 <Text style={[{width:'95%',marginLeft:'2.5%',marginTop:'5%'}]}>
                     {data.post}
                 </Text>
+
+                {this.returnTagList(data)}
+
                 <Spacer  spacing={.025}/>
 
                 {data.imgProvided
@@ -218,19 +239,26 @@ console.log(action)
                 {data.videoProvided
 
                     ?
-                    <Video source={{uri: data.video}}
-                           ref={(ref) => {
-                               this.player = ref
-                           }}
-                           paused={false}
-                           muted={true}
-                           fullscreenAutorotate={true}
-                           disableFocus={false}
-                           controls={true}
-                           //onBuffer={(ev)=>{console.log(ev)}}
-                           onError={(error)=>{alert('video error occurred')}}
-                           resizeMode={'cover'}
-                           style={{width:'100%',height:400,borderRadius:0}} />
+                    <View style={{width:'100%'}}>
+                        <View style={[{position:'absolute',zIndex:1,top:'5%',left:'5%'}]}>
+                            <Ionicons name={'ios-film'} color={'white'} size={35}/>
+                        </View>
+                        <Video source={{uri: data.video}}
+                               ref={(ref) => {
+                                   this.player = ref
+                               }}
+                               paused={!this.props.play}
+                               muted={true}
+                               fullscreenAutorotate={true}
+                               disableFocus={false}
+                               controls={true}
+                            //onBuffer={(ev)=>{console.log(ev)}}
+                               onError={(error)=>{alert('video error occurred')}}
+                               resizeMode={'cover'}
+                               style={{width:'100%',height:400,borderRadius:0}} />
+                    </View>
+
+
                     : <></>
                 }
 

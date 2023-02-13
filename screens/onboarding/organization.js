@@ -160,7 +160,7 @@ export default class OrganizationSignUp extends React.Component {
                     </View>
                     <Spacer spacing={.025}/>
 
-                    <RoundedButton disabled={this.state.organizationSelection === null} pressed={()=>{this.saveAndContinue()}} style={[{width:'90%',marginLeft:'5%',height:'8%'}]} text={'This is my organization'} bgColor={'firebrick'}/>
+                    <RoundedButton disabled={this.state.organizationSelection === null} pressed={()=>{this.saveAndContinue()}} style={[{width:'90%',marginLeft:'5%',height:'8%'}]} text={'This is my organization'} bgColor={'#3EB489'}/>
 
 
                 </View>

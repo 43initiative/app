@@ -190,7 +190,7 @@ export default class Personal extends React.Component {
                     </Hstack>
 
                                 </VStack>
-                <RoundedButton disabled={!this.allowContinue()} pressed={()=>{this.saveAndContinue()}} style={[{width:'80%',height:'7.5%'}]} bgColor={'#c6302c'} text={'Continue'}/>
+                <RoundedButton disabled={!this.allowContinue()} pressed={()=>{this.saveAndContinue()}} style={[{width:'80%',height:'7.5%'}]} bgColor={'#3EB489'} text={'Continue'}/>
 
             </VStack>
                 {this.returnMonthPicker()}

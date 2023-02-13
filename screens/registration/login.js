@@ -45,6 +45,9 @@ export default class Login extends React.Component {
                 if(storeUser.passed) {
                     this.props.navigation.navigate('TabStack')
                 } else {
+                    deactivateLoading()
+                    showToastMessage('Login Failed',loginAttempt.errorMsg,'ios-sad-outline')
+
                     alert('login failed due to data not being present')
                 }
             }

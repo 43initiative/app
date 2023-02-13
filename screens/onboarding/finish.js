@@ -47,7 +47,7 @@ export default class Finish extends React.Component {
                         <Text style={[{fontSize:20,fontWeight:'bold',color:'#101010'}]}>You're ready to go!</Text>
                         <Text style={[{fontSize:13.75,color:'gray',textAlign:'center'}]}>Thank you for telling us more about yourself, we hope you enjoy the app!</Text>
                     </VStack>
-                    <RoundedButton pressed={()=>{this.submitData()}} style={[{width:'80%',height:'20%'}]} bgColor={'#c6302c'} text={`Let's Go!`}/>
+                    <RoundedButton pressed={()=>{this.submitData()}} style={[{width:'80%',height:'20%'}]} bgColor={'#3EB489'} text={`Let's Go!`}/>
                 </VStack>
             </Animated.View>
         )

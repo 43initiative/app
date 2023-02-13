@@ -44,8 +44,8 @@ export default class NotificationPerm extends React.Component {
                         <Image resizeMode={'contain'} style={[{width:'100%'}]} source={require('../../assets/img/notification.png')}/>
                     </VStack>
                     <Hstack jc={'space-around'} width={.9} trueSize={false} height={.2}>
-                        <OutlineButton  borderWidth={1} pressed={()=>{this.props.navigation.navigate('FinishScreen')}} style={[{width:'45%',height:'35%'}]} borderColor={'#c6302c'} textColor={'#c6302c'} text={`No Thanks`}/>
-                        <RoundedButton pressed={()=>{this.runNotificationPerm()}} style={[{width:'45%',height:'35%'}]} bgColor={'#c6302c'} text={`Yes,Notify Me`}/>
+                        <OutlineButton  borderWidth={1} pressed={()=>{this.props.navigation.navigate('FinishScreen')}} style={[{width:'45%',height:'35%'}]} borderColor={'#3EB489'} textColor={'#c6302c'} text={`No Thanks`}/>
+                        <RoundedButton pressed={()=>{this.runNotificationPerm()}} style={[{width:'45%',height:'35%'}]} bgColor={'#3EB489'} text={`Yes,Notify Me`}/>
 
                     </Hstack>
                     <TextLink pressed={()=>{this.props.navigation.goBack()}} textStyles={[{color:'red'}]} text={'Go Back'}/>

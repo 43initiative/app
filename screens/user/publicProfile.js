@@ -14,6 +14,7 @@ import {formatTimestamp} from "../../helperFuncs/dateTime";
 import {returnUserFollowingList, updateFollowingList} from "../../firebase/fireStarter";
 import FollowButton from "../../components/buttons/followButton";
 import PifListSection from "../../components/listings/pifListSection";
+import * as WebBrowser from "expo-web-browser";
 
 export default class PublicProfile extends React.Component {
     constructor(props) {
@@ -107,6 +108,11 @@ export default class PublicProfile extends React.Component {
 
     }
 
+    openBrowser = async (url) => {
+        let action = await WebBrowser.openBrowserAsync(url);
+        console.log(action)
+    };
+
     render() {
         let data = this.props.route.params;
         console.log(data,'data here')
@@ -133,6 +139,17 @@ export default class PublicProfile extends React.Component {
                     <Spacer spacing={.0125}/>
 
                     <Text style={[{fontSize:20}]}>@{data.displayName}</Text>
+                    <Spacer spacing={.0125}/>
+
+                    {data.isOrganization ?
+                        <View style={[flexing.rowStart]}>
+                            <Spacer spacing={.0125}/>
+                            <Ionicons name={'ios-checkmark-circle'} size={15} color={'gray'}/>
+                            <Spacer spacing={.01} xAxis/>
+                            <Text style={[{fontSize:14,color:'gray',textDecorationLine:'none'}]}>Verified Organization</Text>
+                        </View>
+                        :<></>
+                    }
                     <Spacer spacing={.025}/>
 
                     <FollowButton pressed={(action)=>{this.doFollowAction(action,data.userUid)}} isFollowing={this.state.followingList.indexOf(data.userUid) !== -1}/>
@@ -142,6 +159,13 @@ export default class PublicProfile extends React.Component {
                     <Text style={[{fontSize:13,color:'gray',width:'85%',textAlign:'center'}]}>
                         {data.aboutMe}
                     </Text>
+
+                    {data.isOrganization ?
+                        <TouchableOpacity onPress={()=>{this.openBrowser(data.website)}}>
+                            <Text style={[{fontSize:14,color:'gray',textDecorationLine:'underline'}]}>Visit Website</Text>
+                        </TouchableOpacity>
+                        :<></>
+                    }
                     <Spacer spacing={.025}/>
                     <View style={[flexing.rowAround,{width:'85%'}]}>
                         <View style={[flexing.centerColumn, {width: '30%'}]}>
@@ -162,6 +186,7 @@ export default class PublicProfile extends React.Component {
                             <Text style={[{fontSize:14,color:'gray'}]}>{typeof data.joined === 'number' ? formatTimestamp(data.joined) : 'unknown'}</Text>
                         </View>
                     </View>
+
                     <Spacer spacing={.025}/>
 
                     <View style={[fixedShape.line,{marginTop:'5%',width:'90%',marginLeft:'5%'}]}></View>

@@ -3,9 +3,10 @@ import { initializeApp,getApps } from "firebase/app";
 import {getStorage,ref,uploadBytes,getDownloadURL,uploadString,uploadBytesResumable} from 'firebase/storage'
 import {getAuth, createUserWithEmailAndPassword, signOut,signInWithEmailAndPassword,sendPasswordResetEmail,updateEmail,updatePassword} from "firebase/auth";
 import * as ImagePicker from 'expo-image-picker';
+import NetInfo from "@react-native-community/netinfo";
 
 import { doc, getDocs,getFirestore,collection,getDoc,addDoc,query, where ,updateDoc,onSnapshot,serverTimestamp,orderBy} from "firebase/firestore";
-import {storeControllers} from "../reducers/controllers";
+import {showToastMessage, storeControllers} from "../reducers/controllers";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {returnStore} from "./fireInit";
 import {
@@ -19,10 +20,22 @@ import {
 import firebase from "firebase/compat";
 import {img} from "react-native/Libraries/Animated/AnimatedWeb";
 import {waitACertainTime} from "../helperFuncs/timers/wait";
+import {AppState} from "react-native";
 import {Platform} from "react-native";
 let app;
 let db;
 let auth;
+
+import * as Notifications from 'expo-notifications';
+
+// Notifications.addNotificationReceivedListener(notification => {
+//     if (notification. === 'selected') {
+//         // Handle the notification being tapped by the user
+//         const { data } = notification;
+//         // Access the data associated with the notification
+//         console.log(data);
+//     }
+// });
 
 let firebaseCreds = {
     app:null,
@@ -30,7 +43,37 @@ let firebaseCreds = {
     auth:null
 }
 
+let networkStats = {
+    type:null,
+    connected:false
+}
+
 //initialize firebase
+//
+const setOnlineStatus = async (status) => {
+    let userUid = firebaseCreds.auth.currentUser.uid;
+    if(userUid) {
+        const userRef = doc(firebaseCreds.db, "publicUsers", userUid);
+        const res = await updateDoc(userRef,{online:status})
+        //console.log(res)
+    }
+
+}
+
+const handleAppStateChange =  (ev) => {
+
+
+console.log(ev)
+        if(ev === 'active') {
+            setOnlineStatus(true)
+
+        } else {
+            setOnlineStatus(false)
+        }
+
+}
+
+AppState.addEventListener('change', handleAppStateChange);
 
 const initialize = async () => {
     const firebaseConfig = {
@@ -61,11 +104,51 @@ const returnFirebaseCredentials = async () => {
     return firebaseCreds;
 }
 
+let unsubscribeNetWatcher = null;
+let everDisconnected = false;
+
+const startNetworkWatcher = async () => {
+    console.log('running net watchersss')
+    if(!unsubscribeNetWatcher) {
+        NetInfo.fetch().then(state => {
+            networkStats.type = state.type;
+            networkStats.connected = state.isConnected;
+            console.log("Connection type", state.type);
+            console.log("Is connected?", state.isConnected);
+        });
+        unsubscribeNetWatcher = NetInfo.addEventListener(state => {
+            console.log('ion the watcher')
+            console.log("Connection type", state.type);
+            console.log("Is connected?", state.isConnected);
+            networkStats.type = state.type;
+            networkStats.connected = state.isConnected;
+            if(!state.isConnected) {
+                showToastMessage('No Internet','It seems that you have lost internet connection.','ios-wifi')
+                everDisconnected = true;
+
+            } else {
+                if(everDisconnected) {
+                    showToastMessage('Your Internet Is Back','You have restored your internet connection','ios-wifi')
+                }
+                everDisconnected = false;
+
+            }
+        });
+    }
+
+}
+
 
 
 //check for active user
 const checkForToken = async () => {
     return AsyncStorage.getItem('exAccessToken')
+}
+
+const markAllNotifsRead = async (list) => {
+    for (let i = 0; i < list.length; i++) {
+        await markNotifRead(list[i])
+    }
 }
 
 const checkForActiveUser = async () => {
@@ -303,6 +386,21 @@ const submitSignUpData = async (data) => {
 
 
 
+}
+
+const updatePushToken = async (token) => {
+    let db = firebaseCreds.db;
+    let auth = firebaseCreds.auth
+    let userUid = auth.currentUser.uid;
+
+    const userRef = doc(firebaseCreds.db, "privateUsers", userUid);
+
+    const res = await updateDoc(userRef,{
+        permissions: {
+            pushNotifications:true,
+            pushToken:token
+        }
+    },{merge:true})
 }
 
 
@@ -1060,12 +1158,15 @@ const getUserDeeds = async (isSelf,userUid) => {
 
 const getAllUsers = async () => {
     let {auth,db} = firebaseCreds;
+    let uid = auth.currentUser.uid;
     const userRef = collection(db,'publicUsers');
     const querySnapshot = await getDocs(userRef);
     let list = []
     querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
-        list.push({userUid:doc.id,...doc.data()})
+        if(doc.id !== uid) {
+            list.push({userUid:doc.id,...doc.data()})
+        }
     });
     return {passed:true,data:list}
 }
@@ -1135,7 +1236,11 @@ const getNotifications = async () => {
             console.log(doc.id, " => ", doc.data());
         });
         console.log(list);
-        return {data:list,passed:true};
+        return {unread:list.filter((val)=>{
+            return !val.read
+            }),read:list.filter((val)=>{
+            return val.read
+            }),passed:true};
     } catch (e) {
         return {data:null,passed:false,reason:e}
 
@@ -1184,17 +1289,43 @@ const addPif = async (pif) => {
     }
 }
 
+const getTagOptions = async () => {
+    let {auth,db} = firebaseCreds;
 
-const getAllDeeds = async () => {
+    const tagRef = collection(db,'tagList')
+    const querySnapshot = await getDocs(tagRef);
+    let list = [];
+    querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        list.push({tagName:doc.data().tagName,score:doc.data().relevancyScore})
+        //console.log(doc.id, " => ", doc.data());
+    });
+
+    return {passed:true,
+
+    list: list.sort((a,b)=>{
+        return b.relevancyScore = a.relevancyScore
+    }).map((val)=>{
+        return val.tagName
+    })
+
+    }
+}
+
+
+const getAllDeeds = async (tagList) => {
+    if(networkStats.isConnected) {
+        return showToastMessage('No Internet','It seems that you have lost internet connection.','ios-wifi')
+
+    }
     let {auth,db} = firebaseCreds;
     const pifRef = collection(db,'pifs')
-    const querySnapshot = await getDocs(pifRef);
 
-    //
-   ///const q = query(userRef,where('userUid','==',searchUid));
-   //const q = query(pifRef, orderBy("timestamp"))
-   // const querySnapshot = await getDocs(q);
     let list = []
+if(tagList.length > 0) {
+    const q = query(collection(db, "pifs"), where("tagList", "array-contains-any", tagList));
+    const querySnapshot = await getDocs(q);
+
     querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
         let newData = {postId:doc.id}
@@ -1203,6 +1334,23 @@ const getAllDeeds = async () => {
     });
 
     console.log(list,'here')
+} else {
+    const querySnapshot = await getDocs(pifRef);
+    querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        let newData = {postId:doc.id}
+        list.push({id:doc.id,postId:doc.id,...doc.data()})
+        //console.log(doc.id, " => ", doc.data());
+    });
+
+    console.log(list,'here')
+}
+    //
+   ///const q = query(userRef,where('userUid','==',searchUid));
+   //const q = query(pifRef, orderBy("timestamp"))
+   // const querySnapshot = await getDocs(q);
+
+
     //
     // //
     // let list = []
@@ -1750,5 +1898,9 @@ module.exports = {
     testSecondOption,
     signUpUser,
     getPifInspoTrend,
-    doImgUploadForProfile
+    doImgUploadForProfile,
+    startNetworkWatcher,
+    getTagOptions,
+    markAllNotifsRead,
+    updatePushToken
 }

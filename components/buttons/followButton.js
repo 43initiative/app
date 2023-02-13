@@ -31,20 +31,20 @@ export default class FollowButton extends React.Component {
     }
 
     render() {
-        let following = {backgroundColor:'firebrick'};
+        let following = {backgroundColor:'#3EB489'};
         let notFollow= {backgroundColor: 'white'}
         let condition = this.props.isFollowing;
         return (
             <TouchableOpacity
                 onPress={()=>{this.props.pressed(this.props.isFollowing ? 'unfollow' : 'follow')}}
                 style={[flexing.centerColumn,
-                {borderColor:'firebrick',borderWidth:1.5,borderRadius:10,width:dimensions.dimensions.returnWidth(.2),height:dimensions.dimensions.returnHeight(.0375)},condition ?
+                {borderColor:'#3EB489',borderWidth:1.5,borderRadius:10,width:dimensions.dimensions.returnWidth(.2),height:dimensions.dimensions.returnHeight(.0375)},condition ?
                     following:
                     notFollow]}>
                 {condition ?
                     <Text style={[{color:'white'}]}>Unfollow</Text>
  :
-                    <Text style={[{color:'firebrick'}]}>Follow</Text>
+                    <Text style={[{color:'#3EB489'}]}>Follow</Text>
 
                 }
 

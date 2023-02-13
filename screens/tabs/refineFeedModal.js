@@ -54,7 +54,7 @@ export default class RefineFeedModal extends React.Component {
                     {this.state.options.map((val)=>{
                         return(<TouchableOpacity onPress={()=>{this.setState({selected:val.designation})}} style={[{width:'100%',opacity:val.designation === this.state.selected ? 1 : .6,height:'30%',borderBottomWidth:1,borderColor:'#e3e3e3'}]}>
                             <Hstack jc={'space-between'} style={[{backgroundColor:'white'}]} trueSize={false} height={1} width={.9}>
-                                <Ionicons name={val.icon} color={'red'} size={30}/>
+                                <Ionicons name={val.icon} color={'#3EB489'} size={30}/>
                                 <VStack al={'flex-start'} height={.9} width={.8}>
                                     <Text style={[{fontSize:15,color:'#101010',fontWeight:'bold'}]}>{val.title}</Text>
                                     <Text style={[{fontSize:12,color:'#101010'}]}>{val.blurb}</Text>
@@ -69,7 +69,7 @@ export default class RefineFeedModal extends React.Component {
                 </VStack>
                 <Spacer spacing={.05}/>
 
-                <RoundedButton disabled={this.state.selected === this.state.lastSelection} pressed={()=>{this.saveSetting()}} style={[{width:'90%',marginLeft:'5%',height:'8%'}]} text={'Apply To Feed'} bgColor={'firebrick'}/>
+                <RoundedButton disabled={this.state.selected === this.state.lastSelection} pressed={()=>{this.saveSetting()}} style={[{width:'90%',marginLeft:'5%',height:'8%'}]} text={'Apply To Feed'} bgColor={'#3EB489'}/>
 
             </Animated.View>
         )

@@ -39,15 +39,15 @@ export default class CameraSettings extends React.Component {
             if(this.state.canAskAgain) {
                 return(
                     <Text style={[{color:'black',marginTop:'2.5%',fontSize:15}]}>
-                        You are currently allowing The 43 Initiative access to your photos and videos. If you'd like to restrict access to your photos and videos please go
-                        to 'Settings' section of your phone and change it there.
+                        You are not currently allowing The 43 Initiative access to your photos and videos.  If you'd like to enable access to your photos and videos please
+                        tap the button below and allow access when prompted.
                     </Text>
                 )
             } else {
                 return(
                     <Text style={[{color:'black',marginTop:'2.5%',fontSize:15}]}>
-                        You are currently allowing The 43 Initiative access to your photos and videos.  If you'd like to enable access to your photos and videos please
-                        tap the button below and allow access when prompted.
+                        You are not currently allowing The 43 Initiative access to your photos and videos. If you'd like to restrict access to your photos and videos please go
+                        to 'Settings' section of your phone and change it there.
 
                     </Text>
                 )
@@ -61,7 +61,7 @@ export default class CameraSettings extends React.Component {
     }
 
     checkCamera = async () => {
-        let check = await getPermissions(false);
+        let check = await getPermissions(true);
         if(check.permitted) {
             this.setState({permVerified:true,granted:true})
         } else {
@@ -71,8 +71,8 @@ export default class CameraSettings extends React.Component {
 
     returnPermissionButton = () => {
         if(!this.state.granted && this.state.canAskAgain) {
-            return( <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'15%'}]}>
-                <RoundedButton pressed={()=>{this.submitCameraPermission()}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#c6302c'} text={'Submit Email'}/>
+            return( <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'10%'}]}>
+                <RoundedButton pressed={()=>{this.checkCamera()}} style={[{width:'90%',marginLeft:'5%',height:'100%'}]} bgColor={'#c6302c'} text={'Enable Camera Access'}/>
 
             </View>)
         }
@@ -88,17 +88,18 @@ export default class CameraSettings extends React.Component {
                 </View>
                 <View style={[{marginTop:'15%',width:'90%',marginLeft:'5%'}]}>
                     <View style={[flexing.rowStart]}>
-                        <Ionicons name={'ios-camera'} size={30} color={'#c6302c'}/>
+                        <Ionicons name={'ios-notifications-circle'} size={30} color={'#c6302c'}/>
                         <Spacer spacing={.025} xAxis/>
                         <Text style={[{fontWeight:'bold',color:'black',fontSize:25}]}>
-                            Your Camera Settings
+                            Your Notification Settings
                         </Text>
                     </View>
 
 
                     {this.returnPermissionStatusResponse()}
 
-
+                    <Spacer spacing={.6}/>
+                    {this.returnPermissionButton()}
                 </View>
             </Animated.View>
         )

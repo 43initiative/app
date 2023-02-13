@@ -20,26 +20,52 @@ import Spacer from "../../design/spacer";
 import Pif from "../../components/listings/pif";
 import Header from "../../components/headers/header";
 import FilterButton from "../../components/buttons/filterButton";
-import {returnUserFollowingList,returnFollowerList, updateSavedList, returnUserSavedList,returnUserLikedList, updateLikedList, getAllDeeds} from "../../firebase/fireStarter";
+import {getTagOptions, returnUserFollowingList,returnFollowerList, updateSavedList, returnUserSavedList,returnUserLikedList, updateLikedList, getAllDeeds} from "../../firebase/fireStarter";
 import UserTruncated from "../../components/listings/userTruncated";
 import {connect} from "react-redux";
 import {waitACertainTime} from "../../helperFuncs/timers/wait";
 import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
+import {activateLoading, deactivateLoading} from "../../reducers/controllers";
 
   export default class Feed extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {deeds:[],likedList:[],savedList:[],refreshing:false,orderBy:'newest',filterBy:'',following:[],followers:[]}
+        this.state = {deeds:[],likedList:[],savedList:[],tagList:[],refreshing:false,orderBy:'newest',filterBy:'',following:[],followers:[],tagOptions:[],
+        viewableItem:null,
+            play:false
+        }
 
     }
+      flatListRef = React.createRef();
+      onViewableItemsChanged = ({ viewableItems, changed }) => {
+          if(viewableItems.length > 0) {
+              console.log('ran',viewableItems[0].item.id)
+              this.setState({
+                  viewableItem: viewableItems[0].item.id,
+                  play: viewableItems.length > 0
+              },()=>{
+                  //  console.log(this.state.viewableItems?.postId)
+              });
+          }
 
-    componentDidMount() {
+      };
+
+      componentDidMount() {
 
         this.setState({refreshing:true})
         this.getAllDeeds();
         this.getFollowStats();
+        this.getTagList()
 
+    }
+
+    getTagList = async () => {
+          let response = await getTagOptions();
+          console.log(response,'tag listed')
+          if(response.passed) {
+              this.setState({tagOptions:response.list})
+          }
     }
 
 
@@ -72,13 +98,17 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
 
 
     getAllDeeds = async () => {
-        let response = await getAllDeeds();
+        activateLoading()
+        let response = await getAllDeeds(this.state.tagList);
         let likedList = await returnUserLikedList();
         let savedList = await returnUserSavedList();
 
         if(response.passed) {
             console.log(response.data,'this is data')
-            this.setState({deeds:response.data,savedList,likedList,refreshing:false})
+            this.setState({deeds:response.data,savedList,likedList,refreshing:false},async()=>{
+                await waitACertainTime(1500)
+                deactivateLoading()
+            })
         }
     }
 
@@ -200,6 +230,25 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
           })
       }
 
+      setTags = (val) => {
+          console.log(val)
+          this.setState({tagList:val},()=>{
+              this.props.navigation.goBack();
+              this.getAllDeeds()
+          })
+      }
+
+
+
+      doTagMenu = async () => {
+
+          this.props.navigation.push('RefineTags',{
+              selectedTags:this.state.tagList,
+              setTags:this.setTags,
+              tagOptions:this.state.tagOptions
+          })
+      }
+
     render() {
         let DATA = [];
         switch(this.state.orderBy) {
@@ -242,6 +291,10 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
 
 
         <CollapsibleHeaderFlatList
+            ref={this.flatListRef}
+
+            onViewableItemsChanged={this.onViewableItemsChanged}
+            viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
             refreshControl={<RefreshControl
                 colors={["#9Bd35A", "#689F38"]}
                 refreshing={this.state.refreshing}
@@ -249,6 +302,7 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
                 progressViewOffset={Dimensions.get('window').height * .0}
                 onRefresh={()=>{
                     this.getAllDeeds();
+                    this.getTagList()
                 }}/>}
             ListEmptyComponent={()=>{return(<View style={[{width:'100%',height:Dimensions.get('window').height * .6,backgroundColor:'transparent'},flexing.centerColumn]}>
                 <Text style={[{fontSize:18,color:'darkslategray',width:'75%',textAlign:'center'}]}>Whoa, that can't be right, no good deeds? Tap the filter icon <Ionicons name={'ios-filter'} size={20} color={'darkslategray'}/> broaden your search, and see if that changes anything!</Text>
@@ -257,6 +311,8 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
             data={DATA}
             renderItem={({item,index}) => (
                 <Pif
+
+                    play={this.state.viewableItem && item.postId === this.state.viewableItem}
                     ableToLoadComments={true}
                     like={()=>{this.likePost(item.postId,index)}} unlike={()=>{this.unlikePost(item.postId,index)}}
                     save={()=>{this.savePost(item.postId,index)}} unsave={()=>{this.unsavePost(item.postId,index)}}
@@ -267,20 +323,32 @@ import {CollapsibleHeaderFlatList} from "react-native-collapsible-header-views";
             CollapsibleHeaderComponent={
                 <View style={[flexing.rowBetween,{width:'95%'}]}>
                     <View style={[{width:'65%'},flexing.rowStart]}>
-                        <TouchableOpacity onPress={()=>{this.doFeedMenu()}} style={[{width:'49%',marginLeft:'5%',borderWidth:1.5,borderColor:'#c7c7c7c',height:Dimensions.get('window').height * .05,backgroundColor:'white',paddingLeft:'5%',borderRadius:15},flexing.centerColumn,{alignItems:'flex-start'}]}>
+                        <TouchableOpacity onPress={()=>{this.doFeedMenu()}} style={[{width:'35%',marginLeft:'5%',borderWidth:0,backgroundColor:'#d3d3d3',height:Dimensions.get('window').height * .05,paddingLeft:'5%',borderRadius:30},flexing.centerColumn,{alignItems:'flex-start'}]}>
+
+                        {/*<TouchableOpacity onPress={()=>{this.doFeedMenu()}} style={[{width:'49%',marginLeft:'5%',borderWidth:1.5,borderColor:'#c7c7c7c',height:Dimensions.get('window').height * .05,backgroundColor:'white',paddingLeft:'5%',borderRadius:15},flexing.centerColumn,{alignItems:'flex-start'}]}>*/}
                             <View style={[flexing.rowStart]}>
-                                <Ionicons name={'ios-list'} color={'#c7c7c7c'} size={20}/>
+                                <Ionicons name={'ios-list'} color={'#c7c7c7c'} size={15}/>
                                 <Spacer xAxis spacing={.0125}/>
-                                <Text style={[{color:'#c7c7c7c'}]}>{this.state.orderBy}</Text>
+                                <Text numberOfLines={1} style={[{color:'#c7c7c7c',fontSize:13,width:'70%'}]}>{this.state.orderBy}</Text>
                             </View>
 
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={()=>{this.doFilterMenu()}} style={[{width:'49%',marginLeft:'5%',borderWidth:1.5,borderColor:'#c7c7c7c',height:Dimensions.get('window').height * .05,backgroundColor:'white',paddingLeft:'5%',borderRadius:15},flexing.centerColumn,{alignItems:'flex-start'}]}>
+                        {/*<TouchableOpacity onPress={()=>{this.doFilterMenu()}} style={[{width:'49%',marginLeft:'5%',borderWidth:1.5,borderColor:'#c7c7c7c',height:Dimensions.get('window').height * .05,backgroundColor:'white',paddingLeft:'5%',borderRadius:15},flexing.centerColumn,{alignItems:'flex-start'}]}>*/}
+                        <TouchableOpacity onPress={()=>{this.doFilterMenu()}} style={[{width:'35%',marginLeft:'5%',borderWidth:0,backgroundColor:'#d3d3d3',height:Dimensions.get('window').height * .05,paddingLeft:'5%',borderRadius:30},flexing.centerColumn,{alignItems:'flex-start'}]}>
                             <View style={[flexing.rowStart]}>
-                                <Ionicons name={'ios-filter'} color={'#c7c7c7c'} size={20}/>
+                                <Ionicons name={'ios-filter'} color={'#c7c7c7c'} size={15}/>
                                 <Spacer xAxis spacing={.0125}/>
-                                <Text style={[{color:'#c7c7c7c'}]}>{this.state.filterBy === '' ? '-------' : this.state.filterBy}</Text>
+                                <Text numberOfLines={1} style={[{color:'#c7c7c7c',fontSize:13,width:'70%'}]}>{this.state.filterBy === '' ? 'none' : this.state.filterBy}</Text>
+                            </View>
+
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={()=>{this.doTagMenu()}} style={[{width:'35%',marginLeft:'5%',borderWidth:0,backgroundColor:'#d3d3d3',height:Dimensions.get('window').height * .05,paddingLeft:'5%',borderRadius:30},flexing.centerColumn,{alignItems:'flex-start'}]}>
+                            <View style={[flexing.rowStart]}>
+                                <Ionicons name={'ios-pricetag-outline'} color={'#c7c7c7c'} size={15}/>
+                                <Spacer xAxis spacing={.0125}/>
+                                <Text numberOfLines={1} style={[{color:'#c7c7c7c',fontSize:13,width:'70%'}]}>{this.state.tagList.length === 0 ? '0 tags' : this.state.tagList.length}</Text>
                             </View>
 
                         </TouchableOpacity>

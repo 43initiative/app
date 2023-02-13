@@ -6,7 +6,7 @@ import {Ionicons} from "@expo/vector-icons";
 import Spacer from "../../design/spacer";
 import RoundedButton from "../../components/buttons/roundedButton";
 import {flexing} from "../../styles/dimensions/dims";
-import {checkLocationPermissions} from "../../permissionCalls/location";
+import {checkLocationPermissions,runInitialLocationChecks} from "../../permissionCalls/location";
 
 
 export default class LocationSettings extends React.Component {
@@ -59,7 +59,7 @@ export default class LocationSettings extends React.Component {
     }
 
     checkLocation = async () => {
-        let check = await checkLocationPermissions();
+        let check = await runInitialLocationChecks(true);
         if(check.passed) {
             this.setState({permVerified:true,granted:true})
         } else {
@@ -69,8 +69,8 @@ export default class LocationSettings extends React.Component {
 
     returnPermissionButton = () => {
         if(!this.state.granted && this.state.canAskAgain) {
-            return( <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'15%'}]}>
-                <RoundedButton pressed={()=>{this.submitLocationPermission()}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#c6302c'} text={'Submit Email'}/>
+            return( <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'10%'}]}>
+                <RoundedButton pressed={()=>{this.checkLocation()}} style={[{width:'90%',marginLeft:'5%',height:'100%'}]} bgColor={'#c6302c'} text={'Enable Location Tracking'}/>
 
             </View>)
         }
@@ -89,14 +89,14 @@ export default class LocationSettings extends React.Component {
                         <Ionicons name={'ios-navigate-circle'} size={30} color={'#c6302c'}/>
                         <Spacer spacing={.025} xAxis/>
                         <Text style={[{fontWeight:'bold',color:'black',fontSize:25}]}>
-                            Your Location Settings
+                            Your Notification Settings
                         </Text>
                     </View>
 
 
                     {this.returnPermissionStatusResponse()}
 
-                    <Spacer spacing={.05}/>
+                    <Spacer spacing={.6}/>
                     {this.returnPermissionButton()}
                 </View>
             </Animated.View>

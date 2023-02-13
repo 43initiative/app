@@ -16,11 +16,11 @@ export default class SentNom extends React.Component {
 
     render() {
         let data = this.props.data;
-        let displayName= data.nominatorDisplayName ? data.nominatorDisplayName : data.nominatorInitials;
+        let displayName= data.nominatedDisplayName ? data.nominatedDisplayName : data.nominatedInitials;
         let message = data.nominationMsg;
         return (
             <Animated.View style={[flexing.rowBetween,{width:'90%',marginLeft:'5%',padding:'5%',borderRadius:20,backgroundColor:'#f3f3f3',alignItems:'flex-start',marginTop:'5%',minHeight:Dimensions.get('window').height * .15}]}>
-                <InitialOrPic imgProvided={data.nominatorImgProvided} img={data.nominatorImg} initials={data.nominatorInitials}  userUid={data.nominatorId} circleRadius={.05}/>
+                <InitialOrPic navigation={this.props.navigation} route={this.props.route} imgProvided={data.nominatedImgProvided} img={data.nominatedImg} initials={data.nominatedInitials}  userUid={data.nominatedId} circleRadius={.05}/>
                 <View style={[flexing.startColumn,{width:'80%',justifyContent:'space-between',height:Dimensions.get('window').height * .125}]}>
                     <Text style={[{fontSize:18,fontWeight:'bold',color:'black'}]}>{displayName}</Text>
                     <Text style={[{fontSize:15,fontWeight:'400',color:'black'}]}>"..{message}.."</Text>

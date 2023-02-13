@@ -48,6 +48,7 @@ export default class CreateNewPost extends React.Component {
                 {title: 'Add Nominations',icon:'ios-hand-right'},
                 {title: 'Review & Post',icon:'ios-checkmark'},
             ],
+            tagList:'',
             isNomination:false,
             inspirationId:null,
             inspirationBypassed:false,
@@ -117,8 +118,30 @@ export default class CreateNewPost extends React.Component {
         this.setState({stage:currentStage})
     }
 
+    testTagList = () => {
+        let amendedTagList = [];
+        if(this.state.tagList !== '') {
+            let tagArray = this.state.tagList.split(" ")
+
+            amendedTagList =  tagArray.filter((val)=>{return  val && val !== 'undefined' &&  val.includes('#') && val[0] === '#' && val.length > 1} ).slice(0,4).map((val)=>{
+                return val.split('#')[1]
+            })
+            console.log(amendedTagList)
+        }
+    }
+
     submitPost = async () => {
         try {
+            let amendedTagList = [];
+            if(this.state.tagList !== '') {
+                let tagArray = this.state.tagList.split(" ")
+
+                amendedTagList =  tagArray.filter((val)=>{return  val && val !== 'undefined' &&  val.includes('#') && val[0] === '#' && val.length > 1} ).slice(0,4).map((val)=>{
+                    return val.split('#')[1]
+                })
+                console.log(amendedTagList)
+            }
+
             activateLoading()
             let data = storeControllers.storeData().userData.publicData
             let post = {
@@ -138,6 +161,7 @@ export default class CreateNewPost extends React.Component {
                 savedList:[],
                 likedList:[],
                 commentList:[],
+                tagList:amendedTagList,
                 nominationMsg:this.state.nomMsg,
                 trendId:this.state.trendId,
                 isNomination:this.state.isNomination
@@ -270,7 +294,10 @@ export default class CreateNewPost extends React.Component {
 
                         <Text style={[{width:'60%',textAlign:'center',fontWeight:'500',fontSize:16}]}>Create A Post</Text>
 
-                        <RoundedButton pressed={()=>{this.submitPost()}} disabled={this.state.post === ''} textStyles={{color:'white',textTransform:'capitalize'}} bgColor={'#3EB489'} text={'Post'} style={[{backgroundColor:'#3EB489',height:'70%',width:'15%',borderRadius:7}]}/>
+                        <RoundedButton pressed={()=>{
+                            this.submitPost();
+                            //this.testTagList()
+                        }} disabled={this.state.post === ''} textStyles={{color:'white',textTransform:'capitalize'}} bgColor={'#3EB489'} text={'Post'} style={[{backgroundColor:'#3EB489',height:'70%',width:'15%',borderRadius:7}]}/>
                     </Hstack>
 
                     <VStack jc={'flex-start'} height={.9} trueSize={false} width={1} style={[{backgroundColor:'white'}]}>
@@ -291,9 +318,17 @@ export default class CreateNewPost extends React.Component {
 
                         </Hstack>
 
-                        <TextInput placeholderTextColor={'#101010'} onChangeText={(val)=>{this.setState({post:val})}} value={this.state.deed} placeholder={'Tell the people about your good deed!'} multiline={true} style={[{width:'95%',height:'22.5%',borderWidth:0,borderColor:'green'}]}/>
+                        <TextInput placeholderTextColor={'#101010'} onChangeText={(val)=>{this.setState({post:val})}} value={this.state.deed} placeholder={'Tell the people about your good deed!'} multiline={true} style={[{width:'95%',height:'20%',borderWidth:0,borderColor:'green'}]}/>
 
-                        <View style={[{width:'90%',marginLeft:'5%',borderColor:'red',borderWidth:0,height:Dimensions.get('window').height * .08}]}>
+                        <View style={[{width:'95%',height:'5%',borderWidth:0,borderColor:'blue'}]}>
+                            {this.state.post !== '' ?
+                                <TextInput placeholderTextColor={'#d3d3d3'} onChangeText={(val)=>{this.setState({tagList:val})}} value={this.state.tagList} placeholder={'Add up to 4 hashtags i.e #helpthehomeless'} multiline={false} style={[{width:'100%',height:'100%'}]}/>
+                                :<></>
+                            }
+                        </View>
+
+
+                        <View style={[{width:'90%',marginLeft:'2.5%',borderColor:'red',borderWidth:0,height:Dimensions.get('window').height * .08}]}>
 
                             {this.state.mediaLoading
                             ?

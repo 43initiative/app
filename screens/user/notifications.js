@@ -7,14 +7,16 @@ import {Ionicons} from "@expo/vector-icons";
 import {dimensions} from '../../styles/dimensions/dims'
 import NotificationListing from "../../components/listings/notification";
 import Spacer from "../../design/spacer";
-import {markNotifRead, getNotifications} from "../../firebase/fireStarter";
+import {markAllNotifsRead, markNotifRead, getNotifications} from "../../firebase/fireStarter";
+import {waitACertainTime} from "../../helperFuncs/timers/wait";
 
 export default class Notifications extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            notifications:[]
+            newNotifications:[],
+            oldNotifications:[]
         }
 
     }
@@ -26,13 +28,24 @@ export default class Notifications extends React.Component {
     getNotifications = async () =>{
         let data = await getNotifications()
         if(data.passed) {
+            console.log(data.unread,data.read,'read')
 
-            this.setState({notifications:data.data})
+            this.setState({newNotifications:data.unread,oldNotifications:data.read})
         }
     }
 
-    clearNotif = (id) => {
-        markNotifRead(id)
+    clearNotif = async (id) => {
+      await  markNotifRead(id)
+        this.getNotifications()
+    }
+
+    clearAllNotifications = async () => {
+        let outstanding = this.state.newNotifications.map((val)=>{
+            return val.id
+        })
+        await markAllNotifsRead(outstanding)
+        await waitACertainTime(1000);
+        this.getNotifications()
     }
 
     render() {
@@ -51,21 +64,38 @@ export default class Notifications extends React.Component {
 <Spacer spacing={.075}/>
                 <ScrollView styke={{width:'100%'}}>
                     <View style={[flexing.rowBetween,{width:'95%',alignItems:'flex-start'}]}>
-                        <Text style={[{fontWeight:'bold',marginBottom:'5%',marginLeft:'2.5%',fontSize:17}]}>Notifications</Text>
-                        {this.state.notifications.filter((val)=>{
+                        <Text style={[{fontWeight:'bold',marginBottom:'5%',marginLeft:'2.5%',fontSize:17}]}>New Notifications</Text>
+                        {this.state.newNotifications.filter((val)=>{
                             return !val.read
                         }).length > 0 ?
-                        <Text>Mark all as read</Text> : <></>
+                            <TouchableOpacity onPress={()=>{
+                                return this.clearAllNotifications()
+                            }
+                            }>
+                                <Text>Mark all as read</Text>
+                            </TouchableOpacity>
+                         : <></>
                         }
                     </View>
-                    <View style={[{width:dimensions.returnWidth(1),height:dimensions.returnHeight(1),backgroundColor:'white'}]}>
-                        {this.state.notifications.sort((a,b)=>{
+                    <View style={[{width:dimensions.returnWidth(1),backgroundColor:'white'}]}>
+                        {this.state.newNotifications.sort((a,b)=>{
                             return b.timestamp - a.timestamp
                         }).map((val)=>(
                             <NotificationListing clearNotification={(id)=>{this.clearNotif(id)}} navigation={this.props.navigation} route={this.props.route} data={val}/>
 
                         ))}
                     </View>
+              <Spacer spacing={.0125}/>
+                    <Text style={[{fontWeight:'bold',marginBottom:'5%',marginLeft:'2.5%',fontSize:17}]}>Old Notifications</Text>
+                    <View style={[{width:dimensions.returnWidth(1),height:dimensions.returnHeight(1),backgroundColor:'white'}]}>
+                        {this.state.oldNotifications.sort((a,b)=>{
+                            return b.timestamp - a.timestamp
+                        }).map((val)=>(
+                            <NotificationListing clearNotification={(id)=>{this.clearNotif(id)}} navigation={this.props.navigation} route={this.props.route} data={val}/>
+
+                        ))}
+                    </View>
+
                     <Spacer spacing={.25}/>
                 </ScrollView>
                 </View>

@@ -47,7 +47,7 @@ export default class AddBio extends React.Component {
                         placeholder={' I enjoy paying it forward not only for the selfish reasons, but other stuff too.'}
                     />
                     </VStack>
-                    <RoundedButton pressed={()=>{this.saveAndContinue()}} style={[{width:'80%',height:'7.5%'}]} bgColor={'#c6302c'} text={'Continue'}/>
+                    <RoundedButton pressed={()=>{this.saveAndContinue()}} style={[{width:'80%',height:'7.5%'}]} bgColor={'#3EB489'} text={'Continue'}/>
                     <TextLink pressed={()=>{this.props.navigation.goBack()}} textStyles={[{color:'red'}]} text={'Go Back'}/>
 
                 </VStack>

@@ -169,6 +169,9 @@ export default class CommentScreen extends React.Component {
                             </View>
                         </TouchableOpacity>
                     </View>
+                    <TouchableOpacity style={{width:'15%'}} onPress={()=>{this.props.navigation.goBack()}}>
+                        <Ionicons name={'ellipsis-vertical-outline'} size={25} color={'black'}/>
+                    </TouchableOpacity>
                 </View>
                 <KeyboardAvoidingView style={[{flex:1,marginTop:'15%'}]} behavior={'padding'}>
                     <ScrollView>
@@ -198,7 +201,7 @@ export default class CommentScreen extends React.Component {
                             value={this.state.myComment}
                             onChangeText={(val)=>{this.setState({myComment:val})}}
                         />
-                        <TouchableOpacity onPress={()=>{this.postComment()}} disabled={this.state.myComment === ''} style={[{opacity:this.state.myComment === '' ? .3 : 1,width:'15%',height:'30%',borderRadius:10,backgroundColor:'firebrick'},flexing.centerColumn]}>
+                        <TouchableOpacity onPress={()=>{this.postComment()}} disabled={this.state.myComment === ''} style={[{opacity:this.state.myComment === '' ? .3 : 1,width:'15%',height:Dimensions.get('window').height * .0425,borderRadius:10,backgroundColor:'#3EB489'},flexing.centerColumn]}>
                             <Text style={{color:'white'}}>Post</Text>
                         </TouchableOpacity>
                     </View>

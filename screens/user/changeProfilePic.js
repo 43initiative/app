@@ -43,7 +43,7 @@ export default class ChangeProfilePic extends React.Component {
 
     returnProfilePic = () => {
         return(
-            <Circle backgroundColor={'#c6302c'} size={.2} borderRadius={100} borderColor={'lightgray'} borderWidth={8}>
+            <Circle backgroundColor={'#3EB489'} size={.2} borderRadius={100} borderColor={'lightgray'} borderWidth={8}>
                 <Image resizeMode={'cover'} style={[{width:'100%',height:'100%',borderRadius:100,overflow:'hidden'}]} source={{uri:this.state.tempImg ? this.state.tempImg : this.state.img}}/>
             </Circle>
         )
@@ -51,7 +51,7 @@ export default class ChangeProfilePic extends React.Component {
 
     returnInitials = () => {
         return(
-            <Circle backgroundColor={'#c6302c'} size={.2} borderRadius={100} borderColor={'lightgray'} borderWidth={8}>
+            <Circle backgroundColor={'#3EB489'} size={.2} borderRadius={100} borderColor={'lightgray'} borderWidth={8}>
                 <Text style={[{color:'white',fontSize:50,opacity:.7}]}>{this.state.initials}</Text>
             </Circle>
         )
@@ -145,7 +145,7 @@ export default class ChangeProfilePic extends React.Component {
                     </VStack>
 
 
-                    <RoundedButton pressed={()=>{this.saveAndContinue()}} style={[{width:'80%',height:'7.5%'}]} bgColor={'#c6302c'} text={'Save'}/>
+                    <RoundedButton pressed={()=>{this.saveAndContinue()}} style={[{width:'80%',height:'7.5%'}]} bgColor={'#3EB489'} text={'Save'}/>
                     <TextLink pressed={()=>{this.props.navigation.goBack()}} textStyles={[{color:'red'}]} text={'Go Back'}/>
                 </VStack>
 

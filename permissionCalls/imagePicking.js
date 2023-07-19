@@ -5,7 +5,7 @@ import {launchAlertDialog} from './alertDialogs';
 
 const getPermissions = async (proceedToRequest,camOrImg) => {
     let accessing = camOrImg === 'camera' ? [ImagePicker.getCameraPermissionsAsync,ImagePicker.requestCameraPermissionsAsync,ImagePicker.launchCameraAsync] : [ImagePicker.getMediaLibraryPermissionsAsync,ImagePicker.requestMediaLibraryPermissionsAsync,ImagePicker.launchImageLibraryAsync];
-    let currentPermissions = await accessing[0]();
+    let currentPermissions = await accessing[0];
     //return basic response
     let permissionResponse =  {
         permitted:currentPermissions.granted,

@@ -7,6 +7,7 @@ import {startNetworkWatcher, checkForOnboarding, checkForActiveUser, initialize,
 import {waitACertainTime} from "../helperFuncs/timers/wait";
 import {flexing, screens} from "../styles/dimensions/dims";
 import Spacer from "../design/spacer";
+import * as Font from "expo-font";
 
 
 export default class AltSPlash extends React.Component {
@@ -24,6 +25,8 @@ export default class AltSPlash extends React.Component {
         this.startAnimation()
         this.runSequence()
     }
+
+
 
     startAnimation = () => {
         Animated.timing(this.state.animation, {
@@ -104,24 +107,24 @@ export default class AltSPlash extends React.Component {
                         transform:[{ rotate: xInterpolate }]}]}/>
                     <Animated.Image  resizeMode={'contain'} source={require('../assets/img/logo43only.png')} style={[{top:'5%',width:'80%',position:'absolute'}]}/>
 
-                    <View style={[{position:'absolute',backgroundColor:'transparent',zIndex:1000,height:'10%',top:'52.50%',width:'80%',left:'15%',transform:[
+                    <View style={[{position:'absolute',backgroundColor:'transparent',zIndex:1000,height:'10%',top:'52.50%',width:'90%',left:'10%',transform:[
                             {rotate:'-20deg'}
                         ]},flexing.startColumn,{justifyContent:'space-between'}]}>
 
-                        <Animated.Text style={[{fontWeight:'bold',fontSize:32.5,opacity:this.state.animation.interpolate({
+                        <Animated.Text style={[{fontWeight:'bold',fontSize:32.5,fontFamily:'sigmar',opacity:this.state.animation.interpolate({
                                 inputRange: [0,.99,1],
                                 outputRange: [0,0,1]
                             })}]}>Love You</Animated.Text>
                         <View style={[flexing.rowStart]}>
-                            <Animated.Text style={[{fontWeight:'bold',fontSize:30,opacity:this.state.textAnimation.interpolate({
+                            <Animated.Text style={[{fontWeight:'bold',fontSize:26,fontFamily:'marker',opacity:this.state.textAnimation.interpolate({
                                     inputRange: [0,.5,.75,.85,1],
                                     outputRange: [0,1,1,1,1],
                                 })}]}>"Don't </Animated.Text>
-                            <Animated.Text style={[{fontWeight:'bold',fontSize:30,opacity:this.state.textAnimation.interpolate({
+                            <Animated.Text style={[{fontWeight:'bold',fontSize:26,fontFamily:'marker',opacity:this.state.textAnimation.interpolate({
                                     inputRange: [0,.5,.75,.85,1],
                                     outputRange: [0,0,1,1,1],
                                 })}]}>Stop </Animated.Text>
-                            <Animated.Text style={[{fontWeight:'bold',fontSize:30,opacity:this.state.textAnimation.interpolate({
+                            <Animated.Text style={[{fontWeight:'bold',fontSize:26,fontFamily:'marker',opacity:this.state.textAnimation.interpolate({
                                     inputRange: [0,.5,.75,.85,1],
                                     outputRange: [0,0,0,1,1],
                                 })}]}>Believing" </Animated.Text>

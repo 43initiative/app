@@ -46,7 +46,7 @@ export default class UserActivity extends React.Component {
                 <ScrollView style={[{width:'100%',marginTop:'7.5%'}]}>
                 <View style={[{marginTop:'15%',width:'90%',marginLeft:'5%'}]}>
                     <View style={[flexing.rowStart]}>
-                        <Ionicons name={'ios-list'} size={30} color={'#c6302c'}/>
+                        <Ionicons name={'ios-list'} size={30} color={'#3EB489'}/>
                         <Spacer spacing={.025} xAxis/>
                         <Text style={[{fontWeight:'bold',color:'black',fontSize:25}]}>
                             Your Activity

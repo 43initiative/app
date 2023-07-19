@@ -26,6 +26,8 @@ import CommentPif from "../../components/listings/commentPif";
 import InitialOrPic from "../../components/buttons/initialOrPic";
 import {convertTimeStamp} from "../../helperFuncs/dateTime";
 import Comment from "../../components/listings/comment";
+import ActionSheet from '@expo/react-native-action-sheet'
+import Menu from "./actionSheet";
 
 export default class CommentScreen extends React.Component {
     constructor(props) {
@@ -142,6 +144,14 @@ export default class CommentScreen extends React.Component {
         }
     }
 
+    launchReport = (type,userUid,postId) => {
+        console.log(this.props.userUid)
+        this.props.navigation.push(type,
+        {
+            userUid, postId
+        })
+    }
+
     render() {
         let data = this.props.route.params.pifData;
         return (
@@ -158,7 +168,8 @@ export default class CommentScreen extends React.Component {
                         <Spacer xAxis={true} spacing={.025}/>
 
                         <TouchableOpacity onPress={()=>{
-                            getUserProfile(this.props.navigation,this.props.route,false,this.props.userUid)
+                            console.log(this.props.userUid)
+                            //getUserProfile(this.props.navigation,this.props.route,false,this.props.userUid)
 
                         }} style={[flexing.startColumn]}>
                             <Text style={[{fontSize:15,fontWeight:'500'}]}>{data.userDisplayName}</Text>
@@ -169,9 +180,10 @@ export default class CommentScreen extends React.Component {
                             </View>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={{width:'15%'}} onPress={()=>{this.props.navigation.goBack()}}>
-                        <Ionicons name={'ellipsis-vertical-outline'} size={25} color={'black'}/>
-                    </TouchableOpacity>
+                    <Menu reportedAction={(val)=>{this.launchReport(val,data.userUid,data.postId)}}/>
+                    {/*<TouchableOpacity style={{width:'15%'}} onPress={()=>{this.props.navigation.goBack()}}>*/}
+                    {/*    <Ionicons name={'ellipsis-vertical-outline'} size={25} color={'black'}/>*/}
+                    {/*</TouchableOpacity>*/}
                 </View>
                 <KeyboardAvoidingView style={[{flex:1,marginTop:'15%'}]} behavior={'padding'}>
                     <ScrollView>

@@ -27,7 +27,7 @@ export default class AddImg extends React.Component {
 
     returnProfilePic = () => {
         return(
-            <Circle backgroundColor={'#c6302c'} size={.2} borderRadius={100} borderColor={'lightgray'} borderWidth={8}>
+            <Circle backgroundColor={'#3EB489'} size={.2} borderRadius={100} borderColor={'lightgray'} borderWidth={8}>
                 <Image resizeMode={'cover'} style={[{width:'100%',height:'100%',borderRadius:100,overflow:'hidden'}]} source={{uri:this.state.profilePicLink}}/>
             </Circle>
         )
@@ -36,7 +36,7 @@ export default class AddImg extends React.Component {
     returnInitials = () => {
         let initials = storeControllers.storeData().userSignUp.initials
         return(
-            <Circle backgroundColor={'#c6302c'} size={.2} borderRadius={100} borderColor={'lightgray'} borderWidth={8}>
+            <Circle backgroundColor={'#3EB489'} size={.2} borderRadius={100} borderColor={'lightgray'} borderWidth={8}>
                 <Text style={[{color:'white',fontSize:50,opacity:.7}]}>{initials}</Text>
             </Circle>
         )

@@ -32,6 +32,7 @@ import Square from "../../designComps/square";
 import {activateLoading, deactivateLoading, showToastMessage, storeControllers} from "../../reducers/controllers";
 import {waitACertainTime} from "../../helperFuncs/timers/wait";
 import Video from "react-native-video";
+import {runInitialLocationChecks, startLocationTracking} from "../../permissionCalls/location";
 
 
 export default class CreateNewPost extends React.Component {
@@ -50,6 +51,9 @@ export default class CreateNewPost extends React.Component {
             ],
             tagList:'',
             isNomination:false,
+            includeLocation:false,
+            lat:0,
+            long:0,
             inspirationId:null,
             inspirationBypassed:false,
             inspirationList:[],
@@ -58,6 +62,7 @@ export default class CreateNewPost extends React.Component {
             nominationList:[],
             nomMsg:'',
             pifData:null,
+            public:true,
             nominationData:null,
             viewOriginalPost:false,
             isInspired:false,
@@ -72,7 +77,8 @@ export default class CreateNewPost extends React.Component {
             imgProvided:false,
             videoProvided:false,
             img:null,
-            video:null
+            video:null,
+            locationOption:false
 
         }
 
@@ -89,6 +95,17 @@ export default class CreateNewPost extends React.Component {
         }
 
         this.fetchInspiration();
+        this.checkLocation()
+    }
+
+    checkLocation = async () => {
+        let check = await runInitialLocationChecks(true);
+        if(check.passed) {
+            let {lat,long} = await startLocationTracking();
+            this.setState({includeLocation:true,locationOption:true,lat,long})
+        } else {
+
+        }
     }
 
     removeNomination = () => {
@@ -154,6 +171,10 @@ export default class CreateNewPost extends React.Component {
                 video:this.state.video,
                 isOrganization:data.isOrganization,
                 img:this.state.img,
+                public:this.state.public,
+                includeLocation: this.state.includeLocation,
+                lat:this.state.lat,
+                long:this.state.long,
                 isEvent:this.state.didEventLink,
                 eventLink:this.state.eventLink,
                 fundLink:this.state.fundLink,
@@ -385,7 +406,7 @@ export default class CreateNewPost extends React.Component {
 
 
                         <View style={[flexing.startColumn,{width:'90%',marginLeft:'5%'}]}>
-                            {!data.isOrganization ?
+                            {data.isOrganization ?
                                 <>
 
                                     <TouchableOpacity
@@ -453,7 +474,45 @@ export default class CreateNewPost extends React.Component {
                                     </TouchableOpacity>
                                 </>
                                 :
-                                <></>
+                                <>
+                                    <View style={[flexing.rowStart]}>
+                                        <View style={[flexing.rowStart,{width:'85%'}]}>
+
+                                        <Ionicons name={'ios-globe-outline'} color={'#3EB489'} size={30}/>
+                                        <Spacer spacing={.025} xAxis/>
+
+                                        <Text style={[{color:'black',fontWeight:'bold'}]}>Post {this.state.public  ? 'Is' : 'Is Not'} Public </Text>
+                                        </View>
+                                        <Switch
+                                        trackColor={{false: 'firebrick', true: '#3EB489'}}
+                                        thumbColor={true ? '#f5dd4b' : '#f4f3f4'}
+                                        ios_backgroundColor="#3e3e3e"
+                                        onValueChange={(val)=>{this.setState({public:val})}}
+                                        value={this.state.public}
+                                    />
+                                    </View>
+                                    <Spacer spacing={.025}/>
+                                    {this.state.locationOption ?
+                                        <View style={[flexing.rowStart]}>
+                                            <View style={[flexing.rowStart,{width:'85%'}]}>
+                                                <Ionicons name={'ios-navigate-outline'} color={'#47bbfe'} size={30}/>
+                                                <Spacer spacing={.025} xAxis/>
+                                                <Text style={[{color:'black',fontWeight:'bold'}]}>You are {this.state.includeLocation  ? 'Sharing' : 'Not Sharing'} Location </Text>
+
+                                            </View>
+
+                                            <Switch
+                                                trackColor={{false: 'firebrick', true: '#3EB489'}}
+                                                thumbColor={true ? '#f5dd4b' : '#f4f3f4'}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={(val)=>{this.setState({includeLocation:val})}}
+                                                value={this.state.includeLocation}
+                                            />
+                                        </View>
+                                    :
+                                    <></>}
+
+                                </>
                             }
                             <Spacer spacing={.025}/>
                         <TouchableOpacity onPress={()=>{this.addPhoto()}} style={[flexing.rowStart]}>

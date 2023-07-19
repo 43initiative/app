@@ -14,7 +14,7 @@ import {
     SET_ORG_PRIVATE,
     SET_ORG_PUBLIC,
     STORE_PRIVATE_DATA,
-    STORE_PUBLIC_DATA,
+    STORE_PUBLIC_DATA, UPDATE_ACTIONS_LISTINGS,
     UPDATE_USER_PRIVATE_DATA
 } from "../reducers/actionTypes";
 import firebase from "firebase/compat";
@@ -76,14 +76,9 @@ console.log(ev)
 AppState.addEventListener('change', handleAppStateChange);
 
 const initialize = async () => {
+    //add new firebase config here
     const firebaseConfig = {
-        apiKey: "AIzaSyD5fTcIle-PVJAYiQj4qX6u5rCHhTnu8Hg",
-        authDomain: "project-b2117.firebaseapp.com",
-        projectId: "project-b2117",
-        storageBucket: "project-b2117.appspot.com",
-        messagingSenderId: "954058964813",
-        appId: "1:954058964813:web:0c815fe4e9211991b00104",
-        measurementId: "G-2C44W4NCGC"
+
     };
     try {
         if(getApps.length < 1) {
@@ -511,6 +506,7 @@ const storeUserData = async () => {
            let storePublicData =  storeControllers.storeData().userData.publicData;
           // console.log('data watch start')
            userDataWatcher();
+           userActionWatcher();
 
            console.log(storePublicData,storePrivateData);
             return {passed:true}
@@ -1028,6 +1024,44 @@ const submitFeedback = async (message) => {
 
 }
 
+const reportUser = async (message,reportedUserUid,postId) => {
+    try {
+        let {db,auth} = firebaseCreds;
+        let userUid = auth.currentUser.uid;
+        console.log(userUid)
+        await addDoc(collection(db, "reportUser"), {
+            submitter: userUid,
+            reportedUser:reportedUserUid,
+            feedback:message,
+            postId:postId,
+            timestamp:Date.now()
+        });
+        return {passed:true}
+    }catch (e) {
+        console.log(e)
+        return {passed:false}
+    }
+
+}
+
+const reportPost = async (message,reportedUserUid,postId) => {
+    try {
+        let {db,auth} = firebaseCreds;
+        let userUid = auth.currentUser.uid;
+        await addDoc(collection(db, "reportPif"), {
+            submitter: userUid,
+            reportedUser:reportedUserUid,
+            feedback:message,
+            postId:postId,
+            timestamp:Date.now()
+        });
+        return {passed:true}
+    }catch (e) {
+        return {passed:false}
+    }
+
+}
+
 //come back
 //always null for is self on org side
 const getUserProfile = async (navigation,route,isSelf,userUid) => {
@@ -1490,6 +1524,25 @@ const userDataWatcher = async () => {
 
 }
 
+let actionWatcher;
+
+const userActionWatcher = async () => {
+    // if(userWatcher !== null) {
+    //     return
+    // }
+    //  console.log('activated watcher')
+    let {db,auth} = firebaseCreds;
+    let userUid = auth.currentUser.uid;
+    let data;
+    actionWatcher = onSnapshot(doc(db, "actionLists", userUid), (doc) => {
+        data = doc.data();
+        //  console.log("Private watcher live ", doc.data());
+        storeControllers.store.dispatch({type:UPDATE_ACTIONS_LISTINGS,payload:data})
+    });
+
+
+}
+
 
 const markNotifRead = async (id) => {
     try {
@@ -1682,7 +1735,7 @@ const doImgUpload = async () => {
         let{auth} = firebaseCreds
         let userUid = auth.currentUser.uid;
         const storage = getStorage(firebaseCreds.app);
-        const storageRef = ref(storage,`43vids/${Date.now()}${userUid}.jpg`);
+        const storageRef = ref(storage,`43pics/${Date.now()}${userUid}.jpg`);
         await  uploadBytesResumable(storageRef,blob).then((snap)=>{
 
         }).catch((e)=>{
@@ -1693,7 +1746,7 @@ const doImgUpload = async () => {
         blob.close()
         return {passed:true,link:url};
     } catch (e) {
-
+        console.log('error here',e)
     }
 
 
@@ -1902,5 +1955,7 @@ module.exports = {
     startNetworkWatcher,
     getTagOptions,
     markAllNotifsRead,
-    updatePushToken
+    updatePushToken,
+    reportPost,
+    reportUser
 }

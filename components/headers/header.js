@@ -36,8 +36,8 @@ import {connect} from "react-redux";
                     <Image resizeMode={'contain'} style={{width:'100%',height:'100%',borderWidth:0,borderColor:'blue'}} source={require('../../assets/img/logoringonly.png')}/>
                 </View>
                 {/*<Ionicons name={'ios-heart-half'} size={30} color={'firebrick'}/>*/}
-                <Spacer spacing={.0125} xAxis/>
-                <Text style={[{color:'#101010',fontStyle:'normal',fontWeight:'bold',fontSize:18}]}>Initiative</Text>
+                <Spacer spacing={.01} xAxis/>
+                <Text style={[{color:'#101010',fontStyle:'normal',fontWeight:'bold',fontSize:18,fontFamily:'marker'}]}>Initiative</Text>
             </View>
                 <View style={[flexing.rowAround,{width:'40%',borderColor:'red',borderWidth:0}]}>
                     <TouchableOpacity onPress={()=>{this.props.navigation.navigate('CreateNewPost',{

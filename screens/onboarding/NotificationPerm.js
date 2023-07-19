@@ -8,6 +8,8 @@ import TextLink from "../../components/text/textLink";
 import Hstack from "../../designComps/hstack";
 import OutlineButton from "../../components/buttons/outlineButton";
 import {grabPushToken, getPermissions} from "../../permissionCalls/notifications";
+import {updatePushToken} from "../../firebase/fireStarter";
+import {activateLoading, deactivateLoading} from "../../reducers/controllers";
 
 
 export default class NotificationPerm extends React.Component {
@@ -22,6 +24,10 @@ export default class NotificationPerm extends React.Component {
         let response = await getPermissions(true);
         console.log(response)
         if(response.permitted) {
+            activateLoading()
+            let response = await grabPushToken();
+            return updatePushToken(response);
+            deactivateLoading()
             // let token = await grabPushToken();
             // console.log(token)
             this.props.navigation.navigate('FinishScreen')

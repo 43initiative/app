@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<key>UIBackgroundModes</key>
+<array>
+    <string>fetch</string>
+    <string>remote-notification</string>
+</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -23,9 +28,13 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>43project</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.mangicode.43project</string>
+				<string>43project</string>
 			</array>
 		</dict>
 	</array>
@@ -56,6 +65,10 @@
 	<string>Allow $(PRODUCT_NAME) to access your location</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>custom photos permission</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>marker.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

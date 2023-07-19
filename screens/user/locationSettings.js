@@ -70,7 +70,7 @@ export default class LocationSettings extends React.Component {
     returnPermissionButton = () => {
         if(!this.state.granted && this.state.canAskAgain) {
             return( <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'10%'}]}>
-                <RoundedButton pressed={()=>{this.checkLocation()}} style={[{width:'90%',marginLeft:'5%',height:'100%'}]} bgColor={'#c6302c'} text={'Enable Location Tracking'}/>
+                <RoundedButton pressed={()=>{this.checkLocation()}} style={[{width:'90%',marginLeft:'5%',height:'100%'}]} bgColor={'#3EB489'} text={'Enable Location Tracking'}/>
 
             </View>)
         }
@@ -86,7 +86,7 @@ export default class LocationSettings extends React.Component {
                 </View>
                 <View style={[{marginTop:'15%',width:'90%',marginLeft:'5%'}]}>
                     <View style={[flexing.rowStart]}>
-                        <Ionicons name={'ios-navigate-circle'} size={30} color={'#c6302c'}/>
+                        <Ionicons name={'ios-navigate-circle'} size={30} color={'#3EB489'}/>
                         <Spacer spacing={.025} xAxis/>
                         <Text style={[{fontWeight:'bold',color:'black',fontSize:25}]}>
                             Your Notification Settings

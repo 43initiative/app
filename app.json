@@ -18,6 +18,7 @@
       ]
     ],
     "ios": {
+      /*add new bundle identifier below*/
       "bundleIdentifier": "com.mangicode.43project"
     }
   }

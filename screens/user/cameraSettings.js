@@ -61,7 +61,18 @@ export default class CameraSettings extends React.Component {
     }
 
     checkCamera = async () => {
-        let check = await getPermissions(true);
+        let check = await getPermissions(false,'camera');
+        console.log(check,'look for resposne')
+        if(check.permitted) {
+            this.setState({permVerified:true,granted:true})
+        } else {
+            this.setState({permVerified:true,granted:false,canAskAgain:check.canAskAgain})
+        }
+    }
+
+    getCamPerm = async () => {
+        let check = await getPermissions(false,'camera');
+        console.log(check,'look for resposne')
         if(check.permitted) {
             this.setState({permVerified:true,granted:true})
         } else {
@@ -70,9 +81,9 @@ export default class CameraSettings extends React.Component {
     }
 
     returnPermissionButton = () => {
-        if(!this.state.granted && this.state.canAskAgain) {
+        if(!this.state.granted) {
             return( <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'10%'}]}>
-                <RoundedButton pressed={()=>{this.checkCamera()}} style={[{width:'90%',marginLeft:'5%',height:'100%'}]} bgColor={'#c6302c'} text={'Enable Camera Access'}/>
+                <RoundedButton pressed={()=>{this.getCamPerm()}} style={[{width:'90%',marginLeft:'5%',height:'100%'}]} bgColor={'#3EB489'} text={'Enable Camera Access'}/>
 
             </View>)
         }
@@ -88,10 +99,10 @@ export default class CameraSettings extends React.Component {
                 </View>
                 <View style={[{marginTop:'15%',width:'90%',marginLeft:'5%'}]}>
                     <View style={[flexing.rowStart]}>
-                        <Ionicons name={'ios-notifications-circle'} size={30} color={'#c6302c'}/>
+                        <Ionicons name={'ios-notifications-circle'} size={30} color={'#3EB489'}/>
                         <Spacer spacing={.025} xAxis/>
                         <Text style={[{fontWeight:'bold',color:'black',fontSize:25}]}>
-                            Your Notification Settings
+                            Your Camera Settings
                         </Text>
                     </View>
 

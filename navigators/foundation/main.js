@@ -60,6 +60,8 @@ import CompleteFollowers from "../../screens/user/completeFollowers";
 import CreateNewPost from "../../screens/user/testVideoUpload";
 import AllPifs from "../../screens/user/allPifs";
 import RefineTags from "../../screens/tabs/refineTags";
+import ReportUser from "../../screens/user/reportUser";
+import ReportPost from "../../screens/user/reportPost";
 const Stack = createNativeStackNavigator();
 
 function SplashScreen({route,navigation}) {
@@ -319,6 +321,20 @@ function HelpScreen({route,navigation}) {
     )
 }
 
+
+function ReportUserScreen({route,navigation}) {
+    return(
+        <ReportUser  route={route} navigation={navigation}/>
+    )
+}
+
+
+function ReportPostScreen({route,navigation}) {
+    return(
+        <ReportPost  route={route} navigation={navigation}/>
+    )
+}
+
 function AltProfileScreen({route,navigation}) {
     return(
         <AltProfile  route={route} navigation={navigation}/>
@@ -572,6 +588,14 @@ export function MainNavigator() {
         <Stack.Screen
             options={{headerShown: false}}
             name="HelpScreen" component={HelpScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="ReportUserScreen" component={ReportUserScreen}/>
+
+        <Stack.Screen
+            options={{headerShown: false}}
+            name="ReportPostScreen" component={ReportPostScreen}/>
 
         <Stack.Screen
             options={{headerShown: false}}

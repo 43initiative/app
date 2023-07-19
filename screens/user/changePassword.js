@@ -65,7 +65,7 @@ export default class ChangePassword extends React.Component {
                             hasIcon
                             icon={'ios-lock-closed'}
                             size={20}
-                            color={'#c6302c'}
+                            color={'#3EB489'}
                         />
 
 
@@ -74,7 +74,7 @@ export default class ChangePassword extends React.Component {
 
 
                     <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'15%'}]}>
-                        <RoundedButton disabled={this.state.password === '' || this.state.password.length <6} pressed={()=>{this.submitNewPassword()}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#c6302c'} text={'Submit Password'}/>
+                        <RoundedButton disabled={this.state.password === '' || this.state.password.length <6} pressed={()=>{this.submitNewPassword()}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#3EB489'} text={'Submit Password'}/>
 
                     </View>
                 </Animated.View>

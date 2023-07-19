@@ -42,6 +42,7 @@ const UserSignUp  = (state = INITIAL_STATE, action) => {
                 birthMonth:data.birthdayMonth,
                 birthYear:data.birthdayYear,
                 isOrganization:false,
+                state:data.selectedState,
                 initials:`${data.firstName.charAt(0)}.${data.lastName.charAt(0)}.`,
                 displayName: `${data.firstName} ${data.lastName}`
             }

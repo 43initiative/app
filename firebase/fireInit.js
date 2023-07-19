@@ -38,14 +38,9 @@ const saveFireDb = async (db) => {
 let xdb = ''
 
 const initialize = async () => {
+    //add new firebaseConfig here
     const firebaseConfig = {
-        apiKey: "AIzaSyD5fTcIle-PVJAYiQj4qX6u5rCHhTnu8Hg",
-        authDomain: "project-b2117.firebaseapp.com",
-        projectId: "project-b2117",
-        storageBucket: "project-b2117.appspot.com",
-        messagingSenderId: "954058964813",
-        appId: "1:954058964813:web:0c815fe4e9211991b00104",
-        measurementId: "G-2C44W4NCGC"
+
     };
 
 

@@ -64,7 +64,7 @@ export default class ChangeEmail extends React.Component {
                             hasIcon
                             icon={'ios-mail'}
                             size={20}
-                            color={'#c6302c'}
+                            color={'#3EB489'}
                         />
 
 
@@ -73,7 +73,7 @@ export default class ChangeEmail extends React.Component {
 
 
                     <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'15%'}]}>
-                        <RoundedButton disabled={this.state.email === '' || !this.state.email.includes('@')} pressed={()=>{this.submitNewEmail()}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#c6302c'} text={'Submit Email'}/>
+                        <RoundedButton disabled={this.state.email === '' || !this.state.email.includes('@')} pressed={()=>{this.submitNewEmail()}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#3EB489'} text={'Submit Email'}/>
 
                     </View>
                 </Animated.View>

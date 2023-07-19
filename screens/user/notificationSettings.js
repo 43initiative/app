@@ -86,9 +86,9 @@ export default class NotificationSettings extends React.Component {
     }
 
     returnPermissionButton = () => {
-        if(!this.state.granted && this.state.canAskAgain) {
+        if(!this.state.granted) {
             return( <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'10%'}]}>
-                <RoundedButton pressed={()=>{this.startPermissionRequest()}} style={[{width:'90%',marginLeft:'5%',height:'100%'}]} bgColor={'#c6302c'} text={'Turn On Notifications'}/>
+                <RoundedButton pressed={()=>{this.startPermissionRequest()}} style={[{width:'90%',marginLeft:'5%',height:'100%'}]} bgColor={'#3EB489'} text={'Turn On Notifications'}/>
 
             </View>)
         }
@@ -104,7 +104,7 @@ export default class NotificationSettings extends React.Component {
                 </View>
                 <View style={[{marginTop:'15%',width:'90%',marginLeft:'5%'}]}>
                     <View style={[flexing.rowStart]}>
-                        <Ionicons name={'ios-notifications-circle'} size={30} color={'#c6302c'}/>
+                        <Ionicons name={'ios-notifications-circle'} size={30} color={'#3EB489'}/>
                         <Spacer spacing={.025} xAxis/>
                         <Text style={[{fontWeight:'bold',color:'black',fontSize:25}]}>
                             Your Notification Settings

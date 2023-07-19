@@ -151,7 +151,7 @@ console.log(action)
         let data = this.props.data;
 
         return (
-            <Animated.View style={[flexing.startColumn,{width:'100%',backgroundColor:'white',marginTop:'5%',borderTopWidth:8,borderColor:'#d3d3d3'}]}>
+            <TouchableOpacity  onPress={()=>{this.loadComments(data)}} style={[flexing.startColumn,{width:'100%',backgroundColor:'white',marginTop:'5%',borderTopWidth:8,borderColor:'#d3d3d3'}]}>
                 <View style={[flexing.rowStart,{width:'95%',marginLeft:'2.5%',marginTop:'2.5%'}]}>
 
                     <View style={[flexing.rowStart,{width:'75%'}]}>
@@ -370,7 +370,7 @@ console.log(action)
                 }
                 <Spacer  spacing={.025}/>
 
-            </Animated.View>
+            </TouchableOpacity>
         )
     }
 

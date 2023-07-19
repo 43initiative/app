@@ -113,6 +113,14 @@ export default class PublicProfile extends React.Component {
         console.log(action)
     };
 
+
+    launchReport = (type,userUid,postId) => {
+        console.log(this.props.userUid)
+        this.props.navigation.push('ReportUserScreen',
+            {
+                userUid, postId
+            })
+    }
     render() {
         let data = this.props.route.params;
         console.log(data,'data here')
@@ -120,6 +128,9 @@ export default class PublicProfile extends React.Component {
             <View style={{width:'100%',height:'100%',backgroundColor:'white'}}>
                 <TouchableOpacity onPress={()=>{this.props.navigation.goBack()}} style={[{position:'absolute',width:'100%',zIndex:2,marginTop:'0%',paddingTop:'2.5%',paddingLeft:'7.5%',backgroundColor:'white'},flexing.startColumn]}>
                     <Ionicons name={'ios-arrow-back'} size={30} color={'black'}/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>{this.launchReport(data.userUid,null)}} style={[{position:'absolute',width:'100%',zIndex:2,marginTop:'0%',paddingTop:'2.5%',left:'87.5%',backgroundColor:'white'},flexing.startColumn]}>
+                    <Ionicons name={'ios-alert-circle-outline'} size={30} color={'firebrick'}/>
                 </TouchableOpacity>
             <ScrollView style={{width:'100%',height:'100%'}}>
 

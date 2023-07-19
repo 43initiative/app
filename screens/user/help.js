@@ -58,7 +58,7 @@ export default class Help extends React.Component {
                 </View>
                 <View style={[{backgroundColor:'white',width:'100%',height:'100%'}]}>
                     <View style={[flexing.rowStart,{width:'90%',marginLeft:'5%',marginTop:'5%'}]}>
-                        <Ionicons name={'ios-help-buoy'} size={30} color={'#c6302c'}/>
+                        <Ionicons name={'ios-help-buoy'} size={30} color={'#3EB489'}/>
                         <Spacer spacing={.025} xAxis/>
                         <Text style={[{fontWeight:'bold',color:'black',fontSize:25}]}>
                             Send us feedback
@@ -85,7 +85,7 @@ export default class Help extends React.Component {
 
                 </View>
                 <View style={[{position:'absolute',top:'75%',width:'90%',marginLeft:'5%',height:'15%'}]}>
-                    <RoundedButton disabled={this.state.helpFeedback === ''} pressed={()=>{this.submitFeedback()}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#c6302c'} text={'Submit Feedback'}/>
+                    <RoundedButton disabled={this.state.helpFeedback === ''} pressed={()=>{this.submitFeedback()}} style={[{width:'90%',marginLeft:'5%',height:'50%'}]} bgColor={'#3EB489'} text={'Submit Feedback'}/>
 
                 </View>
 

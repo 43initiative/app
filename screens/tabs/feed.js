@@ -40,12 +40,10 @@ import {activateLoading, deactivateLoading} from "../../reducers/controllers";
       flatListRef = React.createRef();
       onViewableItemsChanged = ({ viewableItems, changed }) => {
           if(viewableItems.length > 0) {
-              console.log('ran',viewableItems[0].item.id)
+             // console.log('ran',viewableItems[0].item.id)
               this.setState({
                   viewableItem: viewableItems[0].item.id,
                   play: viewableItems.length > 0
-              },()=>{
-                  //  console.log(this.state.viewableItems?.postId)
               });
           }
 
